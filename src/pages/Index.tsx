@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -40,7 +39,7 @@ const carbonData = [
   { name: 'May', 'Scope 1': 280, 'Scope 2': 249, 'Scope 3': 1180 },
   { name: 'Jun', 'Scope 1': 220, 'Scope 2': 184, 'Scope 3': 1050 },
   { name: 'Jul', 'Scope 1': 250, 'Scope 2': 162, 'Scope 3': 950 },
-  { name: 'Aug', 'Scope 1': 210, 'Scope 2': 142, 'Scope 3': 920 },
+  { name: 'Aug', 'Scope 1': 210, 'Scope 2': 142, 'Scope 3': 920 }
 ];
 
 // Sample ESG score data
@@ -52,14 +51,14 @@ const esgScoreData = [
   { name: 'May', score: 82 },
   { name: 'Jun', score: 80 },
   { name: 'Jul', score: 85 },
-  { name: 'Aug', score: 88 },
+  { name: 'Aug', score: 88 }
 ];
 
 // Sample category data
 const categoryData = [
   { name: 'Environment', value: 85 },
   { name: 'Social', value: 72 },
-  { name: 'Governance', value: 78 },
+  { name: 'Governance', value: 78 }
 ];
 
 // Sample insights
@@ -70,19 +69,19 @@ const sampleInsights = [
     description: 'Your carbon intensity per revenue has decreased by 12% compared to last quarter, putting you ahead of industry average.',
     indicator: 'down',
     percentageChange: -12,
-    date: 'August 15, 2023',
+    date: 'August 15, 2023'
   },
   {
     type: 'recommendation',
     title: 'Renewable energy opportunity',
     description: 'Based on your energy usage patterns, switching to renewable sources for your main facility could reduce Scope 2 emissions by up to 35% and generate ROI within 3 years.',
-    date: 'August 10, 2023',
+    date: 'August 10, 2023'
   },
   {
     type: 'alert',
     title: 'Compliance risk detected',
     description: 'New ESG reporting requirements will become mandatory in your region by Q1 next year. 3 of your current metrics need adjustments to comply.',
-    date: 'August 5, 2023',
+    date: 'August 5, 2023'
   },
   {
     type: 'info',
@@ -90,8 +89,8 @@ const sampleInsights = [
     description: 'Your sector's average ESG performance has improved by 5% this quarter. Your company maintains a position in the top quartile.',
     indicator: 'up',
     percentageChange: 8,
-    date: 'July 28, 2023',
-  },
+    date: 'July 28, 2023'
+  }
 ];
 
 // Sample compliance items
@@ -101,29 +100,29 @@ const complianceItems = [
     status: 'Compliant',
     score: 92,
     lastUpdated: '2 days ago',
-    deadline: null,
+    deadline: null
   },
   {
     name: 'TCFD Reporting',
     status: 'In Progress',
     score: 68,
     lastUpdated: '5 days ago',
-    deadline: 'Sep 30, 2023',
+    deadline: 'Sep 30, 2023'
   },
   {
     name: 'EU Taxonomy',
     status: 'Attention Needed',
     score: 45,
     lastUpdated: '12 days ago',
-    deadline: 'Oct 15, 2023',
+    deadline: 'Oct 15, 2023'
   },
   {
     name: 'CDP Climate Change',
     status: 'Compliant',
     score: 88,
     lastUpdated: '1 month ago',
-    deadline: null,
-  },
+    deadline: null
+  }
 ];
 
 const Index = () => {
