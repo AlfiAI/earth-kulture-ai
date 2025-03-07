@@ -75,6 +75,23 @@ const SustainabilityGoals = () => {
     fetchGoals();
   }, []);
 
+  // Function to render the action plan
+  const renderActionPlan = (actionPlan: string | undefined | any[]) => {
+    if (!actionPlan) return null;
+    
+    // If it's a string, render it directly
+    if (typeof actionPlan === 'string') {
+      return <p className="line-clamp-2">{actionPlan}</p>;
+    }
+    
+    // If it's an array, just show a summary
+    if (Array.isArray(actionPlan)) {
+      return <p className="line-clamp-2">{actionPlan.length} action steps defined</p>;
+    }
+    
+    return null;
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "on-track": return "bg-green-500";
@@ -156,7 +173,7 @@ const SustainabilityGoals = () => {
                   </div>
                   
                   <div className="pt-2 border-t text-sm text-muted-foreground">
-                    <p className="line-clamp-2">{goal.actionPlan}</p>
+                    {renderActionPlan(goal.actionPlan)}
                   </div>
                 </div>
               </CardContent>
