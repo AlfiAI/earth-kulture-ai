@@ -1,147 +1,108 @@
 
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionStatus } from "@/components/pricing/types";
+import { toast } from "sonner";
 
 class SubscriptionService {
-  // Get current user's subscription
   async getCurrentSubscription(): Promise<SubscriptionStatus | null> {
     try {
-      const { data: session } = await supabase.auth.getSession();
+      const { data: user } = await supabase.auth.getUser();
       
-      if (!session.session?.user) {
+      if (!user.user) {
         return null;
       }
       
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
-        .eq('user_id', session.session.user.id)
-        .order('created_at', { ascending: false })
+        .eq('user_id', user.user.id)
+        .order('started_at', { ascending: false })
         .limit(1)
-        .maybeSingle();
-
+        .single();
+        
       if (error) {
-        console.error("Error fetching subscription:", error);
-        toast.error("Failed to fetch subscription information");
+        if (error.code !== 'PGRST116') { // No rows returned is not an error for us
+          console.error("Error fetching subscription:", error);
+          throw error;
+        }
         return null;
       }
       
       return data as SubscriptionStatus;
     } catch (error) {
-      console.error("Unexpected error in getCurrentSubscription:", error);
+      console.error("Error in getCurrentSubscription:", error);
       return null;
     }
   }
-
-  // Subscribe to a new plan
-  async subscribeToPlan(planType: 'Free' | 'Pro' | 'Enterprise'): Promise<boolean> {
+  
+  async subscribeToPlan(planType: 'Free' | 'Pro' | 'Enterprise'): Promise<SubscriptionStatus | null> {
     try {
-      const { data: session } = await supabase.auth.getSession();
+      const { data: user } = await supabase.auth.getUser();
       
-      if (!session.session?.user) {
-        toast.error("You must be logged in to subscribe");
-        return false;
+      if (!user.user) {
+        toast.error("You must be logged in to subscribe to a plan");
+        return null;
       }
       
-      // Calculate expiration date (30 days from now for Pro, 1 year for Enterprise)
-      const now = new Date();
+      // Set expiration date (null for Free, 30 days for Pro, 1 year for Enterprise)
       let expiresAt = null;
-      
       if (planType === 'Pro') {
-        expiresAt = new Date(now.setMonth(now.getMonth() + 1)).toISOString();
+        expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days
       } else if (planType === 'Enterprise') {
-        expiresAt = new Date(now.setFullYear(now.getFullYear() + 1)).toISOString();
+        expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(); // 1 year
       }
       
-      // First, check if user already has a subscription
-      const { data: existingSubscription } = await supabase
+      // Insert new subscription
+      const { data, error } = await supabase
         .from('subscriptions')
-        .select('*')
-        .eq('user_id', session.session.user.id)
-        .maybeSingle();
-      
-      let result;
-      
-      if (existingSubscription) {
-        // Update existing subscription
-        result = await supabase
-          .from('subscriptions')
-          .update({
-            plan: planType,
-            status: 'Active',
-            started_at: new Date().toISOString(),
-            expires_at: expiresAt
-          })
-          .eq('id', existingSubscription.id);
-      } else {
-        // Create new subscription
-        result = await supabase
-          .from('subscriptions')
-          .insert({
-            user_id: session.session.user.id,
-            plan: planType,
-            status: 'Active',
-            started_at: new Date().toISOString(),
-            expires_at: expiresAt
-          });
+        .insert({
+          user_id: user.user.id,
+          plan: planType,
+          status: 'Active',
+          started_at: new Date().toISOString(),
+          expires_at: expiresAt
+        })
+        .select()
+        .single();
+        
+      if (error) {
+        console.error("Error subscribing to plan:", error);
+        toast.error("Failed to subscribe to the plan");
+        throw error;
       }
       
-      if (result.error) {
-        console.error("Error updating subscription:", result.error);
-        toast.error("Failed to update subscription");
-        return false;
-      }
-      
-      toast.success(`Successfully subscribed to ${planType} plan`);
-      return true;
+      toast.success(`Successfully subscribed to the ${planType} plan`);
+      return data as SubscriptionStatus;
     } catch (error) {
-      console.error("Unexpected error in subscribeToPlan:", error);
-      toast.error("An unexpected error occurred");
-      return false;
+      console.error("Error in subscribeToPlan:", error);
+      return null;
     }
   }
-
-  // Cancel subscription
+  
   async cancelSubscription(): Promise<boolean> {
     try {
-      const { data: session } = await supabase.auth.getSession();
+      const currentSubscription = await this.getCurrentSubscription();
       
-      if (!session.session?.user) {
-        toast.error("You must be logged in to cancel your subscription");
-        return false;
-      }
-      
-      const { data: subscription, error: fetchError } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', session.session.user.id)
-        .maybeSingle();
-      
-      if (fetchError || !subscription) {
-        console.error("Error fetching subscription:", fetchError);
-        toast.error("Failed to find subscription");
+      if (!currentSubscription) {
+        toast.error("No active subscription found");
         return false;
       }
       
       const { error } = await supabase
         .from('subscriptions')
-        .update({
-          status: 'Canceled'
-        })
-        .eq('id', subscription.id);
-      
+        .update({ status: 'Canceled' })
+        .eq('id', currentSubscription.id);
+        
       if (error) {
         console.error("Error canceling subscription:", error);
         toast.error("Failed to cancel subscription");
-        return false;
+        throw error;
       }
       
-      toast.success("Your subscription has been canceled");
+      toast.success("Subscription successfully canceled");
       return true;
     } catch (error) {
-      console.error("Unexpected error in cancelSubscription:", error);
-      toast.error("An unexpected error occurred");
+      console.error("Error in cancelSubscription:", error);
       return false;
     }
   }

@@ -1,10 +1,50 @@
 
 import { CarbonEmission } from '../types/esgTypes';
+import { supabase } from "@/integrations/supabase/client";
 import { sampleCarbonEmissions } from '../data/sampleEsgData';
 
 class CarbonService {
   // Get carbon emissions data
-  getCarbonEmissions(): Promise<CarbonEmission[]> {
+  async getCarbonEmissions(): Promise<CarbonEmission[]> {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      
+      if (!user.user) {
+        return this.getFallbackCarbonData();
+      }
+      
+      const { data, error } = await supabase
+        .from('carbon_emissions')
+        .select('*')
+        .eq('user_id', user.user.id)
+        .order('date', { ascending: false });
+        
+      if (error) {
+        console.error("Error fetching carbon emissions:", error);
+        return this.getFallbackCarbonData();
+      }
+      
+      if (!data || data.length === 0) {
+        return this.getFallbackCarbonData();
+      }
+      
+      // Transform data to match our CarbonEmission interface
+      return data.map(item => ({
+        id: item.id,
+        date: new Date(item.date),
+        source: item.source,
+        scope: item.scope,
+        amount: item.amount,
+        unit: item.unit
+      }));
+    } catch (error) {
+      console.error("Error in getCarbonEmissions:", error);
+      return this.getFallbackCarbonData();
+    }
+  }
+  
+  // Private method to get fallback data for demo purposes
+  private getFallbackCarbonData(): Promise<CarbonEmission[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(sampleCarbonEmissions);
@@ -37,6 +77,47 @@ class CarbonService {
       scope3,
       total: scope1 + scope2 + scope3
     };
+  }
+  
+  // Add a new carbon emission entry
+  async addCarbonEmission(emission: Omit<CarbonEmission, 'id'>): Promise<CarbonEmission | null> {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      
+      if (!user.user) {
+        throw new Error("User not authenticated");
+      }
+      
+      const { data, error } = await supabase
+        .from('carbon_emissions')
+        .insert({
+          user_id: user.user.id,
+          date: emission.date.toISOString(),
+          source: emission.source,
+          scope: emission.scope,
+          amount: emission.amount,
+          unit: emission.unit
+        })
+        .select()
+        .single();
+        
+      if (error) {
+        console.error("Error adding carbon emission:", error);
+        throw error;
+      }
+      
+      return {
+        id: data.id,
+        date: new Date(data.date),
+        source: data.source,
+        scope: data.scope,
+        amount: data.amount,
+        unit: data.unit
+      };
+    } catch (error) {
+      console.error("Error in addCarbonEmission:", error);
+      return null;
+    }
   }
 }
 
