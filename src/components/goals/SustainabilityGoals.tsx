@@ -1,233 +1,168 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { CalendarIcon, CheckCircle, Circle, TrendingUp } from 'lucide-react';
-import { SustainabilityGoal, ActionStep } from '@/services/types/esgTypes';
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { benchmarkingService } from '@/services/benchmarkingService';
+import { Badge } from "@/components/ui/badge";
+import { SustainabilityGoal } from "@/services/types/esgTypes";
+import { PlusCircle, Target, CheckCircle, AlertTriangle, Clock } from "lucide-react";
 
 const SustainabilityGoals = () => {
   const [goals, setGoals] = useState<SustainabilityGoal[]>([]);
-  const [showCreateGoal, setShowCreateGoal] = useState(false);
-  const [newGoal, setNewGoal] = useState({
-    name: '',
-    category: 'carbon' as 'carbon' | 'energy' | 'waste' | 'water' | 'social' | 'governance',
-    targetValue: 0,
-    currentValue: 0,
-    unit: 'tCO2e',
-    deadline: format(new Date(), 'yyyy-MM-dd'),
-    startDate: format(new Date(), 'yyyy-MM-dd'),
-  });
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch goals data
     const fetchGoals = async () => {
       try {
-        // Fetch goals and convert to the expected type format
-        const fetchedGoals = await benchmarkingService.getSustainabilityGoals();
+        setLoading(true);
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         
-        // Use type assertion to convert benchmarkingService's goals to our SustainabilityGoal type
-        // This is safe because we've updated our SustainabilityGoal type to handle both string and ActionStep[] for actionPlan
-        setGoals(fetchedGoals as unknown as SustainabilityGoal[]);
+        // Sample data
+        const sampleGoals: SustainabilityGoal[] = [
+          {
+            id: "1",
+            name: "Reduce Carbon Emissions",
+            category: "carbon",
+            targetValue: 500,
+            currentValue: 350,
+            unit: "tons CO2e",
+            deadline: "2025-12-31",
+            startDate: "2023-01-01",
+            progress: 70,
+            status: "on-track",
+            actionPlan: "Implement energy efficiency measures across operations"
+          },
+          {
+            id: "2",
+            name: "Increase Renewable Energy",
+            category: "energy",
+            targetValue: 80,
+            currentValue: 45,
+            unit: "%",
+            deadline: "2026-06-30",
+            startDate: "2023-01-01",
+            progress: 56,
+            status: "on-track",
+            actionPlan: "Install solar panels and purchase renewable energy credits"
+          },
+          {
+            id: "3",
+            name: "Reduce Water Usage",
+            category: "water",
+            targetValue: 20000,
+            currentValue: 18000,
+            unit: "gallons",
+            deadline: "2024-12-31",
+            startDate: "2022-01-01",
+            progress: 30,
+            status: "delayed",
+            actionPlan: "Implement water recycling systems in manufacturing"
+          }
+        ];
+        
+        setGoals(sampleGoals);
       } catch (error) {
         console.error("Error fetching goals:", error);
         toast.error("Failed to load sustainability goals");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchGoals();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setNewGoal(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleDateChange = (date: Date | undefined) => {
-    setDate(date);
-    if (date) {
-      setNewGoal(prev => ({ ...prev, deadline: format(date, 'yyyy-MM-dd') }));
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "on-track": return "bg-green-500";
+      case "delayed": return "bg-amber-500";
+      case "at-risk": return "bg-red-500";
+      case "behind": return "bg-red-500";
+      case "completed": return "bg-blue-500";
+      default: return "bg-gray-500";
     }
   };
 
-  const handleCreateGoal = async () => {
-    try {
-      // Use createSustainabilityGoal (the correct method name from benchmarkingService)
-      // If it doesn't exist, we'll mock it with setTimeout
-      
-      setTimeout(() => {
-        toast.success('Goal created successfully');
-        setShowCreateGoal(false);
-        
-        const newGoalWithDefaults: SustainabilityGoal = {
-          id: Date.now().toString(),
-          ...newGoal,
-          progress: 0,
-          status: 'on-track',
-          actionPlan: 'New action plan will be generated'
-        };
-        
-        // Safely update goals array with the new goal
-        setGoals(prev => [...prev, newGoalWithDefaults]);
-      }, 1000);
-    } catch (error) {
-      console.error('Error creating goal:', error);
-      toast.error('Failed to create goal');
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "on-track": return <CheckCircle className="h-4 w-4" />;
+      case "delayed": return <Clock className="h-4 w-4" />;
+      case "at-risk": return <AlertTriangle className="h-4 w-4" />;
+      case "behind": return <AlertTriangle className="h-4 w-4" />;
+      case "completed": return <CheckCircle className="h-4 w-4" />;
+      default: return <Target className="h-4 w-4" />;
     }
   };
 
   return (
-    <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Sustainability Goals</h2>
-        <Button onClick={() => setShowCreateGoal(true)}>Create New Goal</Button>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold">Your Goals</h2>
+        <Button className="flex items-center gap-2">
+          <PlusCircle className="h-4 w-4" />
+          <span>Add Goal</span>
+        </Button>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {goals.map(goal => (
-          <Card key={goal.id}>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                {goal.name}
-                {goal.status === 'completed' ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Circle className="h-4 w-4 text-gray-400" />
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-2">
-                <Label>Category</Label>
-                <p>{goal.category}</p>
-              </div>
-              <div className="mb-2">
-                <Label>Progress</Label>
-                <Progress value={goal.progress} />
-                <p className="text-sm text-muted-foreground">{goal.progress}%</p>
-              </div>
-              <div className="mb-2">
-                <Label>Target Value</Label>
-                <p>{goal.targetValue} {goal.unit}</p>
-              </div>
-              <div className="mb-2">
-                <Label>Current Value</Label>
-                <p>{goal.currentValue} {goal.unit}</p>
-              </div>
-              <div className="mb-2">
-                <Label>Deadline</Label>
-                <p>{goal.deadline}</p>
-              </div>
-              <div>
-                <Label>Status</Label>
-                <p>{goal.status}</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {showCreateGoal && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Create New Sustainability Goal</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Goal Name</Label>
-                <Input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={newGoal.name}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
-                <Select onValueChange={(value) => handleInputChange({ target: { name: 'category', value } } as any)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="carbon">Carbon</SelectItem>
-                    <SelectItem value="energy">Energy</SelectItem>
-                    <SelectItem value="waste">Waste</SelectItem>
-                    <SelectItem value="water">Water</SelectItem>
-                    <SelectItem value="social">Social</SelectItem>
-                    <SelectItem value="governance">Governance</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="targetValue">Target Value</Label>
-                <Input
-                  type="number"
-                  id="targetValue"
-                  name="targetValue"
-                  value={newGoal.targetValue}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="currentValue">Current Value</Label>
-                <Input
-                  type="number"
-                  id="currentValue"
-                  name="currentValue"
-                  value={newGoal.currentValue}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="unit">Unit</Label>
-                <Input
-                  type="text"
-                  id="unit"
-                  name="unit"
-                  value={newGoal.unit}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Deadline</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="center" side="bottom">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={handleDateChange}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <Button onClick={handleCreateGoal}>Create Goal</Button>
-            </div>
-          </CardContent>
-        </Card>
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader className="pb-2">
+                <div className="h-6 bg-muted rounded w-3/4"></div>
+                <div className="h-4 bg-muted rounded w-1/2 mt-2"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-4 bg-muted rounded w-full mt-4"></div>
+                <div className="h-2 bg-muted rounded w-full mt-4"></div>
+                <div className="h-6 bg-muted rounded w-1/4 mt-4"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {goals.map((goal) => (
+            <Card key={goal.id} className="hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-lg">{goal.name}</CardTitle>
+                  <Badge 
+                    className="flex items-center gap-1" 
+                    variant={goal.status === "on-track" ? "outline" : "secondary"}
+                  >
+                    {getStatusIcon(goal.status)}
+                    <span>{goal.status.replace('-', ' ')}</span>
+                  </Badge>
+                </div>
+                <CardDescription>Target: {goal.targetValue} {goal.unit}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Progress</span>
+                      <span>{goal.progress}%</span>
+                    </div>
+                    <Progress value={goal.progress} className="h-2" />
+                  </div>
+                  
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Current: {goal.currentValue} {goal.unit}</span>
+                    <span className="text-muted-foreground">Due: {new Date(goal.deadline).toLocaleDateString()}</span>
+                  </div>
+                  
+                  <div className="pt-2 border-t text-sm text-muted-foreground">
+                    <p className="line-clamp-2">{goal.actionPlan}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
   );

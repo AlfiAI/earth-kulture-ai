@@ -17,6 +17,9 @@ import Reports from "./pages/Reports";
 import DataCenter from "./pages/DataCenter";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
+import BenchmarkDashboard from "./pages/BenchmarkDashboard";
+import Goals from "./pages/Goals";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -26,22 +29,26 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/dashboard" element={<Index />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/compliance" element={<Compliance />} />
-          <Route path="/insights" element={<Insights />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/features" element={<Features />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/data" element={<DataCenter />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/dashboard" element={<Index />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/compliance" element={<Compliance />} />
+            <Route path="/insights" element={<Insights />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/data" element={<DataCenter />} />
+            <Route path="/benchmarks" element={<BenchmarkDashboard />} />
+            <Route path="/goals" element={<Goals />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

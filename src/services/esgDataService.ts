@@ -80,5 +80,7 @@ export type {
   ComplianceRequirement,
   AIInsight,
   ESGScore,
-  ESGReport
+  ESGReport,
+  SustainabilityGoal,
+  ActionStep
 } from './types/esgTypes';

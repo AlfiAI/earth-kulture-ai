@@ -21,6 +21,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SidebarProps {
   open: boolean;
@@ -31,6 +32,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { logout } = useAuth();
   
   // Auto-close sidebar on mobile when navigating
   useEffect(() => {
@@ -38,12 +40,6 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
       onToggle();
     }
   }, [location.pathname, isMobile, onToggle]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    toast.success('You have been logged out');
-    window.location.href = '/auth';
-  };
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -195,7 +191,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
               "w-full justify-start",
               open ? "px-3" : "px-0 justify-center"
             )}
-            onClick={handleLogout}
+            onClick={logout}
           >
             <LogOut className="h-5 w-5" />
             {open && <span className="ml-2">Logout</span>}
