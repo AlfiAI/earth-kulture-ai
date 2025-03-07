@@ -31,11 +31,12 @@ class CarbonService {
       // Transform data to match our CarbonEmission interface
       return data.map(item => ({
         id: item.id,
-        date: new Date(item.date),
+        date: item.date,
         source: item.source,
-        scope: item.scope,
+        scope: item.scope as 'scope1' | 'scope2' | 'scope3',
+        category: item.category || 'general', // Add default category
         amount: item.amount,
-        unit: item.unit
+        unit: item.unit as 'tCO2e' | 'kgCO2e'
       }));
     } catch (error) {
       console.error("Error in getCarbonEmissions:", error);
@@ -88,13 +89,17 @@ class CarbonService {
         throw new Error("User not authenticated");
       }
       
+      // Ensure date is a string when passing to Supabase
+      const dateStr = typeof emission.date === 'string' ? emission.date : emission.date.toString();
+      
       const { data, error } = await supabase
         .from('carbon_emissions')
         .insert({
           user_id: user.user.id,
-          date: emission.date.toISOString(),
+          date: dateStr,
           source: emission.source,
           scope: emission.scope,
+          category: emission.category || 'general',
           amount: emission.amount,
           unit: emission.unit
         })
@@ -108,11 +113,12 @@ class CarbonService {
       
       return {
         id: data.id,
-        date: new Date(data.date),
+        date: data.date,
         source: data.source,
-        scope: data.scope,
+        scope: data.scope as 'scope1' | 'scope2' | 'scope3',
+        category: data.category || 'general',
         amount: data.amount,
-        unit: data.unit
+        unit: data.unit as 'tCO2e' | 'kgCO2e'
       };
     } catch (error) {
       console.error("Error in addCarbonEmission:", error);

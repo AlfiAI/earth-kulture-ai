@@ -28,7 +28,9 @@ class ComplianceService {
         name: item.name,
         category: item.category,
         description: item.description || '',
-        region: item.region || 'Global'
+        region: item.region || 'Global',
+        requirements: [], // Add empty requirements array
+        lastUpdated: new Date().toISOString() // Add current date as lastUpdated
       }));
     } catch (error) {
       console.error("Error in getComplianceFrameworks:", error);

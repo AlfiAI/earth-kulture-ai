@@ -15,11 +15,11 @@ export interface ESGDataPoint {
 export interface CarbonEmission {
   id: string;
   scope: 'scope1' | 'scope2' | 'scope3';
-  category: string;
+  category?: string; // Make category optional since the service doesn't always provide it
   source: string;
   amount: number;
   unit: 'tCO2e' | 'kgCO2e';
-  date: string;
+  date: string; // Changed from Date to string to match implementation
   location?: string;
   notes?: string;
 }
@@ -28,6 +28,8 @@ export interface ComplianceFramework {
   id: string;
   name: string;
   description: string;
+  category: string;
+  region?: string;
   requirements: ComplianceRequirement[];
   lastUpdated: string;
   deadline?: string;
