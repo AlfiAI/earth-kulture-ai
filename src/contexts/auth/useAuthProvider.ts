@@ -60,12 +60,20 @@ export const useAuthProvider = () => {
           if (session?.user) {
             const profileData = await fetchUserProfile(session.user.id);
             if (profileData) {
-              // Explicitly map to UserProfile type to ensure all required fields are present
+              // Map profile data to UserProfile type
               setUserProfile({
                 id: profileData.id,
                 email: session.user.email || '', // Use email from session user
-                full_name: profileData.full_name,
-                avatar_url: profileData.avatar_url
+                full_name: profileData.full_name || '',
+                avatar_url: profileData.avatar_url || ''
+              });
+            } else {
+              // Create a minimal profile if none exists
+              setUserProfile({
+                id: session.user.id,
+                email: session.user.email || '',
+                full_name: '',
+                avatar_url: ''
               });
             }
           }
@@ -92,12 +100,20 @@ export const useAuthProvider = () => {
         if (newSession?.user) {
           const profileData = await fetchUserProfile(newSession.user.id);
           if (profileData) {
-            // Explicitly map to UserProfile type
+            // Map to UserProfile type
             setUserProfile({
               id: profileData.id,
               email: newSession.user.email || '', // Use email from session user
-              full_name: profileData.full_name,
-              avatar_url: profileData.avatar_url
+              full_name: profileData.full_name || '',
+              avatar_url: profileData.avatar_url || ''
+            });
+          } else {
+            // Create a minimal profile if none exists
+            setUserProfile({
+              id: newSession.user.id,
+              email: newSession.user.email || '',
+              full_name: '',
+              avatar_url: ''
             });
           }
         } else {
@@ -111,6 +127,10 @@ export const useAuthProvider = () => {
         } else if (event === 'SIGNED_OUT') {
           navigate('/auth');
           toast.success("You have been logged out");
+        } else if (event === 'USER_UPDATED') {
+          toast.success("Your profile has been updated");
+        } else if (event === 'PASSWORD_RECOVERY') {
+          toast.success("Password recovery email sent");
         }
       }
     );
@@ -130,11 +150,22 @@ export const useAuthProvider = () => {
   // Authentication methods
   const signIn = async (email: string, password: string) => {
     try {
+      // Special handling for demo account
+      if (email === 'demo@example.com' && password === 'password123') {
+        console.log("Using demo account credentials");
+      }
+      
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
     } catch (error: any) {
       console.error("Error signing in:", error);
-      toast.error(error.message || "Failed to sign in");
+      
+      // Provide more helpful error messages
+      if (error.message.includes("Invalid login credentials")) {
+        toast.error("Invalid email or password. Please try again.");
+      } else {
+        toast.error(error.message || "Failed to sign in");
+      }
       throw error;
     }
   };
@@ -147,15 +178,25 @@ export const useAuthProvider = () => {
         email, 
         password,
         options: {
-          emailRedirectTo: `${currentUrl}/auth`
+          emailRedirectTo: `${currentUrl}/auth`,
+          data: {
+            full_name: '',
+          }
         }
       });
       
       if (error) throw error;
-      toast.success("Please check your email to verify your account");
+      
+      toast.success("Please check your email to verify your account. Check your spam folder if you don't see it.");
     } catch (error: any) {
       console.error("Error signing up:", error);
-      toast.error(error.message || "Failed to sign up");
+      
+      // Provide more specific error messages
+      if (error.message.includes("User already registered")) {
+        toast.error("This email is already registered. Please sign in instead.");
+      } else {
+        toast.error(error.message || "Failed to sign up");
+      }
       throw error;
     }
   };

@@ -8,8 +8,9 @@ import AuthContainer from '@/components/auth/AuthContainer';
 import LegalDisclaimer from '@/components/auth/LegalDisclaimer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Info } from 'lucide-react';
 import LoadingSpinner from '@/components/auth/LoadingSpinner';
+import { Button } from '@/components/ui/button';
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -37,8 +38,21 @@ const AuthPage = () => {
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
       navigate('/dashboard');
+      toast.success("You are now signed in!");
     }
   }, [isAuthenticated, isLoading, navigate]);
+
+  // Function to handle email verification reminder
+  const handleEmailVerificationReminder = () => {
+    toast.info("Please check your email for verification link. Don't forget to check your spam folder.", {
+      duration: 8000,
+    });
+  };
+
+  // Function to navigate to Supabase dashboard for dev purposes
+  const navigateToSupabaseSettings = () => {
+    window.open("https://supabase.com/dashboard/project/ihijlloxwfjrrnhxqlfa/auth/providers", "_blank");
+  };
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-background py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
@@ -52,6 +66,33 @@ const AuthPage = () => {
             <AlertDescription>{authError}</AlertDescription>
           </Alert>
         )}
+
+        {/* Developer note */}
+        <Alert className="bg-blue-50 border-blue-200 text-blue-800">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-xs">
+            <p className="font-medium">Developer Note:</p>
+            <p>For development, email verification is enabled by default in Supabase.</p>
+            <div className="mt-2 space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs h-7 bg-white" 
+                onClick={navigateToSupabaseSettings}
+              >
+                Go to Auth Settings
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs h-7 bg-white" 
+                onClick={handleEmailVerificationReminder}
+              >
+                Email Reminder
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
         
         {pageLoading ? (
           <div className="flex justify-center py-8">

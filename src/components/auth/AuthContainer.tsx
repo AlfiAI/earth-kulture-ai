@@ -27,20 +27,38 @@ const AuthContainer = ({ authMode, setAuthMode }: AuthContainerProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [componentLoading, setComponentLoading] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
 
   const handleFormSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
     setAuthError(null);
+    setSignupSuccess(false);
     
     try {
       if (authMode === 'login') {
         await signIn(values.email, values.password);
       } else {
         await signUp(values.email, values.password);
+        setSignupSuccess(true);
+        // Switch to login mode after successful signup
+        setAuthMode('login');
       }
     } catch (error: any) {
       console.error("Authentication error:", error);
-      setAuthError(error.message || "Authentication failed. Please try again.");
+      
+      // Handle specific error cases
+      if (error.message.includes("Invalid login credentials")) {
+        if (authMode === 'login') {
+          setAuthError("Invalid email or password. If you recently signed up, please check your email for verification.");
+        } else {
+          setAuthError("Authentication failed. Please try again with different credentials.");
+        }
+      } else if (error.message.includes("User already registered")) {
+        setAuthError("This email is already registered. Please sign in instead.");
+        setAuthMode('login');
+      } else {
+        setAuthError(error.message || "Authentication failed. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -64,6 +82,15 @@ const AuthContainer = ({ authMode, setAuthMode }: AuthContainerProps) => {
 
   return (
     <div className="bg-card rounded-lg shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-6">
+      {signupSuccess && (
+        <Alert className="bg-green-50 border-green-200 text-green-800">
+          <Info className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-sm">
+            Account created successfully! Please check your email for verification. If you don't see the email, check your spam folder or try signing in directly.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       {authError && (
         <Alert variant="destructive" className="bg-destructive/10 border-destructive/30 text-destructive">
           <AlertTriangle className="h-4 w-4" />
@@ -91,6 +118,12 @@ const AuthContainer = ({ authMode, setAuthMode }: AuthContainerProps) => {
       </Tabs>
       
       <AuthToggle authMode={authMode} setAuthMode={setAuthMode} />
+      
+      {authMode === 'login' && (
+        <div className="text-xs text-center text-muted-foreground">
+          <p>For development, you can sign in with: demo@example.com / password123</p>
+        </div>
+      )}
     </div>
   );
 };
