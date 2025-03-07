@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { 
   Database, 
   RefreshCw, 
@@ -13,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DataSource {
   id: string;
@@ -27,64 +30,114 @@ interface DataSource {
 const DataSourceCard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState('all');
+  const [dataSources, setDataSources] = useState<DataSource[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated, user } = useAuth();
   
-  // Sample data sources
-  const dataSources: DataSource[] = [
-    {
-      id: '1',
-      name: 'Energy Consumption',
-      category: 'environmental',
-      lastUpdated: '2023-08-15',
-      status: 'active',
-      format: 'excel',
-      recordCount: 1245
-    },
-    {
-      id: '2',
-      name: 'Water Usage',
-      category: 'environmental',
-      lastUpdated: '2023-08-10',
-      status: 'active',
-      format: 'csv',
-      recordCount: 890
-    },
-    {
-      id: '3',
-      name: 'GHG Emissions',
-      category: 'carbon',
-      lastUpdated: '2023-08-05',
-      status: 'active',
-      format: 'excel',
-      recordCount: 1520
-    },
-    {
-      id: '4',
-      name: 'Supplier Data',
-      category: 'supply-chain',
-      lastUpdated: '2023-07-28',
-      status: 'needs-update',
-      format: 'csv',
-      recordCount: 342
-    },
-    {
-      id: '5',
-      name: 'Waste Management',
-      category: 'environmental',
-      lastUpdated: '2023-07-25',
-      status: 'active',
-      format: 'excel',
-      recordCount: 765
-    },
-    {
-      id: '6',
-      name: 'Employee Demographics',
-      category: 'social',
-      lastUpdated: '2023-07-20',
-      status: 'active',
-      format: 'excel',
-      recordCount: 412
-    }
-  ];
+  // Fetch data sources from Supabase
+  useEffect(() => {
+    const fetchDataSources = async () => {
+      if (!isAuthenticated) {
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        setIsLoading(true);
+        
+        // Query Supabase for data sources
+        const { data, error } = await supabase
+          .from('data_sources')
+          .select('*')
+          .order('last_updated', { ascending: false });
+          
+        if (error) {
+          throw error;
+        }
+        
+        // If real data exists in Supabase, use it
+        if (data && data.length > 0) {
+          // Transform data to match our interface
+          const formattedData: DataSource[] = data.map(item => ({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            lastUpdated: new Date(item.last_updated).toISOString().split('T')[0],
+            status: item.status as 'active' | 'needs-update',
+            format: item.format,
+            recordCount: item.record_count || 0
+          }));
+          
+          setDataSources(formattedData);
+        } else {
+          // Fall back to sample data for demo purposes
+          setDataSources([
+            {
+              id: '1',
+              name: 'Energy Consumption',
+              category: 'environmental',
+              lastUpdated: '2023-08-15',
+              status: 'active',
+              format: 'excel',
+              recordCount: 1245
+            },
+            {
+              id: '2',
+              name: 'Water Usage',
+              category: 'environmental',
+              lastUpdated: '2023-08-10',
+              status: 'active',
+              format: 'csv',
+              recordCount: 890
+            },
+            {
+              id: '3',
+              name: 'GHG Emissions',
+              category: 'carbon',
+              lastUpdated: '2023-08-05',
+              status: 'active',
+              format: 'excel',
+              recordCount: 1520
+            },
+            {
+              id: '4',
+              name: 'Supplier Data',
+              category: 'supply-chain',
+              lastUpdated: '2023-07-28',
+              status: 'needs-update',
+              format: 'csv',
+              recordCount: 342
+            },
+            {
+              id: '5',
+              name: 'Waste Management',
+              category: 'environmental',
+              lastUpdated: '2023-07-25',
+              status: 'active',
+              format: 'excel',
+              recordCount: 765
+            },
+            {
+              id: '6',
+              name: 'Employee Demographics',
+              category: 'social',
+              lastUpdated: '2023-07-20',
+              status: 'active',
+              format: 'excel',
+              recordCount: 412
+            }
+          ]);
+        }
+      } catch (error) {
+        console.error('Error fetching data sources:', error);
+        toast.error('Failed to load data sources');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchDataSources();
+  }, [isAuthenticated, user]);
   
   const filteredSources = dataSources.filter(source => {
     if (selectedTab !== 'all' && source.category !== selectedTab) {
@@ -98,20 +151,79 @@ const DataSourceCard = () => {
     return true;
   });
   
-  const handleUpload = () => {
+  const handleUpload = async () => {
+    if (!isAuthenticated) {
+      toast.error('You must be logged in to upload data');
+      return;
+    }
+    
+    // In a real implementation, this would open a file upload dialog
     toast.info('Upload functionality would connect to API integration in a complete implementation');
   };
   
-  const handleConnect = () => {
+  const handleConnect = async () => {
+    if (!isAuthenticated) {
+      toast.error('You must be logged in to connect a data source');
+      return;
+    }
+    
     toast.info('This would open an API connection wizard in a complete implementation');
   };
   
-  const handleAutoProcess = (sourceId: string) => {
+  const handleAutoProcess = async (sourceId: string) => {
+    if (!isAuthenticated) {
+      toast.error('You must be logged in to process data');
+      return;
+    }
+    
     toast.loading('AI is processing data source...');
     
+    // Simulate API call for now
     setTimeout(() => {
       toast.success('Data source processed successfully by AI');
     }, 2000);
+  };
+
+  const handleRefresh = () => {
+    if (!isAuthenticated) {
+      toast.error('You must be logged in to refresh data');
+      return;
+    }
+    
+    toast.loading('Refreshing data sources...');
+    
+    // Reload data sources
+    const fetchDataSources = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('data_sources')
+          .select('*')
+          .order('last_updated', { ascending: false });
+          
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const formattedData: DataSource[] = data.map(item => ({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            lastUpdated: new Date(item.last_updated).toISOString().split('T')[0],
+            status: item.status as 'active' | 'needs-update',
+            format: item.format,
+            recordCount: item.record_count || 0
+          }));
+          
+          setDataSources(formattedData);
+        }
+        
+        toast.success('Data sources refreshed');
+      } catch (error) {
+        console.error('Error refreshing data sources:', error);
+        toast.error('Failed to refresh data sources');
+      }
+    };
+    
+    fetchDataSources();
   };
 
   return (
@@ -140,7 +252,7 @@ const DataSourceCard = () => {
           <Button variant="outline" size="sm">
             <Filter className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleRefresh}>
             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
@@ -154,10 +266,16 @@ const DataSourceCard = () => {
           </TabsList>
           
           <TabsContent value={selectedTab} className="pt-2">
-            <DataSourceList 
-              sources={filteredSources} 
-              onAutoProcess={handleAutoProcess} 
-            />
+            {isLoading ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Loading data sources...</p>
+              </div>
+            ) : (
+              <DataSourceList 
+                sources={filteredSources} 
+                onAutoProcess={handleAutoProcess} 
+              />
+            )}
           </TabsContent>
         </Tabs>
         

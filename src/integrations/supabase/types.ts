@@ -9,6 +9,190 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      carbon_emissions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          date: string
+          id: string
+          notes: string | null
+          scope: string
+          source: string
+          unit: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          date: string
+          id?: string
+          notes?: string | null
+          scope: string
+          source: string
+          unit?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          date?: string
+          id?: string
+          notes?: string | null
+          scope?: string
+          source?: string
+          unit?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      compliance_frameworks: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          region: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          region?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          region?: string | null
+        }
+        Relationships: []
+      }
+      compliance_status: {
+        Row: {
+          created_at: string | null
+          framework_id: string
+          id: string
+          notes: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          framework_id: string
+          id?: string
+          notes?: string | null
+          status: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          framework_id?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_status_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_frameworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_sources: {
+        Row: {
+          category: string
+          created_at: string | null
+          format: string
+          id: string
+          last_updated: string | null
+          name: string
+          record_count: number | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          format: string
+          id?: string
+          last_updated?: string | null
+          name: string
+          record_count?: number | null
+          status: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          format?: string
+          id?: string
+          last_updated?: string | null
+          name?: string
+          record_count?: number | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      esg_data: {
+        Row: {
+          category: string
+          created_at: string | null
+          data_source_id: string | null
+          date: string | null
+          id: string
+          metric_name: string
+          notes: string | null
+          unit: string | null
+          user_id: string
+          value: number
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          data_source_id?: string | null
+          date?: string | null
+          id?: string
+          metric_name: string
+          notes?: string | null
+          unit?: string | null
+          user_id: string
+          value: number
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          data_source_id?: string | null
+          date?: string | null
+          id?: string
+          metric_name?: string
+          notes?: string | null
+          unit?: string | null
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "esg_data_data_source_id_fkey"
+            columns: ["data_source_id"]
+            isOneToOne: false
+            referencedRelation: "data_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
