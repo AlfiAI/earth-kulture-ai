@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Database, RefreshCw, Upload, Filter } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,7 +30,7 @@ const DataSourceCard = () => {
   });
   
   const handleUpload = async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       toast.error('You must be logged in to upload data');
       return;
     }
@@ -40,23 +39,16 @@ const DataSourceCard = () => {
   };
   
   const handleConnect = async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       toast.error('You must be logged in to connect a data source');
       return;
     }
     
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      
-      if (!userData.user) {
-        toast.error('Authentication error');
-        return;
-      }
-      
       const { data, error } = await supabase
         .from('data_sources')
         .insert({
-          user_id: userData.user.id,
+          user_id: user.id,
           name: 'New API Connection',
           category: 'environmental',
           format: 'api',
@@ -70,30 +62,20 @@ const DataSourceCard = () => {
         throw error;
       }
       
-      toast.success('Successfully connected new data source');
-      
-      const { data: dataSources, error: refreshError } = await supabase
-        .from('data_sources')
-        .select('*')
-        .eq('user_id', userData.user.id)
-        .order('last_updated', { ascending: false });
+      if (data) {
+        toast.success('Successfully connected new data source');
         
-      if (refreshError) {
-        throw refreshError;
-      }
-      
-      if (dataSources) {
-        const formattedData = dataSources.map(item => ({
-          id: item.id,
-          name: item.name,
-          category: item.category,
-          lastUpdated: new Date(item.last_updated).toISOString().split('T')[0],
-          status: item.status as 'active' | 'needs-update',
-          format: item.format,
-          recordCount: item.record_count || 0
-        }));
+        const newDataSource = {
+          id: data.id,
+          name: data.name,
+          category: data.category,
+          lastUpdated: data.last_updated ? new Date(data.last_updated).toISOString().split('T')[0] : '',
+          status: data.status as 'active' | 'needs-update',
+          format: data.format,
+          recordCount: data.record_count || 0
+        };
         
-        setDataSources(formattedData);
+        setDataSources(prev => [newDataSource, ...prev]);
       }
     } catch (error) {
       console.error('Error connecting data source:', error);
@@ -115,7 +97,7 @@ const DataSourceCard = () => {
         .update({
           last_updated: new Date().toISOString(),
           status: 'active'
-        })
+        } as any)
         .eq('id', sourceId);
         
       if (error) {

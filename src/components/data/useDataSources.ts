@@ -9,7 +9,7 @@ export const useDataSources = (isAuthenticated: boolean, user: User | null) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchDataSources = async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       setIsLoading(false);
       return;
     }
@@ -17,29 +17,22 @@ export const useDataSources = (isAuthenticated: boolean, user: User | null) => {
     try {
       setIsLoading(true);
       
-      const { data: userData } = await supabase.auth.getUser();
-      
-      if (!userData.user) {
-        setIsLoading(false);
-        return;
-      }
-      
       const { data, error } = await supabase
         .from('data_sources')
         .select('*')
-        .eq('user_id', userData.user.id)
+        .eq('user_id', user.id)
         .order('last_updated', { ascending: false });
         
       if (error) {
         throw error;
       }
       
-      if (data && data.length > 0) {
+      if (data) {
         const formattedData: DataSource[] = data.map(item => ({
           id: item.id,
           name: item.name,
           category: item.category,
-          lastUpdated: new Date(item.last_updated).toISOString().split('T')[0],
+          lastUpdated: item.last_updated ? new Date(item.last_updated).toISOString().split('T')[0] : '',
           status: item.status as 'active' | 'needs-update',
           format: item.format,
           recordCount: item.record_count || 0

@@ -25,8 +25,24 @@ export const supabase = createClient<Database>(
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      // Set redirect URLs dynamically based on the current site URL
-      redirectTo: `${getSiteUrl()}/auth`
+      storage: {
+        getItem: (key: string) => {
+          if (typeof window !== 'undefined') {
+            return window.localStorage.getItem(key);
+          }
+          return null;
+        },
+        setItem: (key: string, value: string) => {
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem(key, value);
+          }
+        },
+        removeItem: (key: string) => {
+          if (typeof window !== 'undefined') {
+            window.localStorage.removeItem(key);
+          }
+        }
+      }
     }
   }
 );
