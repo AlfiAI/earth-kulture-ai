@@ -4,7 +4,7 @@ import { PricingPlanProps, FAQItemProps } from './types';
 export const pricingPlans: PricingPlanProps[] = [
   {
     name: "Starter",
-    price: "$99",
+    price: "$0",
     description: "Perfect for small businesses just beginning their sustainability journey.",
     features: [
       "Carbon footprint calculation (Scope 1 & 2)",
@@ -19,7 +19,8 @@ export const pricingPlans: PricingPlanProps[] = [
       "Custom reporting"
     ],
     cta: "Get Started",
-    popular: false
+    popular: false,
+    planType: "Free"
   },
   {
     name: "Professional",
@@ -38,8 +39,9 @@ export const pricingPlans: PricingPlanProps[] = [
       "Custom API integrations",
       "Dedicated account manager"
     ],
-    cta: "Get Started",
-    popular: true
+    cta: "Subscribe Now",
+    popular: true,
+    planType: "Pro"
   },
   {
     name: "Enterprise",
@@ -56,7 +58,8 @@ export const pricingPlans: PricingPlanProps[] = [
     ],
     notIncluded: [],
     cta: "Contact Sales",
-    popular: false
+    popular: false,
+    planType: "Enterprise"
   }
 ];
 
