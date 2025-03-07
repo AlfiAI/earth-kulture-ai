@@ -1,19 +1,12 @@
 
 import { useState } from 'react';
-import { 
-  ShieldCheck, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  Search,
-  ArrowRight,
-  Loader2
-} from 'lucide-react';
+import { ShieldCheck, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import ValidationForm from './ValidationForm';
+import ValidationResults, { ValidationIssuesList } from './ValidationResults';
+import { ValidationResults as ValidationResultsType } from './ValidationTypes';
 
 const DataValidation = () => {
   const [isValidating, setIsValidating] = useState(false);
@@ -21,18 +14,7 @@ const DataValidation = () => {
   const [progress, setProgress] = useState(0);
   
   // Mock validation results
-  const [validationResults, setValidationResults] = useState<{
-    valid: number;
-    warning: number;
-    error: number;
-    total: number;
-    issues: Array<{
-      type: 'warning' | 'error';
-      message: string;
-      source: string;
-      recommendation: string;
-    }>;
-  }>({
+  const [validationResults, setValidationResults] = useState<ValidationResultsType>({
     valid: 0,
     warning: 0,
     error: 0,
@@ -135,109 +117,14 @@ const DataValidation = () => {
       <CardContent>
         {!validationComplete ? (
           <div className="space-y-6">
-            <div className="border rounded-lg p-6 text-center">
-              <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-medium mb-2">Automated Data Validation</h3>
-              <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                Our AI will scan your ESG data to identify inconsistencies, 
-                missing values, and potential compliance issues.
-              </p>
-              
-              {isValidating && (
-                <div className="mb-4 space-y-2">
-                  <Progress value={progress} className="h-2" />
-                  <p className="text-sm text-muted-foreground">
-                    Validating data... {progress}%
-                  </p>
-                </div>
-              )}
-              
-              <Button 
-                onClick={handleValidate} 
-                disabled={isValidating}
-                className="min-w-32"
-              >
-                {isValidating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Validating...
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="h-4 w-4 mr-2" />
-                    Validate ESG Data
-                  </>
-                )}
-              </Button>
-            </div>
+            <ValidationForm 
+              isValidating={isValidating} 
+              progress={progress} 
+              onValidate={handleValidate} 
+            />
           </div>
         ) : (
-          <div className="space-y-6">
-            <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-              <div>
-                <h3 className="text-lg font-medium">Validation Results</h3>
-                <p className="text-sm text-muted-foreground">
-                  {validationResults.total} data points analyzed
-                </p>
-              </div>
-              
-              <div className="flex gap-3">
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span className="text-sm font-medium">{validationResults.valid}</span>
-                  <span className="text-xs text-muted-foreground">Valid</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <AlertTriangle className="h-4 w-4 text-amber-600" />
-                  <span className="text-sm font-medium">{validationResults.warning}</span>
-                  <span className="text-xs text-muted-foreground">Warnings</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <AlertTriangle className="h-4 w-4 text-red-600" />
-                  <span className="text-sm font-medium">{validationResults.error}</span>
-                  <span className="text-xs text-muted-foreground">Errors</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium">Issues Detected</h4>
-              {validationResults.issues.length > 0 ? (
-                validationResults.issues.map((issue, index) => (
-                  <div key={index} className="border rounded-md p-3 relative overflow-hidden">
-                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${
-                      issue.type === 'error' ? 'bg-red-600' : 'bg-amber-600'
-                    }`} />
-                    <div className="pl-2 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          {issue.type === 'error' ? (
-                            <AlertTriangle className="h-4 w-4 text-red-600 mr-2" />
-                          ) : (
-                            <AlertTriangle className="h-4 w-4 text-amber-600 mr-2" />
-                          )}
-                          <p className="text-sm font-medium">{issue.message}</p>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {issue.source}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground pl-6">
-                        Recommendation: {issue.recommendation}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-4">
-                  <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">
-                    No issues detected in your ESG data
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
+          <ValidationResults results={validationResults} />
         )}
       </CardContent>
       
