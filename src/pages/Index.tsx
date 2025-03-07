@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -86,7 +87,7 @@ const sampleInsights = [
   {
     type: 'info',
     title: 'Industry benchmark update',
-    description: 'Your sector's average ESG performance has improved by 5% this quarter. Your company maintains a position in the top quartile.',
+    description: "Your sector's average ESG performance has improved by 5% this quarter. Your company maintains a position in the top quartile.",
     indicator: 'up',
     percentageChange: 8,
     date: 'July 28, 2023'
