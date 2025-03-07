@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,9 +16,10 @@ const loginSchema = z.object({
 type EmailLoginFormProps = {
   onSubmit: (values: z.infer<typeof loginSchema>) => void;
   authMode: 'login' | 'signup';
+  isSubmitting: boolean;
 };
 
-const EmailLoginForm = ({ onSubmit, authMode }: EmailLoginFormProps) => {
+const EmailLoginForm = ({ onSubmit, authMode, isSubmitting }: EmailLoginFormProps) => {
   const isMobile = useIsMobile();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -42,6 +43,7 @@ const EmailLoginForm = ({ onSubmit, authMode }: EmailLoginFormProps) => {
                   placeholder="your@email.com" 
                   {...field} 
                   className="h-9 sm:h-10 text-sm sm:text-base"
+                  disabled={isSubmitting}
                 />
               </FormControl>
               <FormMessage className="text-xs sm:text-sm" />
@@ -61,6 +63,7 @@ const EmailLoginForm = ({ onSubmit, authMode }: EmailLoginFormProps) => {
                   placeholder="••••••••" 
                   {...field} 
                   className="h-9 sm:h-10 text-sm sm:text-base"
+                  disabled={isSubmitting}
                 />
               </FormControl>
               <FormMessage className="text-xs sm:text-sm" />
@@ -72,9 +75,19 @@ const EmailLoginForm = ({ onSubmit, authMode }: EmailLoginFormProps) => {
           type="submit" 
           className="w-full" 
           size={isMobile ? "sm" : "lg"}
+          disabled={isSubmitting}
         >
-          {authMode === 'login' ? 'Sign In' : 'Sign Up'} 
-          <ArrowRight className="ml-2 h-4 w-4" />
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {authMode === 'login' ? 'Signing In...' : 'Signing Up...'}
+            </>
+          ) : (
+            <>
+              {authMode === 'login' ? 'Sign In' : 'Sign Up'} 
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </>
+          )}
         </Button>
       </form>
     </Form>

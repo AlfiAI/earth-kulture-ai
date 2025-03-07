@@ -45,7 +45,6 @@ const App = () => (
             <Route path="/data" element={<DataCenter />} />
             <Route path="/benchmarks" element={<BenchmarkDashboard />} />
             <Route path="/goals" element={<Goals />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

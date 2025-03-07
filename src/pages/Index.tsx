@@ -13,42 +13,34 @@ import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import CarbonEmissionsTrend from "@/components/dashboard/CarbonEmissionsTrend";
 import ESGScoreProgression from "@/components/dashboard/ESGScoreProgression";
 import AIInsights from "@/components/dashboard/AIInsights";
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
     setMounted(true);
     
-    // Check if user is authenticated
-    const user = localStorage.getItem('user');
-    if (user) {
-      try {
-        const userData = JSON.parse(user);
-        if (userData.isAuthenticated) {
-          setIsAuthenticated(true);
-        } else {
-          navigate('/auth');
-        }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        navigate('/auth');
-      }
-    } else {
+    // Redirect to auth page if not authenticated
+    if (!isLoading && !isAuthenticated) {
       navigate('/auth');
     }
-  }, [navigate]);
+  }, [isAuthenticated, isLoading, navigate]);
   
   // Update sidebar state when screen size changes
   useEffect(() => {
     setSidebarOpen(!isMobile);
   }, [isMobile]);
   
-  if (!mounted) return null;
+  if (!mounted || isLoading) return (
+    <div className="h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+  );
   
   if (!isAuthenticated) {
     return null; // This will be redirected by the useEffect

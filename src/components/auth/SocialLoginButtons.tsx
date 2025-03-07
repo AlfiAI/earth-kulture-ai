@@ -12,7 +12,7 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
       <Button 
         variant="outline" 
         className="w-full justify-start" 
-        onClick={() => onSocialLogin('google-oauth2')}
+        onClick={() => onSocialLogin('google')}
       >
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
           <path
@@ -34,15 +34,6 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
           <path d="M1 1h22v22H1z" fill="none" />
         </svg>
         Continue with Google
-      </Button>
-      
-      <Button 
-        variant="outline" 
-        className="w-full justify-start" 
-        onClick={() => onSocialLogin('github')}
-      >
-        <Github className="mr-2 h-4 w-4" />
-        Continue with GitHub
       </Button>
     </div>
   );

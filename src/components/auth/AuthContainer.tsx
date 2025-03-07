@@ -1,11 +1,11 @@
 
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth0 } from "@auth0/auth0-react";
 import EmailLoginForm from "./EmailLoginForm";
 import SocialLoginButtons from "./SocialLoginButtons";
 import AuthToggle from "./AuthToggle";
-import FallbackLoginButton from "./FallbackLoginButton";
 import LoadingSpinner from "./LoadingSpinner";
+import { useAuth } from "@/contexts/AuthContext";
 import * as z from "zod";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -14,7 +14,6 @@ import { Info } from "lucide-react";
 type AuthContainerProps = {
   authMode: 'login' | 'signup';
   setAuthMode: React.Dispatch<React.SetStateAction<'login' | 'signup'>>;
-  configError?: boolean;
 };
 
 const loginSchema = z.object({
@@ -22,62 +21,38 @@ const loginSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
 });
 
-const AuthContainer = ({ authMode, setAuthMode, configError = false }: AuthContainerProps) => {
-  const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
+const AuthContainer = ({ authMode, setAuthMode }: AuthContainerProps) => {
+  const { signIn, signUp, signInWithGoogle, isLoading } = useAuth();
   const isMobile = useIsMobile();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleFormSubmit = (values: z.infer<typeof loginSchema>) => {
-    console.log("Attempting login with:", values.email);
-    // Using Auth0's email/password authentication
-    loginWithRedirect({
-      authorizationParams: {
-        screen_hint: authMode === 'signup' ? 'signup' : undefined,
-        login_hint: values.email,
+  const handleFormSubmit = async (values: z.infer<typeof loginSchema>) => {
+    setIsSubmitting(true);
+    try {
+      if (authMode === 'login') {
+        await signIn(values.email, values.password);
+      } else {
+        await signUp(values.email, values.password);
       }
-    });
+    } catch (error) {
+      console.error("Authentication error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    console.log(`Attempting social login with provider: ${provider}`);
-    loginWithRedirect({
-      authorizationParams: {
-        connection: provider,
+  const handleSocialLogin = async (provider: string) => {
+    try {
+      if (provider === 'google') {
+        await signInWithGoogle();
       }
-    });
-  };
-
-  const handleDirectLogin = () => {
-    console.log("Attempting direct login");
-    loginWithRedirect();
+    } catch (error) {
+      console.error(`Error with ${provider} login:`, error);
+    }
   };
 
   if (isLoading) {
     return <LoadingSpinner />;
-  }
-
-  if (isAuthenticated) {
-    return null; // Handled by parent component's useEffect
-  }
-
-  if (configError) {
-    return (
-      <div className="bg-card rounded-lg shadow-sm p-4 sm:p-6 space-y-4">
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            To use authentication, configure Auth0 in your environment variables:
-            <ul className="list-disc pl-5 mt-2 text-xs sm:text-sm">
-              <li>VITE_AUTH0_DOMAIN</li>
-              <li>VITE_AUTH0_CLIENT_ID</li>
-              <li>(Optional) VITE_AUTH0_AUDIENCE</li>
-            </ul>
-          </AlertDescription>
-        </Alert>
-        <div className="pt-2 text-center text-muted-foreground text-xs sm:text-sm">
-          <p>Demo mode: Authentication is currently disabled</p>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -89,7 +64,11 @@ const AuthContainer = ({ authMode, setAuthMode, configError = false }: AuthConta
         </TabsList>
         
         <TabsContent value="email" className="space-y-4">
-          <EmailLoginForm onSubmit={handleFormSubmit} authMode={authMode} />
+          <EmailLoginForm 
+            onSubmit={handleFormSubmit} 
+            authMode={authMode} 
+            isSubmitting={isSubmitting}
+          />
         </TabsContent>
         
         <TabsContent value="social" className="space-y-4">
@@ -98,8 +77,6 @@ const AuthContainer = ({ authMode, setAuthMode, configError = false }: AuthConta
       </Tabs>
       
       <AuthToggle authMode={authMode} setAuthMode={setAuthMode} />
-      
-      <FallbackLoginButton onDirectLogin={handleDirectLogin} />
     </div>
   );
 };
