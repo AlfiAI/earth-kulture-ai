@@ -53,36 +53,56 @@ const Analytics = () => {
       </div>
 
       <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
-        <DashboardCard
-          title="Carbon Intensity"
-          subtitle="vs Previous Period"
-          value="8.2"
-          unit="tCO2e/M$"
-          trend={-12.4}
-          trendIcon={TrendingDown}
-          trendColor="text-green-600"
-          trendText="Lower is better"
-        />
-        <DashboardCard
-          title="ESG Score"
-          subtitle="Overall Performance"
-          value="81"
-          unit="/100"
-          trend={3.5}
-          trendIcon={TrendingUp}
-          trendColor="text-green-600"
-          trendText="Top quartile"
-        />
-        <DashboardCard
-          title="Energy Usage"
-          subtitle="Annual Consumption"
-          value="98,000"
-          unit="kWh"
-          trend={-7.8}
-          trendIcon={TrendingDown}
-          trendColor="text-green-600"
-          trendText="Reduction trend"
-        />
+        <DashboardCard title="Carbon Intensity">
+          <div className="flex flex-col space-y-1">
+            <p className="text-xs text-muted-foreground">vs Previous Period</p>
+            <div className="flex items-baseline justify-between">
+              <div className="flex items-baseline">
+                <span className="text-2xl font-bold">8.2</span>
+                <span className="ml-1 text-sm text-muted-foreground">tCO2e/M$</span>
+              </div>
+              <div className="flex items-center text-green-600">
+                <TrendingDown className="h-4 w-4 mr-1" />
+                <span className="text-sm font-medium">-12.4%</span>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Lower is better</p>
+          </div>
+        </DashboardCard>
+        
+        <DashboardCard title="ESG Score">
+          <div className="flex flex-col space-y-1">
+            <p className="text-xs text-muted-foreground">Overall Performance</p>
+            <div className="flex items-baseline justify-between">
+              <div className="flex items-baseline">
+                <span className="text-2xl font-bold">81</span>
+                <span className="ml-1 text-sm text-muted-foreground">/100</span>
+              </div>
+              <div className="flex items-center text-green-600">
+                <TrendingUp className="h-4 w-4 mr-1" />
+                <span className="text-sm font-medium">+3.5%</span>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Top quartile</p>
+          </div>
+        </DashboardCard>
+        
+        <DashboardCard title="Energy Usage">
+          <div className="flex flex-col space-y-1">
+            <p className="text-xs text-muted-foreground">Annual Consumption</p>
+            <div className="flex items-baseline justify-between">
+              <div className="flex items-baseline">
+                <span className="text-2xl font-bold">98,000</span>
+                <span className="ml-1 text-sm text-muted-foreground">kWh</span>
+              </div>
+              <div className="flex items-center text-green-600">
+                <TrendingDown className="h-4 w-4 mr-1" />
+                <span className="text-sm font-medium">-7.8%</span>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Reduction trend</p>
+          </div>
+        </DashboardCard>
       </div>
 
       <Tabs defaultValue="carbon" className="w-full">
@@ -117,10 +137,11 @@ const Analytics = () => {
               <div className="h-80">
                 <Chart 
                   data={carbonData}
+                  dataKey="value"
                   xAxisKey="name"
-                  yAxisKey="value"
-                  strokeColor="#16a34a"
-                  title="Carbon Emissions (tCO2e)"
+                  type="line"
+                  colors={["#16a34a"]}
+                  showTabs={false}
                 />
               </div>
             </CardContent>
@@ -152,10 +173,11 @@ const Analytics = () => {
               <div className="h-80">
                 <Chart 
                   data={esgsData}
+                  dataKey="value"
                   xAxisKey="name"
-                  yAxisKey="value"
-                  strokeColor="#3b82f6"
-                  title="ESG Score (out of 100)"
+                  type="line"
+                  colors={["#3b82f6"]}
+                  showTabs={false}
                 />
               </div>
             </CardContent>
@@ -187,10 +209,11 @@ const Analytics = () => {
               <div className="h-80">
                 <Chart 
                   data={energyData}
+                  dataKey="value"
                   xAxisKey="name"
-                  yAxisKey="value"
-                  strokeColor="#eab308"
-                  title="Energy Usage (kWh)"
+                  type="line"
+                  colors={["#eab308"]}
+                  showTabs={false}
                 />
               </div>
             </CardContent>
