@@ -86,7 +86,24 @@ export interface ESGReport {
   };
 }
 
-// Add SustainabilityGoal interface to align with SustainabilityGoals.tsx
+// Action Step interface for sustainability goals
+export interface ActionStep {
+  id: string;
+  description: string;
+  deadline?: string;
+  status: 'complete' | 'in-progress' | 'not-started';
+  impact: 'high' | 'medium' | 'low';
+  estimatedCost?: {
+    amount: number;
+    currency: string;
+  };
+  estimatedReduction?: {
+    amount: number;
+    unit: string;
+  };
+}
+
+// Sustainability Goal interface
 export interface SustainabilityGoal {
   id: string;
   name: string;
@@ -98,5 +115,5 @@ export interface SustainabilityGoal {
   startDate: string;
   progress: number;
   status: 'on-track' | 'delayed' | 'completed' | 'at-risk' | 'behind';
-  actionPlan: string;
+  actionPlan?: ActionStep[] | string;
 }

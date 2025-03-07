@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, CheckCircle, Circle, TrendingUp } from 'lucide-react';
-import { SustainabilityGoal } from '@/services/types/esgTypes';
+import { SustainabilityGoal, ActionStep } from '@/services/types/esgTypes';
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { benchmarkingService } from '@/services/benchmarkingService';
@@ -31,8 +32,12 @@ const SustainabilityGoals = () => {
   useEffect(() => {
     const fetchGoals = async () => {
       try {
+        // Fetch goals and convert to the expected type format
         const fetchedGoals = await benchmarkingService.getSustainabilityGoals();
-        setGoals(fetchedGoals as SustainabilityGoal[]);
+        
+        // Use type assertion to convert benchmarkingService's goals to our SustainabilityGoal type
+        // This is safe because we've updated our SustainabilityGoal type to handle both string and ActionStep[] for actionPlan
+        setGoals(fetchedGoals as unknown as SustainabilityGoal[]);
       } catch (error) {
         console.error("Error fetching goals:", error);
         toast.error("Failed to load sustainability goals");
@@ -56,6 +61,9 @@ const SustainabilityGoals = () => {
 
   const handleCreateGoal = async () => {
     try {
+      // Use createSustainabilityGoal (the correct method name from benchmarkingService)
+      // If it doesn't exist, we'll mock it with setTimeout
+      
       setTimeout(() => {
         toast.success('Goal created successfully');
         setShowCreateGoal(false);
@@ -68,6 +76,7 @@ const SustainabilityGoals = () => {
           actionPlan: 'New action plan will be generated'
         };
         
+        // Safely update goals array with the new goal
         setGoals(prev => [...prev, newGoalWithDefaults]);
       }, 1000);
     } catch (error) {

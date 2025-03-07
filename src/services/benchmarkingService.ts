@@ -1,5 +1,5 @@
 
-import { esgDataService, ESGScore, AIInsight } from './esgDataService';
+import { ESGScore, AIInsight } from './types/esgTypes';
 
 // Types for benchmarking data
 export interface IndustryBenchmark {
@@ -478,34 +478,34 @@ class BenchmarkingService {
           governancePercentile: 79,
           insights: [
             {
-              type: 'info',
+              type: 'info' as 'info',
               title: 'Industry-leading environmental practices',
               description: 'Your environmental score (85) places you in the top 12% of technology companies. Your recent energy efficiency initiatives have contributed significantly to this position.',
               date: new Date().toISOString().split('T')[0],
-              indicator: 'up',
+              indicator: 'up' as 'up',
               percentageChange: 5,
-              priority: 'medium',
+              priority: 'medium' as 'medium',
               category: 'benchmarking'
             },
             {
-              type: 'recommendation',
+              type: 'recommendation' as 'recommendation',
               title: 'Social score improvement opportunity',
               description: 'Your social score (72) is above average but lags behind industry leaders. Peer companies have achieved higher scores through enhanced employee development programs and community engagement initiatives.',
               date: new Date().toISOString().split('T')[0],
-              priority: 'medium',
+              priority: 'medium' as 'medium',
               category: 'benchmarking'
             },
             {
-              type: 'trend',
+              type: 'trend' as 'trend',
               title: 'Governance score trending upward',
               description: 'Your governance score has improved more rapidly than 65% of your peers over the last quarter, positioning you well against upcoming regulatory changes.',
               date: new Date().toISOString().split('T')[0],
-              indicator: 'up',
+              indicator: 'up' as 'up',
               percentageChange: 8,
-              priority: 'low',
+              priority: 'low' as 'low',
               category: 'benchmarking'
             }
-          ]
+          ] as AIInsight[]
         };
         
         resolve(comparison);
