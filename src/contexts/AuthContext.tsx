@@ -37,38 +37,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const fetchSession = async () => {
       setIsLoading(true);
       
-      // Get the current session
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error("Error fetching session:", error);
-        toast.error(`Authentication error: ${error.message}`);
-      } else {
-        setSession(session);
-        setUser(session?.user || null);
+      try {
+        // Get the current session
+        const { data: { session }, error } = await supabase.auth.getSession();
         
-        // If we have a user, fetch their profile
-        if (session?.user) {
-          const { data, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-            
-          if (profileError) {
-            console.error("Error fetching user profile:", profileError);
-          } else if (data) {
-            setUserProfile({
-              id: data.id,
-              email: session.user.email || '',
-              full_name: data.full_name,
-              avatar_url: data.avatar_url
-            });
+        if (error) {
+          console.error("Error fetching session:", error);
+          toast.error(`Authentication error: ${error.message}`);
+        } else {
+          setSession(session);
+          setUser(session?.user || null);
+          
+          // If we have a user, fetch their profile
+          if (session?.user) {
+            const { data, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+              
+            if (profileError) {
+              console.error("Error fetching user profile:", profileError);
+            } else if (data) {
+              setUserProfile({
+                id: data.id,
+                email: session.user.email || '',
+                full_name: data.full_name,
+                avatar_url: data.avatar_url
+              });
+            }
           }
         }
+      } catch (error) {
+        console.error("Unexpected error in auth initialization:", error);
+      } finally {
+        // Always set loading to false, even if there was an error
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
     
     // Fetch the session immediately
@@ -114,9 +119,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
     
-    // Cleanup subscription
+    // Set a timeout to stop showing loading state even if there's an issue
+    const loadingTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+    
+    // Cleanup subscription and timeout
     return () => {
       subscription.unsubscribe();
+      clearTimeout(loadingTimeout);
     };
   }, [navigate]);
   

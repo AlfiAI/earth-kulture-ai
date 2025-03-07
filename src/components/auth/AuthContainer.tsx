@@ -22,10 +22,11 @@ const loginSchema = z.object({
 });
 
 const AuthContainer = ({ authMode, setAuthMode }: AuthContainerProps) => {
-  const { signIn, signUp, signInWithGoogle, isLoading } = useAuth();
+  const { signIn, signUp, signInWithGoogle } = useAuth();
   const isMobile = useIsMobile();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [componentLoading, setComponentLoading] = useState(false);
 
   const handleFormSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
@@ -44,7 +45,7 @@ const AuthContainer = ({ authMode, setAuthMode }: AuthContainerProps) => {
       setIsSubmitting(false);
     }
   };
-
+  
   const handleSocialLogin = async (provider: string) => {
     setAuthError(null);
     try {
@@ -57,7 +58,7 @@ const AuthContainer = ({ authMode, setAuthMode }: AuthContainerProps) => {
     }
   };
 
-  if (isLoading) {
+  if (componentLoading) {
     return <LoadingSpinner />;
   }
 
