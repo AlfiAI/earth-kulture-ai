@@ -34,9 +34,10 @@ class CarbonService {
         date: item.date,
         source: item.source,
         scope: item.scope as 'scope1' | 'scope2' | 'scope3',
-        category: item.category || 'general', // Add default category
+        // Don't try to access category from DB response as it doesn't exist
         amount: item.amount,
-        unit: item.unit as 'tCO2e' | 'kgCO2e'
+        unit: item.unit as 'tCO2e' | 'kgCO2e',
+        notes: item.notes
       }));
     } catch (error) {
       console.error("Error in getCarbonEmissions:", error);
@@ -90,7 +91,7 @@ class CarbonService {
       }
       
       // Ensure date is a string when passing to Supabase
-      const dateStr = typeof emission.date === 'string' ? emission.date : emission.date.toString();
+      const dateStr = typeof emission.date === 'string' ? emission.date : emission.date;
       
       const { data, error } = await supabase
         .from('carbon_emissions')
@@ -99,9 +100,9 @@ class CarbonService {
           date: dateStr,
           source: emission.source,
           scope: emission.scope,
-          category: emission.category || 'general',
           amount: emission.amount,
-          unit: emission.unit
+          unit: emission.unit,
+          notes: emission.notes
         })
         .select()
         .single();
@@ -116,9 +117,10 @@ class CarbonService {
         date: data.date,
         source: data.source,
         scope: data.scope as 'scope1' | 'scope2' | 'scope3',
-        category: data.category || 'general',
+        // Don't try to access category from DB response
         amount: data.amount,
-        unit: data.unit as 'tCO2e' | 'kgCO2e'
+        unit: data.unit as 'tCO2e' | 'kgCO2e',
+        notes: data.notes
       };
     } catch (error) {
       console.error("Error in addCarbonEmission:", error);

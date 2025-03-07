@@ -81,6 +81,7 @@ export const complianceFrameworks: ComplianceFramework[] = [
     id: '1',
     name: 'GHG Protocol',
     description: 'The Greenhouse Gas Protocol provides standards, guidance, tools, and training for business and government to measure and manage climate-warming emissions.',
+    category: 'Carbon Reporting', // Add category
     requirements: [
       {
         id: '1-1',
@@ -113,6 +114,7 @@ export const complianceFrameworks: ComplianceFramework[] = [
     id: '2',
     name: 'TCFD Reporting',
     description: 'The Task Force on Climate-related Financial Disclosures provides a framework for companies to disclose climate-related financial information.',
+    category: 'Climate Disclosure', // Add category
     requirements: [
       {
         id: '2-1',
