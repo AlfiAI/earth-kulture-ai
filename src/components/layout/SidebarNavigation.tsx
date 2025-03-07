@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -27,7 +28,7 @@ const SidebarNavigation = ({ open, onToggle }: SidebarNavigationProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { logout } = useAuth();
+  const { signOut } = useAuth();
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -129,7 +130,7 @@ const SidebarNavigation = ({ open, onToggle }: SidebarNavigationProps) => {
             "w-full justify-start",
             open ? "px-3" : "px-0 justify-center"
           )}
-          onClick={logout}
+          onClick={signOut}
         >
           <LogOut className="h-5 w-5" />
           {open && <span className="ml-2">Logout</span>}
