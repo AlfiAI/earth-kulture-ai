@@ -9,9 +9,10 @@ interface ChatInputProps {
   setInputValue: (value: string) => void;
   handleSend: () => void;
   inputRef?: React.RefObject<HTMLTextAreaElement>;
+  placeholder?: string;
 }
 
-const ChatInput = ({ inputValue, setInputValue, handleSend, inputRef }: ChatInputProps) => {
+const ChatInput = ({ inputValue, setInputValue, handleSend, inputRef, placeholder }: ChatInputProps) => {
   const localRef = useRef<HTMLTextAreaElement>(null);
   const textareaRef = inputRef || localRef;
   
@@ -30,7 +31,7 @@ const ChatInput = ({ inputValue, setInputValue, handleSend, inputRef }: ChatInpu
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask Waly anything about ESG or carbon management..."
+          placeholder={placeholder || "Ask Waly anything about ESG or carbon management..."}
           className="resize-none pr-10 min-h-[60px] max-h-32"
           maxLength={500}
         />

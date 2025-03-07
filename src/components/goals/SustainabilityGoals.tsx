@@ -1,244 +1,160 @@
-
-import { useState, useEffect } from 'react';
-import { Target, Plus, Loader2, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SustainabilityGoal, benchmarkingService } from '@/services/benchmarkingService';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { CalendarIcon, CheckCircle, Circle, TrendingUp } from 'lucide-react';
+import { esgDataService } from '@/services/esgDataService';
 import { toast } from "sonner";
+import { Progress } from "@/components/ui/progress";
+import { benchmarkingService } from '@/services/benchmarkingService';
+
+interface SustainabilityGoal {
+  id: string;
+  name: string;
+  category: 'social' | 'governance' | 'carbon' | 'energy' | 'waste' | 'water';
+  targetValue: number;
+  currentValue: number;
+  unit: string;
+  deadline: string;
+  startDate: string;
+  progress: number;
+  status: 'on-track' | 'delayed' | 'completed';
+  actionPlan: string;
+}
 
 const SustainabilityGoals = () => {
-  const [loading, setLoading] = useState(true);
   const [goals, setGoals] = useState<SustainabilityGoal[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [showCreateGoal, setShowCreateGoal] = useState(false);
   const [newGoal, setNewGoal] = useState({
     name: '',
     category: 'carbon',
     targetValue: 0,
     currentValue: 0,
-    unit: '',
-    deadline: '',
-    startDate: new Date().toISOString().split('T')[0]
+    unit: 'tCO2e',
+    deadline: format(new Date(), 'yyyy-MM-dd'),
+    startDate: format(new Date(), 'yyyy-MM-dd'),
   });
-  
+  const [date, setDate] = useState<Date | undefined>(new Date());
+
   useEffect(() => {
     const fetchGoals = async () => {
-      try {
-        setLoading(true);
-        const category = selectedCategory === 'all' ? undefined : selectedCategory;
-        const data = await benchmarkingService.getSustainabilityGoals(category);
-        setGoals(data);
-      } catch (error) {
-        console.error('Error fetching goals:', error);
-      } finally {
-        setLoading(false);
-      }
+      const fetchedGoals = await benchmarkingService.getSustainabilityGoals();
+      setGoals(fetchedGoals);
     };
-    
+
     fetchGoals();
-  }, [selectedCategory]);
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setNewGoal(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (date: Date | undefined) => {
+    setDate(date);
+    if (date) {
+      setNewGoal(prev => ({ ...prev, deadline: format(date, 'yyyy-MM-dd') }));
+    }
+  };
 
   const handleCreateGoal = async () => {
     try {
-      if (!newGoal.name || !newGoal.unit || !newGoal.deadline) {
-        toast.error('Please fill in all required fields');
-        return;
-      }
-      
-      const createdGoal = await benchmarkingService.createSustainabilityGoal(newGoal);
-      setGoals(prev => [createdGoal, ...prev]);
-      setDialogOpen(false);
-      toast.success('Goal created successfully with AI-generated action plan');
-      
-      // Reset form
-      setNewGoal({
-        name: '',
-        category: 'carbon',
-        targetValue: 0,
-        currentValue: 0,
-        unit: '',
-        deadline: '',
-        startDate: new Date().toISOString().split('T')[0]
+      const categoryValue = newGoal.category as 'carbon' | 'energy' | 'waste' | 'water' | 'social' | 'governance';
+      await benchmarkingService.createGoal({
+        ...newGoal,
+        category: categoryValue
       });
+      toast.success('Goal created successfully');
+      setShowCreateGoal(false);
+      
+      // Refresh goals
+      const fetchedGoals = await benchmarkingService.getSustainabilityGoals();
+      setGoals(fetchedGoals);
     } catch (error) {
       console.error('Error creating goal:', error);
       toast.error('Failed to create goal');
     }
   };
 
-  const getStatusIcon = (status: 'on-track' | 'at-risk' | 'behind') => {
-    switch (status) {
-      case 'on-track':
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case 'at-risk':
-        return <AlertTriangle className="h-4 w-4 text-amber-500" />;
-      case 'behind':
-        return <Clock className="h-4 w-4 text-red-500" />;
-    }
-  };
-
   return (
-    <>
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Target className="h-5 w-5 text-primary" />
-              Sustainability Goals
-            </CardTitle>
-            <Button size="sm" variant="outline" onClick={() => setDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-1" />
-              New Goal
-            </Button>
-          </div>
-          <CardDescription>
-            Track progress on your sustainability targets
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="all" value={selectedCategory} onValueChange={setSelectedCategory}>
-            <TabsList className="grid grid-cols-4 mb-4">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="carbon">Carbon</TabsTrigger>
-              <TabsTrigger value="energy">Energy</TabsTrigger>
-              <TabsTrigger value="waste">Waste</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value={selectedCategory}>
-              {loading ? (
-                <div className="flex justify-center items-center h-32">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
-              ) : goals.length > 0 ? (
-                <div className="space-y-4">
-                  {goals.map((goal) => (
-                    <div key={goal.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-medium">{goal.name}</h3>
-                        <div className="flex items-center gap-1 text-sm">
-                          {getStatusIcon(goal.status)}
-                          <span className={`
-                            ${goal.status === 'on-track' ? 'text-green-500' : 
-                              goal.status === 'at-risk' ? 'text-amber-500' : 'text-red-500'}
-                          `}>
-                            {goal.status === 'on-track' ? 'On Track' : 
-                             goal.status === 'at-risk' ? 'At Risk' : 'Behind'}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="mb-3">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>{goal.currentValue} {goal.unit}</span>
-                          <span>{goal.targetValue} {goal.unit}</span>
-                        </div>
-                        <Progress value={goal.progress} className="h-2" />
-                      </div>
-                      
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span>Started: {new Date(goal.startDate).toLocaleDateString()}</span>
-                        <span>Target: {new Date(goal.deadline).toLocaleDateString()}</span>
-                      </div>
-                      
-                      {goal.actionPlan && goal.actionPlan.length > 0 && (
-                        <div className="mt-3 pt-3 border-t">
-                          <p className="text-sm font-medium mb-2">AI-Generated Action Plan:</p>
-                          <div className="space-y-2">
-                            {goal.actionPlan.slice(0, 2).map((step) => (
-                              <div key={step.id} className="flex items-start gap-2">
-                                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5
-                                  ${step.status === 'complete' ? 'bg-green-100' : 
-                                    step.status === 'in-progress' ? 'bg-blue-100' : 'bg-gray-100'}
-                                `}>
-                                  <span className={`text-xs
-                                    ${step.status === 'complete' ? 'text-green-600' : 
-                                      step.status === 'in-progress' ? 'text-blue-600' : 'text-gray-600'}
-                                  `}>
-                                    {step.status === 'complete' ? '✓' : 
-                                     step.status === 'in-progress' ? '↻' : '○'}
-                                  </span>
-                                </div>
-                                <div>
-                                  <p className="text-sm">{step.description}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    Due: {new Date(step.deadline || '').toLocaleDateString()} • 
-                                    Impact: <span className={`
-                                      ${step.impact === 'high' ? 'text-green-600' : 
-                                        step.impact === 'medium' ? 'text-blue-600' : 'text-gray-600'}
-                                    `}>
-                                      {step.impact}
-                                    </span>
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                            
-                            {goal.actionPlan.length > 2 && (
-                              <p className="text-xs text-muted-foreground">
-                                +{goal.actionPlan.length - 2} more steps
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center text-muted-foreground p-4">
-                  No sustainability goals found
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-        <CardFooter className="border-t pt-4">
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={() => setDialogOpen(true)}
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Add New Sustainability Goal
-          </Button>
-        </CardFooter>
-      </Card>
-      
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Create New Sustainability Goal</DialogTitle>
-            <DialogDescription>
-              Add a new goal and our AI will generate an action plan to help you achieve it.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            <div>
-              <Label htmlFor="name">Goal Name</Label>
-              <Input 
-                id="name" 
-                value={newGoal.name}
-                onChange={(e) => setNewGoal({...newGoal, name: e.target.value})}
-                placeholder="e.g., Reduce Carbon Emissions"
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
+    <div>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Sustainability Goals</h2>
+        <Button onClick={() => setShowCreateGoal(true)}>Create New Goal</Button>
+      </div>
+
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {goals.map(goal => (
+          <Card key={goal.id}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                {goal.name}
+                {goal.status === 'completed' ? (
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                ) : (
+                  <Circle className="h-4 w-4 text-gray-400" />
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-2">
+                <Label>Category</Label>
+                <p>{goal.category}</p>
+              </div>
+              <div className="mb-2">
+                <Label>Progress</Label>
+                <Progress value={goal.progress} />
+                <p className="text-sm text-muted-foreground">{goal.progress}%</p>
+              </div>
+              <div className="mb-2">
+                <Label>Target Value</Label>
+                <p>{goal.targetValue} {goal.unit}</p>
+              </div>
+              <div className="mb-2">
+                <Label>Current Value</Label>
+                <p>{goal.currentValue} {goal.unit}</p>
+              </div>
+              <div className="mb-2">
+                <Label>Deadline</Label>
+                <p>{goal.deadline}</p>
+              </div>
               <div>
+                <Label>Status</Label>
+                <p>{goal.status}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {showCreateGoal && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Create New Sustainability Goal</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Goal Name</Label>
+                <Input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={newGoal.name}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="category">Category</Label>
-                <Select 
-                  value={newGoal.category}
-                  onValueChange={(value) => setNewGoal({...newGoal, category: value})}
-                >
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="Select category" />
+                <Select onValueChange={(value) => handleInputChange({ target: { name: 'category', value } } as any)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="carbon">Carbon</SelectItem>
@@ -250,62 +166,67 @@ const SustainabilityGoals = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
-              <div>
+              <div className="grid gap-2">
+                <Label htmlFor="targetValue">Target Value</Label>
+                <Input
+                  type="number"
+                  id="targetValue"
+                  name="targetValue"
+                  value={newGoal.targetValue}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="currentValue">Current Value</Label>
+                <Input
+                  type="number"
+                  id="currentValue"
+                  name="currentValue"
+                  value={newGoal.currentValue}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="unit">Unit</Label>
-                <Input 
-                  id="unit" 
+                <Input
+                  type="text"
+                  id="unit"
+                  name="unit"
                   value={newGoal.unit}
-                  onChange={(e) => setNewGoal({...newGoal, unit: e.target.value})}
-                  placeholder="e.g., tCO2e, kWh, %"
+                  onChange={handleInputChange}
                 />
               </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="current">Current Value</Label>
-                <Input 
-                  id="current" 
-                  type="number"
-                  value={newGoal.currentValue || ''}
-                  onChange={(e) => setNewGoal({...newGoal, currentValue: Number(e.target.value)})}
-                />
+              <div className="grid gap-2">
+                <Label>Deadline</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] justify-start text-left font-normal",
+                        !date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="center" side="bottom">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={handleDateChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
-              
-              <div>
-                <Label htmlFor="target">Target Value</Label>
-                <Input 
-                  id="target" 
-                  type="number"
-                  value={newGoal.targetValue || ''}
-                  onChange={(e) => setNewGoal({...newGoal, targetValue: Number(e.target.value)})}
-                />
-              </div>
+              <Button onClick={handleCreateGoal}>Create Goal</Button>
             </div>
-            
-            <div>
-              <Label htmlFor="deadline">Target Deadline</Label>
-              <Input 
-                id="deadline" 
-                type="date"
-                value={newGoal.deadline}
-                onChange={(e) => setNewGoal({...newGoal, deadline: e.target.value})}
-              />
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreateGoal}>
-              Create Goal
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 };
 
