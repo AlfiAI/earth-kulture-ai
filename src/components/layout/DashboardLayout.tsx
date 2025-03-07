@@ -16,7 +16,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
+      <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="flex flex-1 pt-16">
         <Sidebar open={sidebarOpen} onToggle={toggleSidebar} />
         <main

@@ -1,9 +1,7 @@
-
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Bell, 
-  ChevronDown, 
   Menu, 
   Globe, 
   Settings,
@@ -31,7 +29,6 @@ const Header = ({ toggleSidebar, sidebarOpen }: HeaderProps) => {
   const [notifications, setNotifications] = useState(3);
   const location = useLocation();
   
-  // Get the current page title based on the route
   const getPageTitle = () => {
     const path = location.pathname;
     
