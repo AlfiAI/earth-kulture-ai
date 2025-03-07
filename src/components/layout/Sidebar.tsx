@@ -12,10 +12,13 @@ import {
   FileText,
   Database,
   Earth,
-  Bot
+  Bot,
+  Menu
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SidebarProps {
   open: boolean;
@@ -24,19 +27,42 @@ interface SidebarProps {
 
 const Sidebar = ({ open, onToggle }: SidebarProps) => {
   const location = useLocation();
+  const isMobile = useIsMobile();
   
+  // Auto-close sidebar on mobile when navigating
+  useEffect(() => {
+    if (isMobile && open) {
+      onToggle();
+    }
+  }, [location.pathname, isMobile]);
+
   const handleLogout = () => {
     localStorage.removeItem('user');
     toast.success('You have been logged out');
     window.location.href = '/auth';
   };
 
+  if (isMobile && !open) {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onToggle}
+        className="fixed z-50 bottom-4 left-4 rounded-full shadow-lg bg-card"
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+    );
+  }
+
   return (
     <aside
       className={cn(
         "fixed top-0 left-0 z-40 h-screen transition-all pt-14 lg:pt-0",
         open ? "w-64" : "w-16",
-        "lg:translate-x-0"
+        "lg:translate-x-0",
+        isMobile && open ? "translate-x-0" : isMobile && !open ? "-translate-x-full" : "",
+        isMobile ? "shadow-lg" : ""
       )}
     >
       <div className="h-full flex flex-col border-r bg-card px-3 py-4">
@@ -56,7 +82,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
             variant="ghost"
             size="icon"
             onClick={onToggle}
-            className="lg:flex hidden"
+            className={isMobile ? "flex" : "lg:flex hidden"}
           >
             <ChevronLeft
               className={cn(

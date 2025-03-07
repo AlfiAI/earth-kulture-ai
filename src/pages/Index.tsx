@@ -43,6 +43,11 @@ const Index = () => {
     }
   }, [navigate]);
   
+  // Update sidebar state when screen size changes
+  useEffect(() => {
+    setSidebarOpen(!isMobile);
+  }, [isMobile]);
+  
   if (!mounted) return null;
   
   if (!isAuthenticated) {
@@ -58,7 +63,7 @@ const Index = () => {
       <div className={cn(
         "flex-1 transition-all duration-300",
         sidebarOpen ? "lg:ml-64" : "lg:ml-16",
-        isMobile && "ml-0"
+        isMobile ? "ml-0" : ""
       )}>
         <Header toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
         
