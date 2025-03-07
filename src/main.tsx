@@ -17,6 +17,9 @@ createRoot(document.getElementById("root")!).render(
     clientId={clientId}
     authorizationParams={{
       redirect_uri: window.location.origin,
+      // Add these options to enable email/password and social logins
+      prompt: 'login',
+      scope: 'openid profile email'
     }}
   >
     <App />
