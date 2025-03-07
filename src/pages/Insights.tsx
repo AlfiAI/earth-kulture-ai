@@ -1,5 +1,6 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Header from "@/components/layout/Header";
@@ -70,9 +71,42 @@ const sampleInsights = [
 ];
 
 const Insights = () => {
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
-  const [mounted, setMounted] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+    
+    // Check if user is authenticated
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        if (userData.isAuthenticated) {
+          setIsAuthenticated(true);
+        } else {
+          navigate('/auth');
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        navigate('/auth');
+      }
+    } else {
+      navigate('/auth');
+    }
+  }, [navigate]);
+  
+  // Update sidebar state when screen size changes
+  useEffect(() => {
+    setSidebarOpen(!isMobile);
+  }, [isMobile]);
+  
+  if (!mounted || !isAuthenticated) {
+    return null;
+  }
   
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -83,7 +117,7 @@ const Insights = () => {
       <div className={cn(
         "flex-1 transition-all duration-300",
         sidebarOpen ? "lg:ml-64" : "lg:ml-16",
-        isMobile && "ml-0"
+        isMobile ? "ml-0" : ""
       )}>
         <Header toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
         

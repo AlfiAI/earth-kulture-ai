@@ -15,7 +15,7 @@ import {
   Bot,
   Menu
 } from "lucide-react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -27,6 +27,7 @@ interface SidebarProps {
 
 const Sidebar = ({ open, onToggle }: SidebarProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   
   // Auto-close sidebar on mobile when navigating
@@ -34,7 +35,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
     if (isMobile && open) {
       onToggle();
     }
-  }, [location.pathname, isMobile]);
+  }, [location.pathname, isMobile, onToggle]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -42,6 +43,14 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
     window.location.href = '/auth';
   };
 
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    if (isMobile && open) {
+      onToggle();
+    }
+  };
+
+  // Render a floating menu button when sidebar is closed on mobile
   if (isMobile && !open) {
     return (
       <Button
@@ -65,7 +74,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
         isMobile ? "shadow-lg" : ""
       )}
     >
-      <div className="h-full flex flex-col border-r bg-card px-3 py-4">
+      <div className="h-full flex flex-col border-r bg-card px-3 py-4 overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <div
             className={cn(
@@ -100,6 +109,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
             icon={<LayoutDashboard className="h-5 w-5" />}
             active={location.pathname === '/dashboard'}
             expanded={open}
+            onClick={() => handleNavigation('/dashboard')}
           />
           
           <NavItem
@@ -108,6 +118,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
             icon={<FileCheck className="h-5 w-5" />}
             active={location.pathname === '/compliance'}
             expanded={open}
+            onClick={() => handleNavigation('/compliance')}
           />
           
           <NavItem
@@ -116,6 +127,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
             icon={<LightbulbIcon className="h-5 w-5" />}
             active={location.pathname === '/insights'}
             expanded={open}
+            onClick={() => handleNavigation('/insights')}
           />
           
           <NavItem
@@ -124,6 +136,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
             icon={<FileText className="h-5 w-5" />}
             active={location.pathname === '/reports'}
             expanded={open}
+            onClick={() => handleNavigation('/reports')}
           />
           
           <NavItem
@@ -132,6 +145,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
             icon={<Database className="h-5 w-5" />}
             active={location.pathname === '/data'}
             expanded={open}
+            onClick={() => handleNavigation('/data')}
           />
           
           <NavItem
@@ -140,6 +154,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
             icon={<AreaChart className="h-5 w-5" />}
             active={location.pathname === '/analytics'}
             expanded={open}
+            onClick={() => handleNavigation('/analytics')}
           />
         </div>
 
@@ -150,6 +165,7 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
             icon={<Settings className="h-5 w-5" />}
             active={location.pathname === '/settings'}
             expanded={open}
+            onClick={() => handleNavigation('/settings')}
           />
           
           <Button
@@ -196,11 +212,17 @@ interface NavItemProps {
   icon: React.ReactNode;
   active: boolean;
   expanded: boolean;
+  onClick?: () => void;
 }
 
-const NavItem = ({ to, label, icon, active, expanded }: NavItemProps) => {
+const NavItem = ({ to, label, icon, active, expanded, onClick }: NavItemProps) => {
   return (
-    <NavLink to={to} className="block">
+    <NavLink to={to} className="block" onClick={(e) => {
+      if (onClick) {
+        e.preventDefault();
+        onClick();
+      }
+    }}>
       <Button
         variant={active ? "default" : "ghost"}
         size="sm"

@@ -5,15 +5,45 @@ import Sidebar from "@/components/layout/Sidebar";
 import MetricsSection from "@/components/analytics/MetricsSection";
 import ChartTabsSection from "@/components/analytics/ChartTabsSection";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNavigate } from "react-router-dom";
 
 const Analytics = () => {
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+    
+    // Check if user is authenticated
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        if (userData.isAuthenticated) {
+          setIsAuthenticated(true);
+        } else {
+          navigate('/auth');
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        navigate('/auth');
+      }
+    } else {
+      navigate('/auth');
+    }
+  }, [navigate]);
   
   // Update sidebar state when screen size changes
   useEffect(() => {
     setSidebarOpen(!isMobile);
   }, [isMobile]);
+
+  if (!mounted || !isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">
