@@ -15,6 +15,8 @@ import Features from "./pages/Features";
 import Pricing from "./pages/Pricing";
 import Reports from "./pages/Reports";
 import DataCenter from "./pages/DataCenter";
+import Analytics from "./pages/Analytics";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/compliance" element={<Compliance />} />
           <Route path="/insights" element={<Insights />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/about" element={<About />} />
           <Route path="/features" element={<Features />} />
           <Route path="/pricing" element={<Pricing />} />

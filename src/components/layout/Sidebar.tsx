@@ -118,18 +118,13 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
         </div>
 
         <div className="space-y-1 mt-auto">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "w-full justify-start",
-              open ? "px-3" : "px-0 justify-center"
-            )}
-            onClick={() => toast.info('Settings functionality would be implemented in a full version')}
-          >
-            <Settings className="h-5 w-5" />
-            {open && <span className="ml-2">Settings</span>}
-          </Button>
+          <NavItem
+            to="/settings"
+            label="Settings"
+            icon={<Settings className="h-5 w-5" />}
+            active={location.pathname === '/settings'}
+            expanded={open}
+          />
           
           <Button
             variant="ghost"

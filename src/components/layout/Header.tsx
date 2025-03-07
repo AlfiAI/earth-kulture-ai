@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -34,12 +35,21 @@ const Header = ({ toggleSidebar, sidebarOpen }: HeaderProps) => {
   const getPageTitle = () => {
     const path = location.pathname;
     
-    if (path === '/') return 'Dashboard';
+    if (path === '/dashboard') return 'Dashboard';
     if (path === '/insights') return 'AI Insights';
     if (path === '/compliance') return 'Compliance';
+    if (path === '/analytics') return 'Analytics';
+    if (path === '/reports') return 'Reports';
+    if (path === '/data') return 'Data Center';
     if (path === '/settings') return 'Settings';
     
     return 'Earth Kulture';
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    toast.success('You have been logged out');
+    window.location.href = '/auth';
   };
 
   return (
@@ -101,11 +111,13 @@ const Header = ({ toggleSidebar, sidebarOpen }: HeaderProps) => {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+            <DropdownMenuItem asChild>
+              <Link to="/settings">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>
