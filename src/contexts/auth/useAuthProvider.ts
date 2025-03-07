@@ -27,7 +27,7 @@ export const useAuthProvider = () => {
         return null;
       } 
       
-      return data as UserProfile;
+      return data;
     } catch (error) {
       console.error("Error in fetchUserProfile:", error);
       return null;
@@ -60,9 +60,10 @@ export const useAuthProvider = () => {
           if (session?.user) {
             const profileData = await fetchUserProfile(session.user.id);
             if (profileData) {
+              // Explicitly map to UserProfile type to ensure all required fields are present
               setUserProfile({
                 id: profileData.id,
-                email: session.user.email || '',
+                email: session.user.email || '', // Use email from session user
                 full_name: profileData.full_name,
                 avatar_url: profileData.avatar_url
               });
@@ -91,9 +92,10 @@ export const useAuthProvider = () => {
         if (newSession?.user) {
           const profileData = await fetchUserProfile(newSession.user.id);
           if (profileData) {
+            // Explicitly map to UserProfile type
             setUserProfile({
               id: profileData.id,
-              email: newSession.user.email || '',
+              email: newSession.user.email || '', // Use email from session user
               full_name: profileData.full_name,
               avatar_url: profileData.avatar_url
             });
