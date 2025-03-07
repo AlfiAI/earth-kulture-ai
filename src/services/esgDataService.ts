@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 
 // Sample ESG data schemas and types
@@ -143,7 +142,7 @@ export const complianceFrameworks: ComplianceFramework[] = [
       {
         id: '1-3',
         name: 'Scope 3 emissions reporting',
-        description: 'All other indirect emissions in a company's value chain',
+        description: 'All other indirect emissions in a company\'s value chain',
         status: 'in-progress',
         score: 78,
         lastUpdated: '2023-08-10',
@@ -159,7 +158,7 @@ export const complianceFrameworks: ComplianceFramework[] = [
       {
         id: '2-1',
         name: 'Governance',
-        description: 'Disclosure of the organization's governance around climate-related risks and opportunities',
+        description: 'Disclosure of the organization\'s governance around climate-related risks and opportunities',
         status: 'compliant',
         score: 85,
         lastUpdated: '2023-08-12',
@@ -167,7 +166,7 @@ export const complianceFrameworks: ComplianceFramework[] = [
       {
         id: '2-2',
         name: 'Strategy',
-        description: 'Disclosure of the actual and potential impacts of climate-related risks and opportunities on the organization's businesses, strategy, and financial planning',
+        description: 'Disclosure of the actual and potential impacts of climate-related risks and opportunities on the organization\'s businesses, strategy, and financial planning',
         status: 'in-progress',
         score: 62,
         lastUpdated: '2023-08-10',
