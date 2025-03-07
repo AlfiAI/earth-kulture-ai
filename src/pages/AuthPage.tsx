@@ -6,11 +6,13 @@ import { toast } from 'sonner';
 import AuthHeader from '@/components/auth/AuthHeader';
 import AuthContainer from '@/components/auth/AuthContainer';
 import LegalDisclaimer from '@/components/auth/LegalDisclaimer';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const AuthPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, error } = useAuth0();
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -27,8 +29,8 @@ const AuthPage = () => {
   }, [error]);
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md mx-auto p-6 space-y-6 animate-in slide-up">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-background py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
+      <div className={`w-full ${isMobile ? 'max-w-sm' : 'max-w-md'} mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6 animate-in slide-up`}>
         <AuthHeader authMode={authMode} />
         
         <AuthContainer 

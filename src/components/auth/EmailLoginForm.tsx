@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -18,6 +19,7 @@ type EmailLoginFormProps = {
 };
 
 const EmailLoginForm = ({ onSubmit, authMode }: EmailLoginFormProps) => {
+  const isMobile = useIsMobile();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -28,7 +30,7 @@ const EmailLoginForm = ({ onSubmit, authMode }: EmailLoginFormProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
         <FormField
           control={form.control}
           name="email"
@@ -36,9 +38,13 @@ const EmailLoginForm = ({ onSubmit, authMode }: EmailLoginFormProps) => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="your@email.com" {...field} />
+                <Input 
+                  placeholder="your@email.com" 
+                  {...field} 
+                  className="h-9 sm:h-10 text-sm sm:text-base"
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-xs sm:text-sm" />
             </FormItem>
           )}
         />
@@ -50,14 +56,23 @@ const EmailLoginForm = ({ onSubmit, authMode }: EmailLoginFormProps) => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <Input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  {...field} 
+                  className="h-9 sm:h-10 text-sm sm:text-base"
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-xs sm:text-sm" />
             </FormItem>
           )}
         />
         
-        <Button type="submit" className="w-full" size="lg">
+        <Button 
+          type="submit" 
+          className="w-full" 
+          size={isMobile ? "sm" : "lg"}
+        >
           {authMode === 'login' ? 'Sign In' : 'Sign Up'} 
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>

@@ -1,13 +1,13 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useState } from "react";
 import EmailLoginForm from "./EmailLoginForm";
 import SocialLoginButtons from "./SocialLoginButtons";
 import AuthToggle from "./AuthToggle";
 import FallbackLoginButton from "./FallbackLoginButton";
 import LoadingSpinner from "./LoadingSpinner";
 import * as z from "zod";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type AuthContainerProps = {
   authMode: 'login' | 'signup';
@@ -21,6 +21,7 @@ const loginSchema = z.object({
 
 const AuthContainer = ({ authMode, setAuthMode }: AuthContainerProps) => {
   const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
+  const isMobile = useIsMobile();
 
   const handleFormSubmit = (values: z.infer<typeof loginSchema>) => {
     console.log("Attempting login with:", values.email);
@@ -56,7 +57,7 @@ const AuthContainer = ({ authMode, setAuthMode }: AuthContainerProps) => {
   }
 
   return (
-    <div className="bg-card rounded-lg shadow-sm p-6 space-y-6">
+    <div className="bg-card rounded-lg shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-6">
       <Tabs defaultValue="email" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger value="email">Email</TabsTrigger>
