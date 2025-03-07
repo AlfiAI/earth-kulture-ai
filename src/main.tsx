@@ -4,12 +4,20 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App.tsx'
 import './index.css'
 
-// Default values for local development - you'll need to replace these with your actual Auth0 credentials
-const domain = import.meta.env.VITE_AUTH0_DOMAIN || 'dev-example.us.auth0.com';
-const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID || 'exampleClientId123456';
+// Get Auth0 credentials from environment variables
+const domain = import.meta.env.VITE_AUTH0_DOMAIN || '';
+const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID || '';
 
 // Get the current origin for callback URLs
 const origin = window.location.origin;
+
+// Check if credentials are available
+const isAuth0Configured = domain && clientId;
+
+// Log configuration status for debugging
+if (!isAuth0Configured) {
+  console.warn('Auth0 is not configured. Please set VITE_AUTH0_DOMAIN and VITE_AUTH0_CLIENT_ID environment variables.');
+}
 
 createRoot(document.getElementById("root")!).render(
   <Auth0Provider
@@ -21,6 +29,7 @@ createRoot(document.getElementById("root")!).render(
       audience: import.meta.env.VITE_AUTH0_AUDIENCE,  // Optional: API audience if using API authorization
     }}
     cacheLocation="localstorage"  // Store auth state in localStorage to persist between page refreshes
+    skipRedirectCallback={window.location.pathname === '/auth'}  // Prevent redirect loop
   >
     <App />
   </Auth0Provider>

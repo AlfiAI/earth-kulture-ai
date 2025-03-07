@@ -5,11 +5,11 @@ const LegalDisclaimer = () => {
   return (
     <div className="text-xxs sm:text-xs text-center text-muted-foreground mt-4 sm:mt-6 px-2">
       By continuing, you agree to Earth Kulture's{" "}
-      <a href="#" className="text-primary hover:underline">
+      <a href="#" className="text-primary hover:underline font-medium">
         Terms of Service
       </a>{" "}
       and{" "}
-      <a href="#" className="text-primary hover:underline">
+      <a href="#" className="text-primary hover:underline font-medium">
         Privacy Policy
       </a>.
     </div>
