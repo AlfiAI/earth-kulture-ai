@@ -52,7 +52,7 @@ const sampleInsights = [
   {
     type: 'recommendation',
     title: 'Supply chain emission hotspots',
-    description: 'We've identified 3 key suppliers contributing to 45% of your Scope 3 emissions. Engaging with these suppliers could significantly reduce your overall footprint.',
+    description: 'We\'ve identified 3 key suppliers contributing to 45% of your Scope 3 emissions. Engaging with these suppliers could significantly reduce your overall footprint.',
     date: 'July 15, 2023'
   },
   {
@@ -64,7 +64,7 @@ const sampleInsights = [
   {
     type: 'alert',
     title: 'Data quality issue',
-    description: 'We've detected inconsistencies in your transportation emissions data. This may affect the accuracy of your Scope 1 reporting by up to 7%.',
+    description: 'We\'ve detected inconsistencies in your transportation emissions data. This may affect the accuracy of your Scope 1 reporting by up to 7%.',
     date: 'July 5, 2023'
   }
 ];
