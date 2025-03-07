@@ -20,12 +20,10 @@ import DashboardCard from "@/components/dashboard/DashboardCard";
 import Chart from "@/components/dashboard/Chart";
 import InsightCard from "@/components/dashboard/InsightCard";
 import WalyAssistant from "@/components/ai/WalyAssistant";
-import AuthForm from "@/components/auth/AuthForm";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Header from "@/components/layout/Header";
@@ -129,22 +127,36 @@ const complianceItems = [
 const Index = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Set to false to show login form
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // Check if user is authenticated
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        if (userData.isAuthenticated) {
+          setIsAuthenticated(true);
+        } else {
+          navigate('/auth');
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        navigate('/auth');
+      }
+    } else {
+      navigate('/auth');
+    }
+  }, [navigate]);
   
   if (!mounted) return null;
   
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-        <AuthForm onSuccess={() => setIsAuthenticated(true)} />
-      </div>
-    );
+    return null; // This will be redirected by the useEffect
   }
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);

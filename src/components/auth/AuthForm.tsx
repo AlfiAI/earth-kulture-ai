@@ -13,8 +13,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Globe, User, Mail, Lock, EyeOff, Eye } from 'lucide-react';
+import { Globe, User, Mail, Lock, EyeOff, Eye, Building, FileSpreadsheet } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { toast } from 'sonner';
 
@@ -30,9 +37,8 @@ const signupSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
   confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
+  role: z.string().min(1, { message: "Please select a role" }),
+  company: z.string().min(2, { message: "Company name must be at least 2 characters" }).optional(),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
@@ -64,6 +70,8 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
       email: "",
       password: "",
       confirmPassword: "",
+      role: "",
+      company: "",
     },
   });
 
@@ -77,6 +85,13 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
       
       console.log("Login values:", values);
       toast.success("Login successful!");
+      
+      // Store user info in localStorage for demo purposes
+      localStorage.setItem('user', JSON.stringify({ 
+        email: values.email,
+        isAuthenticated: true,
+        role: 'user' // Default role for login
+      }));
       
       // Call onSuccess callback
       if (onSuccess) {
@@ -101,6 +116,15 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
       console.log("Signup values:", values);
       toast.success("Account created successfully!");
       
+      // Store user info in localStorage for demo purposes
+      localStorage.setItem('user', JSON.stringify({ 
+        email: values.email,
+        name: values.name,
+        company: values.company,
+        role: values.role,
+        isAuthenticated: true
+      }));
+      
       // Call onSuccess callback
       if (onSuccess) {
         onSuccess();
@@ -112,6 +136,15 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
       setLoading(false);
     }
   };
+
+  // Function to check if selected role is a company role
+  const isCompanyRole = (role: string) => {
+    return ['sustainability_manager', 'esg_director', 'operations_manager'].includes(role);
+  };
+
+  // Watch the role field to show/hide company field
+  const selectedRole = signupForm.watch('role');
+  const showCompanyField = isCompanyRole(selectedRole);
 
   return (
     <div className="w-full max-w-md mx-auto p-6 space-y-6 animate-in slide-up">
@@ -280,6 +313,61 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
                   </FormItem>
                 )}
               />
+              
+              <FormField
+                control={signupForm.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                      disabled={loading}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="sustainability_manager">Sustainability Manager</SelectItem>
+                        <SelectItem value="esg_director">ESG Director</SelectItem>
+                        <SelectItem value="operations_manager">Operations Manager</SelectItem>
+                        <SelectItem value="consultant">Sustainability Consultant</SelectItem>
+                        <SelectItem value="researcher">Environmental Researcher</SelectItem>
+                        <SelectItem value="student">Student</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {showCompanyField && (
+                <FormField
+                  control={signupForm.control}
+                  name="company"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Company</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            {...field}
+                            placeholder="Enter your company name"
+                            className="pl-10"
+                            disabled={loading}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               
               <FormField
                 control={signupForm.control}

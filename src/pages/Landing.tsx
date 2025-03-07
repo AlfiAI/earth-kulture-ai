@@ -21,8 +21,8 @@ const Landing = () => {
           <Button variant="ghost" onClick={() => navigate('/about')}>About</Button>
           <Button variant="ghost" onClick={() => navigate('/features')}>Features</Button>
           <Button variant="ghost" onClick={() => navigate('/pricing')}>Pricing</Button>
-          <Button className="hidden sm:flex" onClick={() => navigate('/')}>
-            Get Started <ArrowRight className="ml-2 h-4 w-4" />
+          <Button className="hidden sm:flex" onClick={() => navigate('/auth')}>
+            Sign In <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </nav>
@@ -39,8 +39,8 @@ const Landing = () => {
           Earth Kulture helps sustainability leaders track, analyze, and improve their environmental impact with AI-powered tools and real-time data.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-          <Button size="lg" className="w-full" onClick={() => navigate('/')}>
-            Dashboard Access
+          <Button size="lg" className="w-full" onClick={() => navigate('/auth')}>
+            Get Started
           </Button>
           <Button size="lg" variant="outline" className="w-full" onClick={() => navigate('/demo')}>
             Watch Demo
@@ -95,7 +95,7 @@ const Landing = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
               Join hundreds of forward-thinking companies using Earth Kulture to track, manage, and improve their environmental impact.
             </p>
-            <Button size="lg" onClick={() => navigate('/')}>
+            <Button size="lg" onClick={() => navigate('/auth')}>
               Get Started Today
             </Button>
           </CardContent>
