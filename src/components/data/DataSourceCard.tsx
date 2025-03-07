@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Database, 
@@ -30,7 +29,7 @@ const DataSourceCard = () => {
   const [selectedTab, setSelectedTab] = useState('all');
   
   // Sample data sources
-  const dataSources = [
+  const dataSources: DataSource[] = [
     {
       id: '1',
       name: 'Energy Consumption',
