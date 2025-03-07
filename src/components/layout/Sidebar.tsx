@@ -13,7 +13,9 @@ import {
   Database,
   Earth,
   Bot,
-  Menu
+  Menu,
+  BarChart3,
+  Target
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -113,6 +115,15 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
           />
           
           <NavItem
+            to="/benchmarks"
+            label="Benchmarking"
+            icon={<BarChart3 className="h-5 w-5" />}
+            active={location.pathname === '/benchmarks'}
+            expanded={open}
+            onClick={() => handleNavigation('/benchmarks')}
+          />
+          
+          <NavItem
             to="/compliance"
             label="Compliance"
             icon={<FileCheck className="h-5 w-5" />}
@@ -128,6 +139,15 @@ const Sidebar = ({ open, onToggle }: SidebarProps) => {
             active={location.pathname === '/insights'}
             expanded={open}
             onClick={() => handleNavigation('/insights')}
+          />
+          
+          <NavItem
+            to="/goals"
+            label="Goals"
+            icon={<Target className="h-5 w-5" />}
+            active={location.pathname === '/goals'}
+            expanded={open}
+            onClick={() => handleNavigation('/goals')}
           />
           
           <NavItem
