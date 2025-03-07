@@ -15,6 +15,7 @@ const AuthPage = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const isMobile = useIsMobile();
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
@@ -26,6 +27,14 @@ const AuthPage = () => {
     <div className="min-h-screen flex flex-col justify-center items-center bg-background py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
       <div className={`w-full ${isMobile ? 'max-w-sm' : 'max-w-md'} mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6 animate-in slide-up`}>
         <AuthHeader authMode={authMode} />
+        
+        {authError && (
+          <Alert variant="destructive" className="border-destructive/50 text-destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Authentication Error</AlertTitle>
+            <AlertDescription>{authError}</AlertDescription>
+          </Alert>
+        )}
         
         {isLoading ? (
           <div className="flex justify-center py-8">
