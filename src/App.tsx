@@ -10,6 +10,9 @@ import Compliance from "./pages/Compliance";
 import Insights from "./pages/Insights";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
+import About from "./pages/About";
+import Features from "./pages/Features";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +28,9 @@ const App = () => (
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/compliance" element={<Compliance />} />
           <Route path="/insights" element={<Insights />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/pricing" element={<Pricing />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
