@@ -15,7 +15,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   user: User | null;
-  loginWithRedirect: () => void;
+  loginWithRedirect: (options?: any) => void;
   logout: () => void;
 }
 
@@ -27,13 +27,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAuthenticated,
     isLoading,
     loginWithRedirect,
-    logout: auth0Logout
+    logout: auth0Logout,
+    error
   } = useAuth0();
   const [authUser, setAuthUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user && isAuthenticated) {
+      console.log("User authenticated:", user);
       setAuthUser({
         email: user.email || '',
         name: user.name,
@@ -44,6 +46,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAuthUser(null);
     }
   }, [user, isAuthenticated]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Auth0 error in context:", error);
+      toast.error(`Authentication error: ${error.message}`);
+    }
+  }, [error]);
 
   const logout = () => {
     auth0Logout({ 
