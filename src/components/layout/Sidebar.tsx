@@ -1,22 +1,21 @@
 
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { 
-  Globe, 
-  Home, 
-  LineChart, 
-  ClipboardCheck, 
-  Settings, 
-  Users, 
-  Zap, 
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { 
+  ChevronLeft, 
+  LayoutDashboard, 
+  AreaChart, 
+  FileCheck, 
+  LightbulbIcon, 
+  Settings, 
+  LogOut,
+  FileText,
+  Database,
+  Earth,
+  Bot
+} from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
+import { toast } from "sonner";
 
 interface SidebarProps {
   open: boolean;
@@ -25,130 +24,174 @@ interface SidebarProps {
 
 const Sidebar = ({ open, onToggle }: SidebarProps) => {
   const location = useLocation();
-  const isMobile = useIsMobile();
-  const [mounted, setMounted] = useState(false);
   
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  if (!mounted) return null;
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    toast.success('You have been logged out');
+    window.location.href = '/auth';
+  };
 
-  const sidebarItems = [
-    {
-      title: 'Dashboard',
-      icon: Home,
-      href: '/',
-    },
-    {
-      title: 'AI Insights',
-      icon: Zap,
-      href: '/insights',
-    },
-    {
-      title: 'Compliance',
-      icon: ClipboardCheck,
-      href: '/compliance',
-    },
-    {
-      title: 'Team',
-      icon: Users,
-      href: '/team',
-    },
-    {
-      title: 'Settings',
-      icon: Settings,
-      href: '/settings',
-    },
-  ];
-
-  const sidebarWidth = open ? 'w-64' : 'w-16';
-  
   return (
-    <>
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-20 flex flex-col border-r border-border/40 bg-sidebar transition-all duration-300 ease-in-out",
-          sidebarWidth,
-          isMobile && !open && "transform -translate-x-full",
-          isMobile && open && "transform translate-x-0 w-64",
-        )}
-      >
-        <div className="flex h-16 items-center justify-between px-4 border-b border-border/40">
-          <Link to="/" className="flex items-center gap-2">
-            <Globe className="h-6 w-6 text-primary animate-pulse-gentle" />
-            <span className={cn(
-              "font-semibold text-xl tracking-tight transition-opacity duration-200",
-              !open && "opacity-0 w-0"
-            )}>
-              Earth Kulture
+    <aside
+      className={cn(
+        "fixed top-0 left-0 z-40 h-screen transition-all pt-14 lg:pt-0",
+        open ? "w-64" : "w-16",
+        "lg:translate-x-0"
+      )}
+    >
+      <div className="h-full flex flex-col border-r bg-card px-3 py-4">
+        <div className="flex items-center justify-between mb-6">
+          <div
+            className={cn(
+              "flex items-center transition-all overflow-hidden",
+              open ? "w-auto opacity-100" : "w-0 opacity-0"
+            )}
+          >
+            <Earth className="h-6 w-6 text-primary" />
+            <span className="ml-2 font-semibold whitespace-nowrap">
+              EarthKulture AI
             </span>
-          </Link>
-          
-          {!isMobile && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToggle}
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggle}
+            className="lg:flex hidden"
+          >
+            <ChevronLeft
               className={cn(
-                "h-8 w-8 rounded-full",
+                "h-5 w-5 transition-transform",
                 !open && "rotate-180"
               )}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              <span className="sr-only">Toggle Sidebar</span>
-            </Button>
-          )}
+            />
+          </Button>
         </div>
 
-        <ScrollArea>
-          <div className="space-y-2 py-4 px-2">
-            {sidebarItems.map((item) => {
-              const isActive = location.pathname === item.href;
-              
-              return (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                    isActive
-                      ? "bg-sidebar-accent text-primary font-medium"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-primary"
-                  )}
-                >
-                  <item.icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-sidebar-foreground")} />
-                  <span className={cn(
-                    "transition-opacity duration-200",
-                    !open && "opacity-0 w-0"
-                  )}>
-                    {item.title}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </ScrollArea>
-
-        <div className="mt-auto p-4 border-t border-border/40">
-          <div className={cn(
-            "flex items-center gap-2 transition-opacity duration-200 text-xs text-muted-foreground",
-            !open && "opacity-0"
-          )}>
-            <div className="h-2 w-2 rounded-full bg-green-500" />
-            <span>All systems operational</span>
-          </div>
+        <div className="space-y-1">
+          <NavItem
+            to="/dashboard"
+            label="Dashboard"
+            icon={<LayoutDashboard className="h-5 w-5" />}
+            active={location.pathname === '/dashboard'}
+            expanded={open}
+          />
+          
+          <NavItem
+            to="/compliance"
+            label="Compliance"
+            icon={<FileCheck className="h-5 w-5" />}
+            active={location.pathname === '/compliance'}
+            expanded={open}
+          />
+          
+          <NavItem
+            to="/insights"
+            label="Insights"
+            icon={<LightbulbIcon className="h-5 w-5" />}
+            active={location.pathname === '/insights'}
+            expanded={open}
+          />
+          
+          <NavItem
+            to="/reports"
+            label="Reports"
+            icon={<FileText className="h-5 w-5" />}
+            active={location.pathname === '/reports'}
+            expanded={open}
+          />
+          
+          <NavItem
+            to="/data"
+            label="Data Center"
+            icon={<Database className="h-5 w-5" />}
+            active={location.pathname === '/data'}
+            expanded={open}
+          />
+          
+          <NavItem
+            to="/analytics"
+            label="Analytics"
+            icon={<AreaChart className="h-5 w-5" />}
+            active={location.pathname === '/analytics'}
+            expanded={open}
+          />
         </div>
-      </aside>
-      
-      {/* Mobile overlay */}
-      {isMobile && open && (
-        <div
-          className="fixed inset-0 z-10 bg-black/50 transition-opacity"
-          onClick={onToggle}
-        />
-      )}
-    </>
+
+        <div className="space-y-1 mt-auto">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "w-full justify-start",
+              open ? "px-3" : "px-0 justify-center"
+            )}
+            onClick={() => toast.info('Settings functionality would be implemented in a full version')}
+          >
+            <Settings className="h-5 w-5" />
+            {open && <span className="ml-2">Settings</span>}
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "w-full justify-start",
+              open ? "px-3" : "px-0 justify-center"
+            )}
+            onClick={handleLogout}
+          >
+            <LogOut className="h-5 w-5" />
+            {open && <span className="ml-2">Logout</span>}
+          </Button>
+        </div>
+
+        <div className="mt-6 border-t pt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn(
+              "w-full",
+              open ? "justify-start px-3" : "justify-center px-0"
+            )}
+            onClick={() => {
+              const walyButton = document.querySelector('[class*="fixed right-4 bottom-4 rounded-full"]') as HTMLButtonElement;
+              if (walyButton) {
+                walyButton.click();
+              }
+            }}
+          >
+            <Bot className="h-5 w-5 text-primary" />
+            {open && <span className="ml-2">Ask Waly</span>}
+          </Button>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
+interface NavItemProps {
+  to: string;
+  label: string;
+  icon: React.ReactNode;
+  active: boolean;
+  expanded: boolean;
+}
+
+const NavItem = ({ to, label, icon, active, expanded }: NavItemProps) => {
+  return (
+    <NavLink to={to} className="block">
+      <Button
+        variant={active ? "default" : "ghost"}
+        size="sm"
+        className={cn(
+          "w-full",
+          expanded ? "justify-start px-3" : "justify-center px-0"
+        )}
+      >
+        {icon}
+        {expanded && <span className="ml-2">{label}</span>}
+      </Button>
+    </NavLink>
   );
 };
 

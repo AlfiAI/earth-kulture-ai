@@ -8,10 +8,12 @@ interface ChatInputProps {
   inputValue: string;
   setInputValue: (value: string) => void;
   handleSend: () => void;
+  inputRef?: React.RefObject<HTMLTextAreaElement>;
 }
 
-const ChatInput = ({ inputValue, setInputValue, handleSend }: ChatInputProps) => {
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+const ChatInput = ({ inputValue, setInputValue, handleSend, inputRef }: ChatInputProps) => {
+  const localRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = inputRef || localRef;
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -24,7 +26,7 @@ const ChatInput = ({ inputValue, setInputValue, handleSend }: ChatInputProps) =>
     <div className="p-3 border-t">
       <div className="relative">
         <Textarea
-          ref={inputRef}
+          ref={textareaRef}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
