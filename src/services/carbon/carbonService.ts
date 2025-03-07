@@ -4,12 +4,41 @@ import { supabase } from "@/integrations/supabase/client";
 import { sampleCarbonEmissions } from '../data/sampleEsgData';
 
 class CarbonService {
+  // Test Supabase connection
+  async testConnection(): Promise<{ success: boolean; message: string }> {
+    try {
+      const { data, error, status } = await supabase
+        .from('carbon_emissions')
+        .select('count(*)', { count: 'exact', head: true });
+        
+      if (error && status !== 406) {
+        console.error("Connection test error:", error);
+        return { 
+          success: false, 
+          message: `Failed to connect to Supabase: ${error.message}` 
+        };
+      }
+      
+      return { 
+        success: true, 
+        message: "Successfully connected to Supabase carbon_emissions table" 
+      };
+    } catch (error) {
+      console.error("Connection test exception:", error);
+      return { 
+        success: false, 
+        message: `Exception when connecting to Supabase: ${error.message}` 
+      };
+    }
+  }
+
   // Get carbon emissions data
   async getCarbonEmissions(): Promise<CarbonEmission[]> {
     try {
       const { data: user } = await supabase.auth.getUser();
       
       if (!user.user) {
+        console.log("No authenticated user, returning fallback data");
         return this.getFallbackCarbonData();
       }
       
@@ -25,6 +54,7 @@ class CarbonService {
       }
       
       if (!data || data.length === 0) {
+        console.log("No carbon emissions data found, returning fallback data");
         return this.getFallbackCarbonData();
       }
       

@@ -4,6 +4,34 @@ import { supabase } from "@/integrations/supabase/client";
 import { complianceFrameworks } from '../data/sampleEsgData';
 
 class ComplianceService {
+  // Test Supabase connection
+  async testConnection(): Promise<{ success: boolean; message: string }> {
+    try {
+      const { data, error, status } = await supabase
+        .from('compliance_frameworks')
+        .select('count(*)', { count: 'exact', head: true });
+        
+      if (error && status !== 406) {
+        console.error("Connection test error:", error);
+        return { 
+          success: false, 
+          message: `Failed to connect to Supabase: ${error.message}` 
+        };
+      }
+      
+      return { 
+        success: true, 
+        message: "Successfully connected to Supabase compliance_frameworks table" 
+      };
+    } catch (error) {
+      console.error("Connection test exception:", error);
+      return { 
+        success: false, 
+        message: `Exception when connecting to Supabase: ${error.message}` 
+      };
+    }
+  }
+
   // Get compliance frameworks
   async getComplianceFrameworks(): Promise<ComplianceFramework[]> {
     try {
