@@ -73,7 +73,7 @@ class ESGDataService {
 export const esgDataService = new ESGDataService();
 
 // Re-export types for convenience
-export {
+export type { 
   ESGDataPoint,
   CarbonEmission,
   ComplianceFramework,

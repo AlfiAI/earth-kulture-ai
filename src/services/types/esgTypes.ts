@@ -85,3 +85,18 @@ export interface ESGReport {
     complianceScore: number;
   };
 }
+
+// Add SustainabilityGoal interface to align with SustainabilityGoals.tsx
+export interface SustainabilityGoal {
+  id: string;
+  name: string;
+  category: 'social' | 'governance' | 'carbon' | 'energy' | 'waste' | 'water';
+  targetValue: number;
+  currentValue: number;
+  unit: string;
+  deadline: string;
+  startDate: string;
+  progress: number;
+  status: 'on-track' | 'delayed' | 'completed' | 'at-risk' | 'behind';
+  actionPlan: string;
+}
