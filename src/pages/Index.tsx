@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from "@/lib/utils";
@@ -13,7 +12,7 @@ import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import CarbonEmissionsTrend from "@/components/dashboard/CarbonEmissionsTrend";
 import ESGScoreProgression from "@/components/dashboard/ESGScoreProgression";
 import AIInsights from "@/components/dashboard/AIInsights";
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 
 const Index = () => {
   const navigate = useNavigate();

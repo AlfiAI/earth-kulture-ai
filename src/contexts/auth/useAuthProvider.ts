@@ -1,38 +1,40 @@
 
-import { createContext, useContext, ReactNode, useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from "@supabase/supabase-js";
+import { UserProfile } from "./types";
 
-interface UserProfile {
-  id: string;
-  email: string;
-  full_name?: string;
-  avatar_url?: string;
-}
-
-interface AuthContextType {
-  session: Session | null;
-  user: User | null;
-  userProfile: UserProfile | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
-  signOut: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
-
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const useAuthProvider = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Fetch user profile from Supabase
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+        
+      if (error) {
+        console.error("Error fetching user profile:", error);
+        return null;
+      } 
+      
+      return data as UserProfile;
+    } catch (error) {
+      console.error("Error in fetchUserProfile:", error);
+      return null;
+    }
+  };
+
+  // Initialize auth session
   useEffect(() => {
     const fetchSession = async () => {
       setIsLoading(true);
@@ -56,20 +58,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           
           // If we have a user, fetch their profile
           if (session?.user) {
-            const { data, error: profileError } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-              
-            if (profileError) {
-              console.error("Error fetching user profile:", profileError);
-            } else if (data) {
+            const profileData = await fetchUserProfile(session.user.id);
+            if (profileData) {
               setUserProfile({
-                id: data.id,
+                id: profileData.id,
                 email: session.user.email || '',
-                full_name: data.full_name,
-                avatar_url: data.avatar_url
+                full_name: profileData.full_name,
+                avatar_url: profileData.avatar_url
               });
             }
           }
@@ -94,20 +89,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         // Handle user profile when session changes
         if (newSession?.user) {
-          const { data, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', newSession.user.id)
-            .single();
-            
-          if (profileError) {
-            console.error("Error fetching user profile:", profileError);
-          } else if (data) {
+          const profileData = await fetchUserProfile(newSession.user.id);
+          if (profileData) {
             setUserProfile({
-              id: data.id,
+              id: profileData.id,
               email: newSession.user.email || '',
-              full_name: data.full_name,
-              avatar_url: data.avatar_url
+              full_name: profileData.full_name,
+              avatar_url: profileData.avatar_url
             });
           }
         } else {
@@ -199,29 +187,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        session,
-        user,
-        userProfile,
-        isAuthenticated: !!session,
-        isLoading,
-        signIn,
-        signUp,
-        signInWithGoogle,
-        signOut,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === null) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  return {
+    session,
+    user,
+    userProfile,
+    isAuthenticated: !!session,
+    isLoading,
+    signIn,
+    signUp,
+    signInWithGoogle,
+    signOut,
+  };
 };

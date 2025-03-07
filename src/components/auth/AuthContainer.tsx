@@ -5,7 +5,7 @@ import EmailLoginForm from "./EmailLoginForm";
 import SocialLoginButtons from "./SocialLoginButtons";
 import AuthToggle from "./AuthToggle";
 import LoadingSpinner from "./LoadingSpinner";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth";
 import * as z from "zod";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Alert, AlertDescription } from "@/components/ui/alert";

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import PricingPlan from './PricingPlan';
 import { PricingPlanProps, SubscriptionStatus } from './types';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { subscriptionService } from '@/services/subscription/subscriptionService';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';

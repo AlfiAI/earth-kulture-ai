@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
 import { PricingPlanProps } from "./types";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth";
 import { useNavigate } from "react-router-dom";
 import { subscriptionService } from "@/services/subscription/subscriptionService";
 import { toast } from "sonner";

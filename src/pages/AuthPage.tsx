@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import AuthHeader from '@/components/auth/AuthHeader';
 import AuthContainer from '@/components/auth/AuthContainer';
 import LegalDisclaimer from '@/components/auth/LegalDisclaimer';
