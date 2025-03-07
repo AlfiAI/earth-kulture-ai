@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { SustainabilityGoal } from "@/services/types/esgTypes";
+import { SustainabilityGoal, ActionStep } from "@/services/types/esgTypes";
 import { PlusCircle, Target, CheckCircle, AlertTriangle, Clock } from "lucide-react";
 
 const SustainabilityGoals = () => {
@@ -76,7 +76,7 @@ const SustainabilityGoals = () => {
   }, []);
 
   // Function to render the action plan
-  const renderActionPlan = (actionPlan: string | undefined | any[]) => {
+  const renderActionPlan = (actionPlan: string | ActionStep[] | undefined) => {
     if (!actionPlan) return null;
     
     // If it's a string, render it directly
@@ -84,7 +84,7 @@ const SustainabilityGoals = () => {
       return <p className="line-clamp-2">{actionPlan}</p>;
     }
     
-    // If it's an array, just show a summary
+    // If it's an array of ActionStep objects, render a summary
     if (Array.isArray(actionPlan)) {
       return <p className="line-clamp-2">{actionPlan.length} action steps defined</p>;
     }
