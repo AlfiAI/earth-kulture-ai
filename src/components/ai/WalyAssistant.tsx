@@ -1,6 +1,5 @@
-
 import { useState, useRef, useEffect } from 'react';
-import { ArrowUpCircle, PanelRightClose, PanelRightOpen, Robot, User, Loader2, BotMessageSquare, X } from 'lucide-react';
+import { ArrowUpCircle, PanelRightClose, PanelRightOpen, Bot, User, Loader2, BotMessageSquare, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -47,7 +46,6 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   const handleSend = () => {
     if (inputValue.trim() === '') return;
     
-    // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputValue,
@@ -59,7 +57,6 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
     setInputValue('');
     setIsTyping(true);
     
-    // Simulate AI response after a delay
     setTimeout(() => {
       const aiResponses = [
         "Based on your current carbon emissions data, I recommend focusing on reducing Scope 2 emissions by implementing renewable energy sources at your facilities.",
@@ -88,12 +85,10 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
     }
   };
   
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
-  // Format timestamp
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
@@ -105,7 +100,7 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
           onClick={toggleOpen}
           className="fixed right-4 bottom-4 rounded-full w-14 h-14 shadow-lg p-0 animate-in bg-primary text-white hover:bg-primary/90"
         >
-          <Robot className="h-6 w-6" />
+          <Bot className="h-6 w-6" />
         </Button>
       )}
       
@@ -117,7 +112,7 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
       >
         <div className="bg-primary text-primary-foreground p-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Robot className="h-5 w-5" />
+            <Bot className="h-5 w-5" />
             <h2 className="font-medium">Waly Assistant</h2>
             <Badge variant="outline" className="text-xs bg-white/20 text-white border-white/20">Beta</Badge>
           </div>
@@ -155,7 +150,7 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
                   >
                     {message.sender === 'ai' && (
                       <div className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white">
-                        <Robot className="h-3 w-3" />
+                        <Bot className="h-3 w-3" />
                       </div>
                     )}
                     
@@ -179,7 +174,7 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
                 <div className="flex justify-start">
                   <div className="bg-muted max-w-[85%] rounded-lg p-3 flex items-center space-x-2 mr-4 relative">
                     <div className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white">
-                      <Robot className="h-3 w-3" />
+                      <Bot className="h-3 w-3" />
                     </div>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span className="text-sm">Waly is thinking...</span>
