@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      carbon_data: {
+        Row: {
+          emissions: number
+          id: string
+          reported_at: string | null
+          scope: number
+          source: string
+          unit: string | null
+          user_id: string | null
+        }
+        Insert: {
+          emissions: number
+          id?: string
+          reported_at?: string | null
+          scope: number
+          source: string
+          unit?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          emissions?: number
+          id?: string
+          reported_at?: string | null
+          scope?: number
+          source?: string
+          unit?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carbon_data_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       carbon_emissions: {
         Row: {
           amount: number
@@ -220,6 +258,100 @@ export type Database = {
           id?: string
           role?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          ai_generated: boolean | null
+          created_at: string | null
+          file_url: string | null
+          id: string
+          report_type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          created_at?: string | null
+          file_url?: string | null
+          id?: string
+          report_type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          ai_generated?: boolean | null
+          created_at?: string | null
+          file_url?: string | null
+          id?: string
+          report_type?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          expires_at: string | null
+          id: string
+          plan: string | null
+          started_at: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          expires_at?: string | null
+          id?: string
+          plan?: string | null
+          started_at?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          expires_at?: string | null
+          id?: string
+          plan?: string | null
+          started_at?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          role: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id?: string
+          role?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          role?: string | null
         }
         Relationships: []
       }
