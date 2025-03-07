@@ -38,6 +38,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(true);
       
       try {
+        // Check for hash fragment in URL which could indicate a redirect from OAuth
+        const hasHashParams = window.location.hash && window.location.hash.length > 0;
+        if (hasHashParams) {
+          console.log("Hash params detected, handling auth redirect");
+        }
+        
         // Get the current session
         const { data: { session }, error } = await supabase.auth.getSession();
         
@@ -145,7 +151,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
+      // Get the current site URL dynamically
+      const currentUrl = window.location.origin;
+      const { error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          emailRedirectTo: `${currentUrl}/auth`
+        }
+      });
+      
       if (error) throw error;
       toast.success("Please check your email to verify your account");
     } catch (error: any) {
@@ -157,10 +172,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   
   const signInWithGoogle = async () => {
     try {
+      // Get the current site URL dynamically
+      const currentUrl = window.location.origin;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth`
+          redirectTo: `${currentUrl}/auth`
         }
       });
       if (error) throw error;
