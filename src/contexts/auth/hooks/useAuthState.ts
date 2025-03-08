@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "../types";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const useAuthState = () => {
@@ -11,7 +10,6 @@ export const useAuthState = () => {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -48,7 +46,7 @@ export const useAuthState = () => {
     return () => {
       clearTimeout(loadingTimeout);
     };
-  }, [navigate]);
+  }, []);
 
   return {
     session,

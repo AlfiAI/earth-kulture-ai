@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import AuthPage from "@/pages/AuthPage";
 import Index from "@/pages/Index";
@@ -27,7 +27,7 @@ import "@/App.css";
 
 function App() {
   return (
-    <Router>
+    <>
       <Routes>
         {/* Public routes */}
         <Route path="/auth" element={<AuthPage />} />
@@ -55,7 +55,7 @@ function App() {
       
       <EnhancedWalyAssistant initialOpen={false} />
       <Toaster />
-    </Router>
+    </>
   );
 }
 

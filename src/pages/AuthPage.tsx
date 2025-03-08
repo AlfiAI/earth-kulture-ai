@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/auth';
 import { motion } from 'framer-motion';
@@ -17,6 +17,7 @@ import AuthPageLayout from '@/components/auth/AuthPageLayout';
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, isLoading } = useAuth();
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'reset-password'>('login');
   const [authError, setAuthError] = useState<string | null>(null);
@@ -39,10 +40,11 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      navigate('/dashboard');
+      const from = location.state?.from || '/app';
+      navigate(from, { replace: true });
       toast.success("You are now signed in!");
     }
-  }, [isAuthenticated, isLoading, navigate]);
+  }, [isAuthenticated, isLoading, navigate, location]);
 
   // Clear error when changing auth mode
   useEffect(() => {

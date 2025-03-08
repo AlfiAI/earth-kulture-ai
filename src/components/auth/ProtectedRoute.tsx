@@ -1,7 +1,7 @@
 
 import { ReactNode, useEffect } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/auth';
 import { toast } from 'sonner';
 
 interface ProtectedRouteProps {
@@ -9,17 +9,16 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       toast.error("Please sign in to access this page");
-      loginWithRedirect({
-        appState: { returnTo: location.pathname }
-      });
+      navigate('/auth', { state: { from: location.pathname } });
     }
-  }, [isAuthenticated, isLoading, loginWithRedirect, location.pathname]);
+  }, [isAuthenticated, isLoading, navigate, location.pathname]);
 
   if (isLoading) {
     return (

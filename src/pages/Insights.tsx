@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from '@/contexts/auth';
 import EnhancedWalyAssistant from "@/components/ai/EnhancedWalyAssistant";
 import InsightsHeader from "@/components/insights/InsightsHeader";
 import InsightsBanner from "@/components/insights/InsightsBanner";
@@ -12,30 +13,17 @@ const Insights = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
     setMounted(true);
     
     // Check if user is authenticated
-    const user = localStorage.getItem('user');
-    if (user) {
-      try {
-        const userData = JSON.parse(user);
-        if (userData.isAuthenticated) {
-          setIsAuthenticated(true);
-        } else {
-          navigate('/auth');
-        }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        navigate('/auth');
-      }
-    } else {
+    if (!isLoading && !isAuthenticated) {
       navigate('/auth');
     }
-  }, [navigate]);
+  }, [isAuthenticated, isLoading, navigate]);
   
   // Update sidebar state when screen size changes
   useEffect(() => {
