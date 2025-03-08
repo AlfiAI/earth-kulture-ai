@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { externalDataService, ESGBenchmark } from "@/services/external/externalDataService";
+import { ESGBenchmark, benchmarkService } from "@/services/external/externalDataService";
 import { getDemoBenchmarks, prepareChartDataFromDemoData } from "./benchmarkUtils";
 
 export function useBenchmarkData() {
@@ -45,7 +45,7 @@ export function useBenchmarkData() {
     
     try {
       const industryFilter = industry !== "all" ? industry : undefined;
-      const data = await externalDataService.getESGBenchmarks(industryFilter);
+      const data = await benchmarkService.getESGBenchmarks(industryFilter);
       
       if (data && data.length > 0) {
         setBenchmarks(data);
