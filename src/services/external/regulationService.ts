@@ -11,20 +11,21 @@ class RegulationService {
     try {
       // Build query
       let query = supabase
-        .from('esg_regulations')
+        .from('esg_regulatory_updates')
         .select('*');
         
       // Apply filters if provided
       if (region) {
-        query = query.eq('region', region);
+        query = query.eq('country', region);
       }
       
+      // Note: status field might need adjustment if the database uses a different field
       if (status) {
         query = query.eq('status', status);
       }
       
       const { data, error } = await query
-        .order('effective_date', { ascending: false });
+        .order('published_date', { ascending: false });
       
       if (error) throw error;
       
@@ -51,7 +52,7 @@ class RegulationService {
       }
       
       const { data, error } = await supabase
-        .from('esg_regulations')
+        .from('esg_regulatory_updates')
         .select('*')
         .eq('id', id)
         .single();
@@ -71,11 +72,13 @@ class RegulationService {
   // Get regulations affecting specific sectors
   async getRegulationsBySector(sector: string): Promise<ESGRegulation[]> {
     try {
+      // Note: This assumes there's a 'tags' column that might contain sector information
+      // Adjust as needed based on your actual database schema
       const { data, error } = await supabase
-        .from('esg_regulations')
+        .from('esg_regulatory_updates')
         .select('*')
-        .contains('sectors', [sector])
-        .order('effective_date', { ascending: false });
+        .contains('tags', [sector])
+        .order('published_date', { ascending: false });
       
       if (error) throw error;
       

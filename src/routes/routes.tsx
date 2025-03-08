@@ -1,38 +1,16 @@
 
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 
-// Auth & Onboarding
-import LoginPage from "@/pages/LoginPage";
-import SignupPage from "@/pages/SignupPage";
-import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
-import SetupMFAPage from "@/pages/SetupMFAPage";
-
-// Dashboard & Analytics
-import DashboardPage from "@/pages/DashboardPage";
+// Core pages
+import AuthPage from "@/pages/AuthPage";
+import DashboardPage from "@/pages/Index";  // Use existing Index as DashboardPage
 import BenchmarkDashboard from "@/pages/BenchmarkDashboard";
 import BenchmarkingPage from "@/pages/BenchmarkingPage";
-
-// Data & Management
-import DataManagementPage from "@/pages/DataManagementPage";
-import ESGReportsPage from "@/pages/ESGReportsPage";
-import UserSettingsPage from "@/pages/UserSettingsPage";
-
-// Compliance & Tools
-import ComplianceFrameworksPage from "@/pages/ComplianceFrameworksPage";
-import RegulatoryUpdatesPage from "@/pages/RegulatoryUpdatesPage";
-import CarbonCalculatorPage from "@/pages/CarbonCalculatorPage";
-import AIAssistantPage from "@/pages/AIAssistantPage";
-
-// Documentation & Help
-import DocumentationPage from "@/pages/DocumentationPage";
-import SupportPage from "@/pages/SupportPage";
-
-// Error Pages
-import ErrorPage from "@/pages/ErrorPage";
-import NotFoundPage from "@/pages/NotFoundPage";
+import NotFoundPage from "@/pages/NotFound";  // Use existing NotFound
+import ErrorPage from "@/pages/NotFound";  // Use NotFound as ErrorPage
 
 // Protected route layout
-import AuthGuard from "@/components/auth/AuthGuard";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 const Root = () => <Outlet />;
 
@@ -47,67 +25,31 @@ export const router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <LoginPage />,
+        element: <AuthPage />,
       },
       {
         path: "signup",
-        element: <SignupPage />,
+        element: <AuthPage />,
       },
       {
         path: "forgot-password",
-        element: <ForgotPasswordPage />,
+        element: <AuthPage />,
       },
       {
         path: "setup-mfa",
-        element: <SetupMFAPage />,
+        element: <AuthPage />,
       },
       {
         path: "dashboard",
-        element: <AuthGuard><DashboardPage /></AuthGuard>,
+        element: <ProtectedRoute><DashboardPage /></ProtectedRoute>,
       },
       {
         path: "benchmark-dashboard",
-        element: <AuthGuard><BenchmarkDashboard /></AuthGuard>,
+        element: <ProtectedRoute><BenchmarkDashboard /></ProtectedRoute>,
       },
       {
         path: "benchmarking",
-        element: <AuthGuard><BenchmarkingPage /></AuthGuard>,
-      },
-      {
-        path: "data-management",
-        element: <AuthGuard><DataManagementPage /></AuthGuard>,
-      },
-      {
-        path: "esg-reports",
-        element: <AuthGuard><ESGReportsPage /></AuthGuard>,
-      },
-      {
-        path: "user-settings",
-        element: <AuthGuard><UserSettingsPage /></AuthGuard>,
-      },
-      {
-        path: "compliance-frameworks",
-        element: <AuthGuard><ComplianceFrameworksPage /></AuthGuard>,
-      },
-      {
-        path: "regulatory-updates",
-        element: <AuthGuard><RegulatoryUpdatesPage /></AuthGuard>,
-      },
-      {
-        path: "carbon-calculator",
-        element: <AuthGuard><CarbonCalculatorPage /></AuthGuard>,
-      },
-      {
-        path: "ai-assistant",
-        element: <AuthGuard><AIAssistantPage /></AuthGuard>,
-      },
-      {
-        path: "documentation",
-        element: <DocumentationPage />,
-      },
-      {
-        path: "support",
-        element: <SupportPage />,
+        element: <ProtectedRoute><BenchmarkingPage /></ProtectedRoute>,
       },
       {
         path: "*",

@@ -4,3 +4,4 @@ export * from './types/externalTypes';
 export * from './benchmarkService';
 export * from './competitorService';
 export * from './regulationService';
+export { regulationsService } from './regulationsService';

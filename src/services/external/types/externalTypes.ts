@@ -1,3 +1,4 @@
+
 import { toast } from "sonner";
 
 export interface ESGBenchmark {
@@ -27,16 +28,37 @@ export interface ESGCompetitor {
   created_at: string;
 }
 
+// Updated to match the esg_regulatory_updates table structure
 export interface ESGRegulation {
   id: string;
-  name: string;
-  region: string;
-  effective_date: string;
-  status: 'upcoming' | 'active' | 'superseded';
-  summary: string;
-  sectors: string[];
-  compliance_deadline: string;
-  created_at: string;
+  title: string;
+  content: string;
+  source: string;
+  url: string;
+  category?: string;
+  impact_level?: string;
+  published_date?: string;
+  tags?: string[];
+  country?: string;
+  scraped_at?: string;
+  relevance_score?: number;
+}
+
+export interface ExternalESGDataset {
+  id: string;
+  dataset_name: string;
+  dataset_description?: string;
+  category: string;
+  source: string;
+  data: any;
+  metrics?: string[];
+  last_updated?: string;
+  next_update?: string;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  count: number;
 }
 
 // Error handling for external services

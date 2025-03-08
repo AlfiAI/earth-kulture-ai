@@ -3,26 +3,13 @@ import { ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ESGRegulation } from "@/services/external/types/externalTypes";
 
 // Define impact level type with specific allowed values
 export type RegulationImpactLevel = 'high' | 'medium' | 'low' | 'unknown';
 
-// Create a more detailed interface for regulations
-export interface Regulation {
-  id: string;
-  title: string;
-  content: string;
-  source: string;
-  url: string;
-  impact_level?: RegulationImpactLevel;
-  published_date?: string;
-  tags?: string[];
-  category?: string;
-  country?: string;
-}
-
 interface ESGRegulationItemProps {
-  regulation: Regulation;
+  regulation: ESGRegulation;
   className?: string;
   maxTagsToShow?: number;
   showCategory?: boolean;
@@ -37,7 +24,7 @@ const ESGRegulationItem = ({
   onTagClick
 }: ESGRegulationItemProps) => {
   // Map impact levels to badge variants
-  const getBadgeVariant = (impact?: RegulationImpactLevel) => {
+  const getBadgeVariant = (impact?: string) => {
     switch(impact) {
       case 'high': return 'destructive';
       case 'medium': return 'default';
@@ -61,7 +48,7 @@ const ESGRegulationItem = ({
       <div className="flex items-start justify-between mb-2">
         <h3 className="font-medium">{regulation.title}</h3>
         <Badge 
-          variant={getBadgeVariant(regulation.impact_level as RegulationImpactLevel)}
+          variant={getBadgeVariant(regulation.impact_level)}
         >
           {regulation.impact_level || 'Unknown'} Impact
         </Badge>

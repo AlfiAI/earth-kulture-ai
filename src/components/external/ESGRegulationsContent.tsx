@@ -2,7 +2,7 @@
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ESGRegulation } from "@/services/external/externalDataService";
-import ESGRegulationItem, { Regulation } from "./ESGRegulationItem";
+import ESGRegulationItem from "./ESGRegulationItem";
 
 interface ESGRegulationsContentProps {
   regulations: ESGRegulation[];
@@ -47,7 +47,7 @@ const ESGRegulationsContent = ({
       {regulations.map((regulation) => (
         <ESGRegulationItem 
           key={regulation.id} 
-          regulation={regulation as Regulation}
+          regulation={regulation}
           onTagClick={onTagClick}
           showCategory={true}
         />
