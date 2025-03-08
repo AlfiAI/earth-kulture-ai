@@ -14,10 +14,15 @@ verify_jwt = false
 [functions.setup-esg-cron]
 verify_jwt = false
 
-# Configure function settings
+# Configure Deno for edge functions
 [functions]
-# Port to use for the Deno CLI
+node_modules = false
+import_map = "./import_map.json"
+
+# Port is configured as a property of the functions object
+[functions.serve]
 port = 54335
 
-[functions.imported_paths]
+# Define imported dependencies properly
+[[functions.import_map.imports]]
 supabase = "https://esm.sh/@supabase/supabase-js@2"
