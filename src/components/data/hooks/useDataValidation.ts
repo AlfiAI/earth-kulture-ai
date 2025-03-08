@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ValidationResults } from '../ValidationTypes';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { validationService } from "@/services/validation/validationService";
 
 export const useDataValidation = () => {
   const [isValidating, setIsValidating] = useState(false);
@@ -28,7 +29,7 @@ export const useDataValidation = () => {
         throw new Error("User not authenticated");
       }
       
-      // Simulate validation progress while the edge function runs
+      // Start progress indicator
       const progressInterval = setInterval(() => {
         setProgress(prev => {
           const newProgress = prev + 5;
@@ -37,14 +38,22 @@ export const useDataValidation = () => {
           }
           return newProgress < 95 ? newProgress : 95;
         });
-      }, 120);
+      }, 100); // Slightly faster progress updates
+      
+      // Performance monitoring
+      const startTime = performance.now();
       
       // Call the data validation edge function
       const { data, error } = await supabase.functions.invoke("data-validation", {
         body: {
           userId: userData.user.id,
+          validateWith: "deepseek-r1" // Use DeepSeek-R1 for advanced validation
         }
       });
+      
+      // Performance tracking
+      const endTime = performance.now();
+      console.log(`Validation completed in ${Math.round(endTime - startTime)}ms`);
       
       clearInterval(progressInterval);
       
@@ -68,64 +77,84 @@ export const useDataValidation = () => {
   };
 
   const fixIssues = async (issues: ValidationResults['issues']) => {
-    // Map issue types to fix strategies
+    // Map issue types to fix strategies with improved AI intelligence
     const fixStrategies: Record<string, (issue: ValidationResults['issues'][0]) => Promise<boolean>> = {
       data_completeness: async (issue) => {
-        // Auto-generate missing values or units
-        const { data: userData } = await supabase.auth.getUser();
-        if (!userData.user) return false;
-        
-        // Example: Updates ESG data entries with missing units
-        if (issue.message.includes('unit')) {
-          const { error } = await supabase
-            .from('esg_data')
-            .update({ unit: 'units' })
-            .eq('user_id', userData.user.id)
-            .is('unit', null);
+        try {
+          const { data: userData } = await supabase.auth.getUser();
+          if (!userData.user) return false;
           
-          return !error;
+          // Use validationService for AI-enhanced fixes
+          const result = await validationService.fixDataCompleteness(
+            userData.user.id, 
+            issue.message
+          );
+          
+          return result.success;
+        } catch (error) {
+          console.error(`Error fixing data completeness:`, error);
+          return false;
         }
-        return false;
       },
       data_range: async (issue) => {
-        // Fix outliers or negative values
-        const { data: userData } = await supabase.auth.getUser();
-        if (!userData.user) return false;
-        
-        if (issue.message.includes('Negative value')) {
-          const { error } = await supabase
-            .from('esg_data')
-            .update({ value: 0 })
-            .eq('user_id', userData.user.id)
-            .eq('category', 'environmental')
-            .lt('value', 0);
+        try {
+          const { data: userData } = await supabase.auth.getUser();
+          if (!userData.user) return false;
           
-          return !error;
+          // Use validationService for AI-enhanced fixes
+          const result = await validationService.fixDataRange(
+            userData.user.id, 
+            issue.message
+          );
+          
+          return result.success;
+        } catch (error) {
+          console.error(`Error fixing data range:`, error);
+          return false;
         }
-        return false;
       },
       data_timeframe: async (issue) => {
-        // Fix future dates
-        const { data: userData } = await supabase.auth.getUser();
-        if (!userData.user) return false;
-        
-        if (issue.message.includes('Future date')) {
-          const today = new Date().toISOString().split('T')[0];
-          const { error } = await supabase
-            .from('esg_data')
-            .update({ date: today })
-            .eq('user_id', userData.user.id)
-            .gt('date', new Date().toISOString());
+        try {
+          const { data: userData } = await supabase.auth.getUser();
+          if (!userData.user) return false;
           
-          return !error;
+          // Use validationService for AI-enhanced fixes
+          const result = await validationService.fixDataTimeframe(
+            userData.user.id, 
+            issue.message
+          );
+          
+          return result.success;
+        } catch (error) {
+          console.error(`Error fixing data timeframe:`, error);
+          return false;
         }
-        return false;
+      },
+      data_consistency: async (issue) => {
+        try {
+          const { data: userData } = await supabase.auth.getUser();
+          if (!userData.user) return false;
+          
+          // Use validationService for AI-enhanced fixes
+          const result = await validationService.fixDataConsistency(
+            userData.user.id, 
+            issue.message
+          );
+          
+          return result.success;
+        } catch (error) {
+          console.error(`Error fixing data consistency:`, error);
+          return false;
+        }
       }
     };
     
-    // Apply fixes based on issue types
+    // Apply fixes based on issue types with enhanced error handling
     let fixedCount = 0;
     let errorCount = 0;
+    let skippedCount = 0;
+    
+    toast.info(`AI is analyzing and fixing ${issues.length} data issues...`);
     
     for (const issue of issues) {
       const strategy = fixStrategies[issue.source];
@@ -133,31 +162,43 @@ export const useDataValidation = () => {
         try {
           const success = await strategy(issue);
           if (success) fixedCount++;
+          else errorCount++;
         } catch (error) {
           console.error(`Error fixing issue ${issue.message}:`, error);
           errorCount++;
         }
+      } else {
+        console.log(`No fix strategy for issue type: ${issue.source}`);
+        skippedCount++;
       }
     }
     
-    return { fixedCount, errorCount };
+    return { fixedCount, errorCount, skippedCount };
   };
 
   const handleFixIssues = async () => {
-    toast.info('AI is analyzing and fixing data issues...');
+    toast.info('DeepSeek-R1 AI is analyzing and fixing data issues...');
     
     try {
-      const { fixedCount, errorCount } = await fixIssues(validationResults.issues);
+      const startTime = performance.now();
+      const { fixedCount, errorCount, skippedCount } = await fixIssues(validationResults.issues);
+      const endTime = performance.now();
+      
+      console.log(`Issue fixing completed in ${Math.round(endTime - startTime)}ms`);
       
       // Run validation again to get updated results
       await handleValidate();
       
       if (fixedCount > 0) {
         toast.success(`Successfully fixed ${fixedCount} issues automatically.`);
-      } else if (errorCount > 0) {
+      }
+      
+      if (errorCount > 0) {
         toast.error(`Could not fix ${errorCount} issues automatically. Manual review required.`);
-      } else {
-        toast.info('No issues could be fixed automatically. Manual review required.');
+      }
+      
+      if (skippedCount > 0) {
+        toast.info(`Skipped ${skippedCount} issues that require manual attention.`);
       }
     } catch (error) {
       console.error('Error fixing issues:', error);
@@ -167,6 +208,13 @@ export const useDataValidation = () => {
 
   const resetValidation = () => {
     setValidationComplete(false);
+    setValidationResults({
+      valid: 0,
+      warning: 0,
+      error: 0,
+      total: 0,
+      issues: []
+    });
   };
 
   return {
