@@ -23,6 +23,21 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
     onSocialLogin('google');
   };
 
+  const handleGithubSignIn = () => {
+    // Check if we're in development mode, show a helpful message
+    if (process.env.NODE_ENV === 'development') {
+      toast.info("Make sure GitHub provider is enabled in Supabase Auth settings", {
+        duration: 5000,
+        action: {
+          label: 'Learn More',
+          onClick: () => window.open('https://supabase.com/dashboard/project/ihijlloxwfjrrnhxqlfa/auth/providers', '_blank')
+        }
+      });
+    }
+    
+    onSocialLogin('github');
+  };
+
   return (
     <div className="grid gap-2">
       <Button 
@@ -50,6 +65,15 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
           <path d="M1 1h22v22H1z" fill="none" />
         </svg>
         Continue with Google
+      </Button>
+      
+      <Button 
+        variant="outline" 
+        className="w-full justify-start" 
+        onClick={handleGithubSignIn}
+      >
+        <Github className="mr-2 h-4 w-4" />
+        Continue with GitHub
       </Button>
     </div>
   );

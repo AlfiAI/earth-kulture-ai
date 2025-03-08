@@ -23,7 +23,8 @@ export const useAuthProvider = () => {
   const { 
     signIn, 
     signUp, 
-    signInWithGoogle, 
+    signInWithGoogle,
+    signInWithGithub,
     signOut, 
     resetPassword,
     setupMFA,
@@ -48,6 +49,7 @@ export const useAuthProvider = () => {
     signIn,
     signUp,
     signInWithGoogle,
+    signInWithGithub,
     signOut,
     resetPassword,
     setupMFA,

@@ -28,7 +28,8 @@ export interface AuthContextType {
   authError: string | null;
   signIn: (email: string, password: string, rememberMe?: boolean) => Promise<MFASignInResult>;
   signUp: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<any>; // Changed from Promise<void> to Promise<any>
+  signInWithGoogle: () => Promise<any>;
+  signInWithGithub: () => Promise<any>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   setupMFA: () => Promise<{ qr: string; secret: string } | null>;

@@ -18,7 +18,7 @@ type AuthContainerProps = {
 };
 
 const AuthContainer = ({ authMode, setAuthMode, setAuthError }: AuthContainerProps) => {
-  const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
+  const { signIn, signUp, signInWithGoogle, signInWithGithub, resetPassword } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false);
@@ -72,6 +72,8 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError }: AuthContainerPro
     try {
       if (provider === 'google') {
         await signInWithGoogle();
+      } else if (provider === 'github') {
+        await signInWithGithub();
       }
     } catch (error: any) {
       console.error(`Error with ${provider} login:`, error);

@@ -7,7 +7,7 @@ import { useMFAOperations } from "./operations/useMFAOperations";
 
 export const useAuthOperations = () => {
   const { signIn, signUp, signOut } = useBasicAuth();
-  const { signInWithGoogle } = useSocialAuth();
+  const { signInWithGoogle, signInWithGithub } = useSocialAuth();
   const { resetPassword } = usePasswordReset();
   const { setupMFA, verifyMFA, disableMFA } = useMFAOperations();
 
@@ -15,6 +15,7 @@ export const useAuthOperations = () => {
     signIn,
     signUp,
     signInWithGoogle,
+    signInWithGithub,
     signOut,
     resetPassword,
     setupMFA,

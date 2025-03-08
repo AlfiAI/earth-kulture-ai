@@ -63,7 +63,45 @@ export const useSocialAuth = () => {
     }
   };
 
+  const signInWithGithub = async () => {
+    try {
+      const redirectUrl = `${getSiteUrl()}/auth`;
+      console.log("Signing in with GitHub, redirect URL:", redirectUrl);
+      
+      const { error, data } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: redirectUrl
+        }
+      });
+      
+      if (error) {
+        if (error.message.includes("provider is not enabled")) {
+          console.error("GitHub provider is not enabled in Supabase:", error);
+          toast.error("GitHub authentication is not enabled. Please contact support or use email login.");
+          throw new Error("GitHub provider is not enabled in Supabase Auth settings");
+        }
+        throw error;
+      }
+      
+      return data;
+    } catch (error: any) {
+      console.error("Error signing in with GitHub:", error);
+      captureException(error);
+      
+      // Show more specific error message
+      if (error.message.includes("provider is not enabled")) {
+        toast.error("GitHub authentication is not enabled. Please use email login or contact support.");
+      } else {
+        toast.error(error.message || "Failed to sign in with GitHub");
+      }
+      
+      throw error;
+    }
+  };
+
   return {
-    signInWithGoogle
+    signInWithGoogle,
+    signInWithGithub
   };
 };
