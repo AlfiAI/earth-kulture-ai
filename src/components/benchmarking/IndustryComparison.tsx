@@ -6,7 +6,7 @@ import BenchmarkChart from "@/components/external/benchmark/BenchmarkChart";
 import BenchmarkFilters from "@/components/external/benchmark/BenchmarkFilters";
 import BenchmarkHeader from "@/components/external/benchmark/BenchmarkHeader";
 import BenchmarkFooter from "@/components/external/benchmark/BenchmarkFooter";
-import { benchmarkingService } from '@/services/benchmarkingService';
+import { benchmarkingService } from '@/services/benchmarking';
 
 interface IndustryComparisonProps {
   title?: string;
@@ -25,7 +25,6 @@ const IndustryComparison = ({
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        // Fix: Using getPredictions instead of compareToIndustry
         const data = await benchmarkingService.getPredictions(activeTab as any);
         setBenchmarkData(data);
       } catch (error) {
@@ -57,31 +56,31 @@ const IndustryComparison = ({
         
         <CardContent>
           <TabsContent value="esg" className="mt-0 pt-4">
-            <BenchmarkHeader category="ESG Score" data={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFilters category="esg" />
-            <BenchmarkChart data={benchmarkData} category="esg" isLoading={isLoading} />
-            <BenchmarkFooter category="esg" />
+            <BenchmarkHeader title="ESG Score" data={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFilters industry="all" metric="esg_score" />
+            <BenchmarkChart chartData={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFooter sourceText="ESG industry data" />
           </TabsContent>
           
           <TabsContent value="carbon" className="mt-0 pt-4">
-            <BenchmarkHeader category="Carbon Emissions" data={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFilters category="carbon" />
-            <BenchmarkChart data={benchmarkData} category="carbon" isLoading={isLoading} />
-            <BenchmarkFooter category="carbon" />
+            <BenchmarkHeader title="Carbon Emissions" data={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFilters industry="all" metric="carbon_emissions" />
+            <BenchmarkChart chartData={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFooter sourceText="Carbon emissions data" />
           </TabsContent>
           
           <TabsContent value="compliance" className="mt-0 pt-4">
-            <BenchmarkHeader category="Compliance" data={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFilters category="compliance" />
-            <BenchmarkChart data={benchmarkData} category="compliance" isLoading={isLoading} />
-            <BenchmarkFooter category="compliance" />
+            <BenchmarkHeader title="Compliance" data={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFilters industry="all" metric="compliance_score" />
+            <BenchmarkChart chartData={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFooter sourceText="Compliance data" />
           </TabsContent>
           
           <TabsContent value="financial" className="mt-0 pt-4">
-            <BenchmarkHeader category="Financial Impact" data={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFilters category="financial" />
-            <BenchmarkChart data={benchmarkData} category="financial" isLoading={isLoading} />
-            <BenchmarkFooter category="financial" />
+            <BenchmarkHeader title="Financial Impact" data={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFilters industry="all" metric="financial_impact" />
+            <BenchmarkChart chartData={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFooter sourceText="Financial impact data" />
           </TabsContent>
         </CardContent>
       </Tabs>

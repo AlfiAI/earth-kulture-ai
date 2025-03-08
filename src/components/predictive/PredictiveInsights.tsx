@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Minus, Calendar, ArrowRight, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ESGPrediction, benchmarkingService } from '@/services/benchmarkingService';
+import { ESGPrediction, benchmarkingService } from '@/services/benchmarking';
 
 const PredictiveInsights = () => {
   const [loading, setLoading] = useState(true);

@@ -1,39 +1,11 @@
 
-import { toast } from "sonner";
+import { ESGPrediction, PredictionCategory } from './types';
 
-// Types for ESG predictions
-export interface ESGPrediction {
-  id: string;
-  category: 'esg' | 'carbon' | 'compliance' | 'financial';
-  metricName: string;
-  currentValue: number;
-  predictedValue: number;
-  predictedDate: string;
-  confidence: number;
-  trendDirection: 'up' | 'down' | 'stable';
-  factors: {
-    name: string;
-    impact: number; // -1 to 1 range, negative means reducing the metric
-  }[];
-  createdAt: string;
-}
-
-class BenchmarkingService {
-  // Get AI-generated predictions for different categories
-  async getPredictions(category: 'esg' | 'carbon' | 'compliance' | 'financial'): Promise<ESGPrediction[]> {
-    try {
-      // This would be connected to a real AI model in production
-      // Currently using mock data to demonstrate the UI
-      return this.getMockPredictions(category);
-    } catch (error) {
-      console.error(`Error fetching ${category} predictions:`, error);
-      toast.error(`Failed to load predictions for ${category}`);
-      return [];
-    }
-  }
-  
-  // Generate mock predictions for demo purposes
-  private getMockPredictions(category: 'esg' | 'carbon' | 'compliance' | 'financial'): ESGPrediction[] {
+export class MockPredictionGenerator {
+  /**
+   * Generate mock predictions for demo purposes
+   */
+  static getMockPredictions(category: PredictionCategory): ESGPrediction[] {
     const now = new Date();
     const futureDate = new Date();
     futureDate.setMonth(now.getMonth() + 3);
@@ -173,56 +145,4 @@ class BenchmarkingService {
         return [];
     }
   }
-  
-  // Run what-if simulation based on user inputs
-  async runSimulation(
-    category: 'esg' | 'carbon' | 'compliance' | 'financial',
-    adjustments: { factor: string; changePercent: number }[]
-  ): Promise<ESGPrediction> {
-    try {
-      // In a real implementation, this would call an AI model
-      // For demonstration, we're using a simplified approach
-      
-      const predictions = await this.getPredictions(category);
-      if (predictions.length === 0) {
-        throw new Error(`No predictions available for ${category}`);
-      }
-      
-      const basePrediction = predictions[0];
-      let adjustedValue = basePrediction.predictedValue;
-      
-      // Apply each adjustment factor
-      adjustments.forEach(adjustment => {
-        const matchingFactor = basePrediction.factors.find(f => f.name === adjustment.factor);
-        if (matchingFactor) {
-          // Calculate impact of this adjustment
-          const impactMultiplier = adjustment.changePercent / 100;
-          const valueChange = basePrediction.predictedValue * 
-            Math.abs(matchingFactor.impact) * impactMultiplier;
-          
-          // Add or subtract based on the factor's direction
-          if (matchingFactor.impact > 0) {
-            adjustedValue += valueChange;
-          } else {
-            adjustedValue -= valueChange;
-          }
-        }
-      });
-      
-      // Create a copy of the prediction with the adjusted value
-      return {
-        ...basePrediction,
-        id: `sim-${Date.now()}`,
-        predictedValue: adjustedValue,
-        confidence: basePrediction.confidence * 0.9, // Slightly lower confidence for simulation
-        createdAt: new Date().toISOString()
-      };
-    } catch (error) {
-      console.error(`Error running ${category} simulation:`, error);
-      toast.error(`Failed to run simulation for ${category}`);
-      throw error;
-    }
-  }
 }
-
-export const benchmarkingService = new BenchmarkingService();
