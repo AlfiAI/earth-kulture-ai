@@ -14,7 +14,7 @@ const ConnectionTester = () => {
   const [complianceStatus, setComplianceStatus] = useState<{ success: boolean; message: string } | null>(null);
   const [authStatus, setAuthStatus] = useState<{ success: boolean; message: string } | null>(null);
   const [isTesting, setIsTesting] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const testAllConnections = async () => {
     setIsTesting(true);
@@ -39,6 +39,11 @@ const ConnectionTester = () => {
       // Test compliance service
       const complianceResult = await complianceService.testConnection();
       setComplianceStatus(complianceResult);
+      
+      // Log additional auth details for debugging
+      if (user) {
+        console.log("Authenticated user:", user.email);
+      }
     } catch (error) {
       console.error("Test connection error:", error);
     } finally {

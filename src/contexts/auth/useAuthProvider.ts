@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -136,15 +137,21 @@ export const useAuthProvider = () => {
         console.log("Using demo account credentials");
       }
       
+      // Fix the options structure to match Supabase API expectations
       const { error } = await supabase.auth.signInWithPassword({ 
         email, 
         password,
         options: {
-          session: {
-            expiresIn: rememberMe ? 2592000 : 3600
-          }
+          captchaToken: undefined // This is the only valid property at this level
         }
       });
+      
+      // Handle remember me functionality through localStorage instead
+      if (rememberMe) {
+        localStorage.setItem('supabase-remember-me', 'true');
+      } else {
+        localStorage.removeItem('supabase-remember-me');
+      }
       
       if (error) throw error;
     } catch (error: any) {
