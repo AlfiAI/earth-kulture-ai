@@ -2,18 +2,20 @@
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ESGRegulation } from "@/services/external/externalDataService";
-import ESGRegulationItem from "./ESGRegulationItem";
+import ESGRegulationItem, { Regulation } from "./ESGRegulationItem";
 
 interface ESGRegulationsContentProps {
   regulations: ESGRegulation[];
   isLoading: boolean;
   handleRefresh: () => Promise<void>;
+  onTagClick?: (tag: string) => void;
 }
 
 const ESGRegulationsContent = ({ 
   regulations, 
   isLoading, 
-  handleRefresh 
+  handleRefresh,
+  onTagClick
 }: ESGRegulationsContentProps) => {
   if (isLoading) {
     return (
@@ -45,7 +47,9 @@ const ESGRegulationsContent = ({
       {regulations.map((regulation) => (
         <ESGRegulationItem 
           key={regulation.id} 
-          regulation={regulation} 
+          regulation={regulation as Regulation}
+          onTagClick={onTagClick}
+          showCategory={true}
         />
       ))}
     </div>
