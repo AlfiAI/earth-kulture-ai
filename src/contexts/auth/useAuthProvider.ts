@@ -11,7 +11,9 @@ export const useAuthProvider = () => {
     userProfile, 
     setUserProfile, 
     isAuthenticated, 
-    isLoading 
+    isLoading,
+    setSession,
+    setUser
   } = useAuthState();
   
   const { fetchUserProfile } = useProfileManagement(user, setUserProfile);
@@ -25,8 +27,8 @@ export const useAuthProvider = () => {
   } = useAuthOperations();
   
   useAuthStateChange(
-    (newSession) => session !== newSession && setSession(newSession),
-    (newUser) => user !== newUser && setUser(newUser),
+    (newSession) => newSession !== session && setSession(newSession),
+    (newUser) => newUser !== user && setUser(newUser),
     setUserProfile,
     fetchUserProfile
   );
