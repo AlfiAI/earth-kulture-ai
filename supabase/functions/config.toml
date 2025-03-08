@@ -3,3 +3,14 @@
 # Put project_id = "your-project-ref" in here once you've created a project.
 
 project_id = "ihijlloxwfjrrnhxqlfa"
+
+# Define functions
+[functions.esg-scraper]
+verify_jwt = false
+
+[functions.fetch-external-datasets]
+verify_jwt = false
+
+[functions.setup-esg-cron]
+verify_jwt = false
+

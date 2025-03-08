@@ -22,6 +22,27 @@ const DATA_SOURCES = [
     category: 'emissions',
     sourceType: 'api',
     dataProcessor: processOECDData
+  },
+  {
+    name: 'EPA Climate Change Indicators',
+    url: 'https://www.epa.gov/climate-indicators/climate-change-indicators-greenhouse-gases',
+    category: 'emissions',
+    sourceType: 'web',
+    dataProcessor: processWebData
+  },
+  {
+    name: 'Global Carbon Atlas',
+    url: 'http://www.globalcarbonatlas.org/en/CO2-emissions',
+    category: 'carbon',
+    sourceType: 'web',
+    dataProcessor: processWebData
+  },
+  {
+    name: 'UN SDG Indicators',
+    url: 'https://unstats.un.org/sdgs/indicators/database/',
+    category: 'sustainability',
+    sourceType: 'web',
+    dataProcessor: processWebData
   }
 ];
 
@@ -94,6 +115,29 @@ function processOECDData(data) {
   }
 }
 
+// Process scraped web data
+function processWebData(htmlContent) {
+  // In a real implementation, you would use a proper HTML parser
+  // to extract data from the web pages
+  
+  return {
+    processed: [
+      {
+        indicator: 'CO2 Emissions',
+        value: 'See source for latest data',
+        year: new Date().getFullYear().toString(),
+        source: 'Web scraping'
+      }
+    ],
+    metadata: {
+      count: 1,
+      source: 'Web Scraping',
+      indicator: 'Various Environmental Indicators',
+      updated: new Date().toISOString()
+    }
+  };
+}
+
 // Fetch data from a specific source
 async function fetchFromSource(source) {
   console.log(`Fetching data from ${source.name}: ${source.url}`);
@@ -105,8 +149,17 @@ async function fetchFromSource(source) {
       throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
     }
     
-    const data = await response.json();
-    const processed = source.dataProcessor(data);
+    // Process differently based on source type
+    let data;
+    let processed;
+    
+    if (source.sourceType === 'api') {
+      data = await response.json();
+      processed = source.dataProcessor(data);
+    } else if (source.sourceType === 'web') {
+      const html = await response.text();
+      processed = source.dataProcessor(html);
+    }
     
     return {
       source: source.name,
@@ -116,7 +169,7 @@ async function fetchFromSource(source) {
       category: source.category,
       last_updated: new Date().toISOString(),
       next_update: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week later
-      metrics: ['emissions', 'climate']
+      metrics: [source.category, 'climate', 'sustainability']
     };
   } catch (error) {
     console.error(`Error fetching from ${source.name}:`, error);
