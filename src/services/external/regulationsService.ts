@@ -2,13 +2,16 @@
 import { supabase } from "@/integrations/supabase/client";
 import { ESGRegulation, PaginatedResponse, handleServiceError } from "./types/externalTypes";
 import { toast } from "sonner";
+import { RegulationImpactLevel } from "@/components/external/ESGRegulationItem";
 
 class RegulationsService {
   // Get ESG regulatory updates with pagination and improved error handling
   async getESGRegulations(
     page = 1, 
     pageSize = 10, 
-    category?: string
+    category?: string,
+    impactLevel?: RegulationImpactLevel,
+    tags?: string[]
   ): Promise<PaginatedResponse<ESGRegulation>> {
     try {
       // Validate input parameters
@@ -29,6 +32,17 @@ class RegulationsService {
         query = query.eq('category', category);
       }
       
+      // Apply impact level filter if provided
+      if (impactLevel) {
+        query = query.eq('impact_level', impactLevel);
+      }
+      
+      // Apply tags filter if provided
+      if (tags && tags.length > 0) {
+        // Using .contains for array overlap (matches if any tag is present)
+        query = query.contains('tags', tags);
+      }
+      
       // Apply pagination
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
@@ -46,7 +60,7 @@ class RegulationsService {
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulatory updates", {
         operation: 'getESGRegulations',
-        params: { page, pageSize, category }
+        params: { page, pageSize, category, impactLevel, tags }
       });
       return { data: [], count: 0 };
     }

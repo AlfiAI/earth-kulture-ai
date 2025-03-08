@@ -9,6 +9,7 @@ interface ESGRegulationsTabsProps {
   regulations: ESGRegulation[];
   isLoading: boolean;
   handleRefresh: () => Promise<void>;
+  onTagClick?: (tag: string) => void;
 }
 
 const ESGRegulationsTabs = ({
@@ -16,7 +17,8 @@ const ESGRegulationsTabs = ({
   handleTabChange,
   regulations,
   isLoading,
-  handleRefresh
+  handleRefresh,
+  onTagClick
 }: ESGRegulationsTabsProps) => {
   return (
     <Tabs defaultValue="all" value={activeTab} onValueChange={handleTabChange}>
@@ -32,6 +34,7 @@ const ESGRegulationsTabs = ({
           regulations={regulations} 
           isLoading={isLoading}
           handleRefresh={handleRefresh}
+          onTagClick={onTagClick}
         />
       </TabsContent>
     </Tabs>
