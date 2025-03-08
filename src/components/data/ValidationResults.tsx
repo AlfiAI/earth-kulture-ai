@@ -1,22 +1,11 @@
 
 import { AlertTriangle, CheckCircle } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
-
-interface ValidationIssue {
-  type: 'warning' | 'error';
-  message: string;
-  source: string;
-  recommendation: string;
-}
+import { ValidationResults as ValidationResultsType } from './ValidationTypes';
+import { Separator } from "@/components/ui/separator";
 
 interface ValidationResultsProps {
-  results: {
-    valid: number;
-    warning: number;
-    error: number;
-    total: number;
-    issues: ValidationIssue[];
-  };
+  results: ValidationResultsType;
 }
 
 const ValidationResults = ({ results }: ValidationResultsProps) => {
@@ -49,6 +38,8 @@ const ValidationResults = ({ results }: ValidationResultsProps) => {
         </div>
       </div>
       
+      <Separator />
+      
       <ValidationIssuesList issues={results.issues} />
     </div>
   );
@@ -56,7 +47,7 @@ const ValidationResults = ({ results }: ValidationResultsProps) => {
 
 export default ValidationResults;
 
-export const ValidationIssuesList = ({ issues }: { issues: ValidationIssue[] }) => {
+const ValidationIssuesList = ({ issues }: { issues: ValidationResultsType['issues'] }) => {
   return (
     <div className="space-y-3">
       <h4 className="text-sm font-medium">Issues Detected</h4>
