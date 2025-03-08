@@ -4,7 +4,7 @@ import { MessageProps } from '@/components/ai/Message';
 
 // Constants
 const DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions";
-const DEEPSEEK_API_KEY = "DEMO_KEY"; // In production, this should come from environment variables
+const DEEPSEEK_API_KEY = "sk-c31c53e99fee40fb8e0cc5f70cdeb452"; // Your DeepSeek API key
 
 // System prompt for ESG & Carbon Intelligence
 const ESG_SYSTEM_PROMPT = `You are Waly, an expert ESG & Carbon Intelligence Assistant specializing in sustainability reporting, emissions analysis, 
@@ -54,6 +54,8 @@ class DeepseekService {
         { role: "user", content: query }
       ];
       
+      console.log("Calling DeepSeek API with formatted messages:", messages);
+      
       // Call DeepSeek API
       const response = await fetch(DEEPSEEK_URL, {
         method: 'POST',
@@ -72,13 +74,16 @@ class DeepseekService {
       
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("DeepSeek API returned an error:", errorData);
         throw new Error(`DeepSeek API Error: ${errorData.error?.message || response.statusText}`);
       }
       
       const data: DeepseekResponse = await response.json();
+      console.log("DeepSeek API response:", data);
       return data.choices[0].message.content;
     } catch (error) {
       console.error('Error calling DeepSeek API:', error);
+      toast.error("Failed to get AI response. Using fallback mode.");
       // Fallback to local processing if API fails
       return this.fallbackProcessQuery(query);
     }
