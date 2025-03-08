@@ -17,7 +17,8 @@ You have expertise in:
 - Regulatory compliance tracking
 - Industry benchmarking and trend analysis
 
-Always provide specific, actionable insights based on industry best practices. When appropriate, reference relevant regulations, frameworks, or methodologies.`;
+Always provide specific, actionable insights based on industry best practices. When appropriate, reference relevant regulations, frameworks, or methodologies.
+Keep responses concise but informative, focusing on practical advice and clear explanations.`;
 
 // Interface for API response
 interface DeepseekResponse {
@@ -42,14 +43,17 @@ interface DeepseekResponse {
 
 class DeepseekService {
   // Process query using DeepSeek API
-  async processQuery(query: string, previousMessages: MessageProps[] = []): Promise<string> {
+  async processQuery(query: string, previousMessages: MessageProps[] = [], customSystemPrompt?: string): Promise<string> {
     try {
       // Format previous messages for context
       const formattedMessages = this.formatMessagesForAPI(previousMessages);
       
+      // Use custom system prompt if provided, otherwise use default
+      const systemPrompt = customSystemPrompt || ESG_SYSTEM_PROMPT;
+      
       // Add system prompt and user query
       const messages = [
-        { role: "system", content: ESG_SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt },
         ...formattedMessages,
         { role: "user", content: query }
       ];
@@ -64,7 +68,7 @@ class DeepseekService {
           'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
         },
         body: JSON.stringify({
-          model: "deepseek-chat",  // Updated to use a valid model name
+          model: "deepseek-chat",  // Use a valid model name
           messages: messages,
           temperature: 0.7,
           top_p: 0.95,

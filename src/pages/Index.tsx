@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from "@/lib/utils";
@@ -5,6 +6,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import WalyAssistant from "@/components/ai/WalyAssistant";
+import EnhancedWalyAssistant from "@/components/ai/EnhancedWalyAssistant";
 import DashboardESGScore from "@/components/dashboard/DashboardESGScore";
 import CarbonFootprint from "@/components/dashboard/CarbonFootprint";
 import ComplianceStatus from "@/components/dashboard/ComplianceStatus";
@@ -13,6 +15,9 @@ import CarbonEmissionsTrend from "@/components/dashboard/CarbonEmissionsTrend";
 import ESGScoreProgression from "@/components/dashboard/ESGScoreProgression";
 import AIInsights from "@/components/dashboard/AIInsights";
 import { useAuth } from '@/contexts/auth';
+
+// Feature flag for enhanced assistant
+const SHOW_ENHANCED_ASSISTANT = true;
 
 const Index = () => {
   const navigate = useNavigate();
@@ -75,7 +80,11 @@ const Index = () => {
         </main>
       </div>
       
-      <WalyAssistant initialOpen={false} />
+      {SHOW_ENHANCED_ASSISTANT ? (
+        <EnhancedWalyAssistant initialOpen={false} />
+      ) : (
+        <WalyAssistant initialOpen={false} />
+      )}
     </div>
   );
 };
