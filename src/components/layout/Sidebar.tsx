@@ -1,50 +1,153 @@
 
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LogOut } from "lucide-react";
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import MobileSidebarToggle from "./MobileSidebarToggle";
-import SidebarHeader from "./SidebarHeader";
-import SidebarNavigation from "./SidebarNavigation";
+import { Button } from "@/components/ui/button";
+import {
+  BarChart,
+  FileText,
+  Settings,
+  Upload,
+  Users,
+  MessageSquare,
+  FileBarChart,
+  BookOpen,
+  HelpCircle,
+  Globe,
+  Gauge,
+  ListChecks,
+  Scale,
+  TrendingUp,
+  Building
+} from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface SidebarProps {
-  open: boolean;
-  onToggle: () => void;
+  isCollapsed: boolean;
 }
 
-const Sidebar = ({ open, onToggle }: SidebarProps) => {
-  const location = useLocation();
-  const isMobile = useIsMobile();
-  
-  // Auto-close sidebar on mobile when navigating
-  useEffect(() => {
-    if (isMobile && open) {
-      onToggle();
-    }
-  }, [location.pathname, isMobile, onToggle]);
+interface SidebarItem {
+  title: string;
+  icon: React.ReactNode;
+  href: string;
+  submenu?: { title: string; href: string }[];
+}
 
-  // Render a floating menu button when sidebar is closed on mobile
-  if (isMobile && !open) {
-    return <MobileSidebarToggle onToggle={onToggle} />;
-  }
+export function Sidebar({ isCollapsed }: SidebarProps) {
+  const { pathname } = useLocation();
+
+  const sidebarItems: SidebarItem[] = [
+    {
+      title: "Dashboard",
+      icon: <Gauge className="h-5 w-5" />,
+      href: "/dashboard",
+    },
+    {
+      title: "AI Benchmarking",
+      icon: <TrendingUp className="h-5 w-5" />,
+      href: "/benchmarking",
+    },
+    {
+      title: "Industry Benchmark",
+      icon: <Building className="h-5 w-5" />,
+      href: "/benchmark-dashboard",
+    },
+    {
+      title: "Data Management",
+      icon: <Upload className="h-5 w-5" />,
+      href: "/data-management",
+    },
+    {
+      title: "ESG Reports",
+      icon: <FileText className="h-5 w-5" />,
+      href: "/esg-reports",
+    },
+    {
+      title: "AI Assistant",
+      icon: <MessageSquare className="h-5 w-5" />,
+      href: "/ai-assistant",
+    },
+    {
+      title: "Carbon Calculator",
+      icon: <BarChart className="h-5 w-5" />,
+      href: "/carbon-calculator",
+    },
+    {
+      title: "Compliance Frameworks",
+      icon: <ListChecks className="h-5 w-5" />,
+      href: "/compliance-frameworks",
+    },
+    {
+      title: "Regulatory Updates",
+      icon: <Scale className="h-5 w-5" />,
+      href: "/regulatory-updates",
+    },
+    {
+      title: "Documentation",
+      icon: <BookOpen className="h-5 w-5" />,
+      href: "/documentation",
+    },
+    {
+      title: "Support",
+      icon: <HelpCircle className="h-5 w-5" />,
+      href: "/support",
+    },
+    {
+      title: "User Settings",
+      icon: <Settings className="h-5 w-5" />,
+      href: "/user-settings",
+    },
+  ];
 
   return (
     <aside
       className={cn(
-        "fixed top-0 left-0 z-40 h-screen transition-all pt-14 lg:pt-0",
-        open ? "w-64" : "w-16",
-        "lg:translate-x-0",
-        isMobile && open ? "translate-x-0" : isMobile && !open ? "-translate-x-full" : "",
-        isMobile ? "shadow-lg" : ""
+        "fixed inset-y-0 left-0 z-20 flex h-full flex-col border-r bg-background transition-all duration-300 ease-in-out",
+        isCollapsed ? "w-[60px]" : "w-64"
       )}
     >
-      <div className="h-full flex flex-col border-r bg-card px-3 py-4 overflow-y-auto">
-        <SidebarHeader open={open} onToggle={onToggle} isMobile={isMobile} />
-        <SidebarNavigation open={open} onToggle={onToggle} />
+      <div className="flex h-16 items-center justify-center border-b px-4">
+        <Link to="/" className="flex items-center">
+          <Globe className="h-6 w-6 text-primary" />
+          {!isCollapsed && (
+            <span className="ml-2 text-xl font-bold">Earth Kulture</span>
+          )}
+        </Link>
       </div>
+      <ScrollArea className="flex-1 py-2">
+        <nav className="flex flex-col gap-1 px-2">
+          <TooltipProvider delayDuration={0}>
+            {sidebarItems.map((item) => (
+              <Tooltip key={item.href}>
+                <TooltipTrigger asChild>
+                  <Button
+                    asChild
+                    variant={pathname === item.href ? "secondary" : "ghost"}
+                    className={cn(
+                      "justify-start",
+                      isCollapsed && "justify-center"
+                    )}
+                  >
+                    <Link to={item.href} className="flex items-center">
+                      {item.icon}
+                      {!isCollapsed && (
+                        <span className="ml-2 truncate">{item.title}</span>
+                      )}
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                {isCollapsed && (
+                  <TooltipContent side="right">
+                    <p>{item.title}</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            ))}
+          </TooltipProvider>
+        </nav>
+      </ScrollArea>
     </aside>
   );
-};
+}
 
 export default Sidebar;

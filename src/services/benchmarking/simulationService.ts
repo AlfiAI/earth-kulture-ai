@@ -1,58 +1,99 @@
 
 import { ESGPrediction, SimulationAdjustment, PredictionCategory } from './types';
 import { MockPredictionGenerator } from './mockPredictionGenerator';
-import { toast } from "sonner";
 
 export class SimulationService {
   /**
-   * Run what-if simulation based on user inputs
+   * Run a what-if simulation based on adjustments to see potential ESG outcomes
    */
   static async runSimulation(
     category: PredictionCategory,
     adjustments: SimulationAdjustment[]
   ): Promise<ESGPrediction> {
-    try {
-      // In a real implementation, this would call an AI model
-      // For demonstration, we're using a simplified approach
+    // Get a base prediction to modify
+    const basePredictions = MockPredictionGenerator.getMockPredictions(category);
+    
+    if (basePredictions.length === 0) {
+      throw new Error(`No predictions available for category: ${category}`);
+    }
+    
+    const basePrediction = { ...basePredictions[0] };
+    
+    // Calculate impact of adjustments
+    let totalImpact = 0;
+    const impactFactors: ESGPrediction['factors'] = [];
+    
+    adjustments.forEach(adjustment => {
+      // Calculate percentage change
+      const percentageChange = (adjustment.value - adjustment.originalValue) / adjustment.originalValue;
       
-      const predictions = MockPredictionGenerator.getMockPredictions(category);
-      if (predictions.length === 0) {
-        throw new Error(`No predictions available for ${category}`);
+      // Each adjustment contributes to the overall impact based on its size
+      let impact = 0;
+      
+      // Different metrics have different impacts on different categories
+      switch (category) {
+        case 'esg':
+          // For ESG, improvements in any area help the score
+          impact = percentageChange * 0.25; // 25% effect per metric on average
+          break;
+          
+        case 'carbon':
+          // For carbon, reducing values is positive (negative correlation)
+          impact = -percentageChange * 0.33; // 33% effect per metric
+          break;
+          
+        case 'compliance':
+          // For compliance, increases directly impact score
+          impact = percentageChange * 0.5; // 50% effect per metric
+          break;
+          
+        case 'financial':
+          // Financial impact varies based on the specific adjustment
+          impact = percentageChange * 0.4; // 40% effect per metric
+          break;
       }
       
-      const basePrediction = predictions[0];
-      let adjustedValue = basePrediction.predictedValue;
+      totalImpact += impact;
       
-      // Apply each adjustment factor
-      adjustments.forEach(adjustment => {
-        const matchingFactor = basePrediction.factors.find(f => f.name === adjustment.factor);
-        if (matchingFactor) {
-          // Calculate impact of this adjustment
-          const impactMultiplier = adjustment.changePercent / 100;
-          const valueChange = basePrediction.predictedValue * 
-            Math.abs(matchingFactor.impact) * impactMultiplier;
-          
-          // Add or subtract based on the factor's direction
-          if (matchingFactor.impact > 0) {
-            adjustedValue += valueChange;
-          } else {
-            adjustedValue -= valueChange;
-          }
-        }
+      // Add to factors
+      impactFactors.push({
+        name: adjustment.metricName,
+        impact: impact
       });
-      
-      // Create a copy of the prediction with the adjusted value
-      return {
-        ...basePrediction,
-        id: `sim-${Date.now()}`,
-        predictedValue: adjustedValue,
-        confidence: basePrediction.confidence * 0.9, // Slightly lower confidence for simulation
-        createdAt: new Date().toISOString()
-      };
-    } catch (error) {
-      console.error(`Error running ${category} simulation:`, error);
-      toast.error(`Failed to run simulation for ${category}`);
-      throw error;
+    });
+    
+    // Apply the total impact to the base prediction
+    let newValue = basePrediction.predictedValue;
+    
+    if (category === 'carbon') {
+      // For carbon, negative impact is good (reducing emissions)
+      newValue = Math.max(0, basePrediction.predictedValue * (1 + totalImpact));
+    } else {
+      // For other categories, positive impact is good
+      newValue = basePrediction.predictedValue * (1 + totalImpact);
     }
+    
+    // Determine trend direction
+    let trendDirection: 'up' | 'down' | 'stable' = 'stable';
+    if (Math.abs(totalImpact) < 0.03) {
+      trendDirection = 'stable'; 
+    } else if ((category === 'carbon' && totalImpact < 0) || 
+               (category !== 'carbon' && totalImpact > 0)) {
+      trendDirection = 'up'; // Positive trend (for carbon, down is up)
+    } else {
+      trendDirection = 'down'; // Negative trend
+    }
+    
+    // Build the simulation result
+    return {
+      id: `simulation-${Date.now()}`,
+      category,
+      currentValue: basePrediction.currentValue,
+      predictedValue: Math.round(newValue * 100) / 100, // Round to 2 decimal places
+      predictedDate: basePrediction.predictedDate,
+      trendDirection,
+      confidence: Math.max(0.5, basePrediction.confidence - 0.15), // Slightly lower confidence for simulations
+      factors: impactFactors
+    };
   }
 }
