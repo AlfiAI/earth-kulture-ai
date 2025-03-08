@@ -22,7 +22,3 @@ import_map = "./import_map.json"
 # Define the port for the server
 [functions.serve]
 port = 54335
-
-# Define imported dependencies properly
-[[functions.import_map.imports]]
-supabase = "https://esm.sh/@supabase/supabase-js@2"
