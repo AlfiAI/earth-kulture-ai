@@ -9,13 +9,23 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const getSiteUrl = () => {
   // In browser environment
   if (typeof window !== 'undefined') {
+    // First check if we're running in the preview environment
+    if (window.location.hostname.includes('preview--') || 
+        window.location.hostname.includes('lovable.app')) {
+      return window.location.origin;
+    }
+    
+    // For local development or other deployments
     const url = new URL(window.location.href);
-    // Use the full origin including the protocol
     return `${url.protocol}//${url.host}`;
   }
   // Fallback for non-browser environments
   return 'http://localhost:8080';
 };
+
+// Configure auth redirect URLs
+const redirectTo = `${getSiteUrl()}/auth`;
+console.log("Auth redirects configured to:", redirectTo);
 
 export const supabase = createClient<Database>(
   SUPABASE_URL, 

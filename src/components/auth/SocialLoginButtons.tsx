@@ -1,18 +1,34 @@
 
 import { Button } from "@/components/ui/button";
 import { Github } from "lucide-react";
+import { toast } from "sonner";
 
 type SocialLoginButtonsProps = {
   onSocialLogin: (provider: string) => void;
 };
 
 const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
+  const handleGoogleSignIn = () => {
+    // Check if we're in development mode, show a helpful message
+    if (process.env.NODE_ENV === 'development') {
+      toast.info("Make sure Google provider is enabled in Supabase Auth settings", {
+        duration: 5000,
+        action: {
+          label: 'Learn More',
+          onClick: () => window.open('https://supabase.com/dashboard/project/ihijlloxwfjrrnhxqlfa/auth/providers', '_blank')
+        }
+      });
+    }
+    
+    onSocialLogin('google');
+  };
+
   return (
     <div className="grid gap-2">
       <Button 
         variant="outline" 
         className="w-full justify-start" 
-        onClick={() => onSocialLogin('google')}
+        onClick={handleGoogleSignIn}
       >
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
           <path

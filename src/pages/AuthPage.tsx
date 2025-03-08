@@ -18,10 +18,13 @@ import AuthPageLayout from '@/components/auth/AuthPageLayout';
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, authError } = useAuth();
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'reset-password'>('login');
-  const [authError, setAuthError] = useState<string | null>(null);
+  const [localAuthError, setLocalAuthError] = useState<string | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
+
+  // Combine both auth context errors and local component errors
+  const displayError = localAuthError || authError;
 
   useEffect(() => {
     // Set a timeout to stop showing loading state even if auth context is still loading
@@ -40,7 +43,13 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      const from = location.state?.from || '/app';
+      // Check if there's a saved redirect path
+      const redirectPath = localStorage.getItem('redirectAfterLogin') || '/app';
+      localStorage.removeItem('redirectAfterLogin'); // Clear the stored path
+      
+      // Or use the location state if available
+      const from = location.state?.from || redirectPath;
+      
       navigate(from, { replace: true });
       toast.success("You are now signed in!");
     }
@@ -48,7 +57,7 @@ const AuthPage = () => {
 
   // Clear error when changing auth mode
   useEffect(() => {
-    setAuthError(null);
+    setLocalAuthError(null);
   }, [authMode]);
 
   return (
@@ -57,7 +66,7 @@ const AuthPage = () => {
         <AuthHeader authMode={authMode} />
       </motion.div>
       
-      <AuthError error={authError} />
+      <AuthError error={displayError} />
       <DevModeAlert />
       
       {pageLoading ? (
@@ -67,7 +76,7 @@ const AuthPage = () => {
           <AuthContainer 
             authMode={authMode} 
             setAuthMode={setAuthMode}
-            setAuthError={setAuthError}
+            setAuthError={setLocalAuthError}
           />
         </motion.div>
       )}
