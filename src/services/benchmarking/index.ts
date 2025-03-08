@@ -3,7 +3,7 @@
 import { benchmarkingService } from './benchmarkingService';
 import { MockPredictionGenerator } from './mockPredictionGenerator';
 import { SimulationService } from './simulationService';
-import { ESGPrediction } from './types';
+import type { ESGPrediction } from './types';
 
 export { 
   benchmarkingService,
