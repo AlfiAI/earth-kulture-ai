@@ -1,5 +1,4 @@
 
-import { toast } from "sonner";
 import { 
   ESGDataPoint, 
   CarbonEmission, 
@@ -8,25 +7,25 @@ import {
   ESGScore,
   ESGReport
 } from './types/esgTypes';
-import { esgDataCoreService } from './core/esgDataService';
-import { carbonService } from './carbon/carbonService';
-import { complianceService } from './compliance/complianceService';
-import { reportingService } from './reporting/reportingService';
+import { coreEsgService } from './esg/core/coreEsgService';
+import { carbonEsgService } from './esg/carbon/carbonEsgService';
+import { complianceEsgService } from './esg/compliance/complianceEsgService';
+import { reportingEsgService } from './esg/reporting/reportingEsgService';
 
 // Facade service that coordinates all ESG data operations
 class ESGDataService {
   // ESG Data Methods
   getAllESGData(): Promise<ESGDataPoint[]> {
-    return esgDataCoreService.getAllESGData();
+    return coreEsgService.getAllESGData();
   }
 
   processESGData(data: Partial<ESGDataPoint>): Promise<ESGDataPoint> {
-    return esgDataCoreService.processESGData(data);
+    return coreEsgService.processESGData(data);
   }
 
   // Carbon Methods
   getCarbonEmissions(): Promise<CarbonEmission[]> {
-    return carbonService.getCarbonEmissions();
+    return carbonEsgService.getCarbonEmissions();
   }
 
   calculateCarbonFootprint(emissions: CarbonEmission[]): { 
@@ -35,12 +34,12 @@ class ESGDataService {
     scope3: number, 
     total: number 
   } {
-    return carbonService.calculateCarbonFootprint(emissions);
+    return carbonEsgService.calculateCarbonFootprint(emissions);
   }
 
   // Compliance Methods
   getComplianceFrameworks(): Promise<ComplianceFramework[]> {
-    return complianceService.getComplianceFrameworks();
+    return complianceEsgService.getComplianceFrameworks();
   }
 
   // Reporting and Analytics Methods
@@ -49,7 +48,7 @@ class ESGDataService {
     emissions: CarbonEmission[], 
     frameworks: ComplianceFramework[]
   ): Promise<AIInsight[]> {
-    return reportingService.generateESGInsights(esgData, emissions, frameworks);
+    return reportingEsgService.generateESGInsights(esgData, emissions, frameworks);
   }
 
   calculateESGScore(
@@ -57,7 +56,7 @@ class ESGDataService {
     emissions: CarbonEmission[], 
     frameworks: ComplianceFramework[]
   ): Promise<ESGScore> {
-    return reportingService.calculateESGScore(esgData, emissions, frameworks);
+    return reportingEsgService.calculateESGScore(esgData, emissions, frameworks);
   }
 
   generateESGReport(params: {
@@ -65,7 +64,7 @@ class ESGDataService {
     frameworks: string[],
     focusAreas: string[]
   }): Promise<ESGReport> {
-    return reportingService.generateESGReport(params);
+    return reportingEsgService.generateESGReport(params);
   }
 }
 
