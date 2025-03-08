@@ -72,8 +72,9 @@ class PredictionTestingService {
         });
       }
       
-      // Store results for later analysis
-      await this.storeAccuracyResults(results);
+      // In a real implementation, we would store the results
+      // For demo purposes, we'll log them and return them
+      console.log("Prediction accuracy test results:", results);
       
       toast.success(`Tested accuracy of ${results.length} predictions`);
       return results;
@@ -128,8 +129,9 @@ class PredictionTestingService {
         });
       }
       
-      // Store results for later analysis
-      await this.storeAnomalyResults(results);
+      // In a real implementation, we would store the results
+      // For demo purposes, we'll log them and return them
+      console.log("Anomaly detection test results:", results);
       
       toast.success(`Tested anomaly detection on ${results.length} data points`);
       return results;
@@ -227,48 +229,54 @@ class PredictionTestingService {
   }
   
   /**
-   * Store accuracy results
+   * Store accuracy results (commented out since table doesn't exist yet)
    */
   private async storeAccuracyResults(results: PredictionAccuracyResult[]): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('esg_prediction_accuracy')
-        .insert(results.map(result => ({
-          prediction_id: result.predictionId,
-          actual_value: result.actualValue,
-          predicted_value: result.predictedValue,
-          error: result.error,
-          error_percentage: result.errorPercentage,
-          category: result.category,
-          test_timestamp: new Date().toISOString()
-        })));
-      
-      if (error) throw error;
+      // We'll just log for now instead of storing in potentially non-existent tables
+      console.log("Would store prediction accuracy results:", results);
+      // In a real implementation with tables created:
+      // const { error } = await supabase
+      //   .from('esg_prediction_accuracy')
+      //   .insert(results.map(result => ({
+      //     prediction_id: result.predictionId,
+      //     actual_value: result.actualValue,
+      //     predicted_value: result.predictedValue,
+      //     error: result.error,
+      //     error_percentage: result.errorPercentage,
+      //     category: result.category,
+      //     test_timestamp: new Date().toISOString()
+      //   })));
+      // 
+      // if (error) throw error;
     } catch (error) {
       console.error("Error storing accuracy results:", error);
     }
   }
   
   /**
-   * Store anomaly detection results
+   * Store anomaly detection results (commented out since table doesn't exist yet)
    */
   private async storeAnomalyResults(results: AnomalyDetectionResult[]): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('esg_anomaly_detection')
-        .insert(results.map(result => ({
-          data_point_id: result.dataPointId,
-          is_anomaly: result.isAnomaly,
-          confidence: result.confidence,
-          expected_lower: result.expectedRange[0],
-          expected_upper: result.expectedRange[1],
-          actual_value: result.actualValue,
-          deviation: result.deviation,
-          category: result.category,
-          test_timestamp: new Date().toISOString()
-        })));
-      
-      if (error) throw error;
+      // We'll just log for now instead of storing in potentially non-existent tables
+      console.log("Would store anomaly detection results:", results);
+      // In a real implementation with tables created:
+      // const { error } = await supabase
+      //   .from('esg_anomaly_detection')
+      //   .insert(results.map(result => ({
+      //     data_point_id: result.dataPointId,
+      //     is_anomaly: result.isAnomaly,
+      //     confidence: result.confidence,
+      //     expected_lower: result.expectedRange[0],
+      //     expected_upper: result.expectedRange[1],
+      //     actual_value: result.actualValue,
+      //     deviation: result.deviation,
+      //     category: result.category,
+      //     test_timestamp: new Date().toISOString()
+      //   })));
+      // 
+      // if (error) throw error;
     } catch (error) {
       console.error("Error storing anomaly results:", error);
     }
