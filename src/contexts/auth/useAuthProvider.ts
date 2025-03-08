@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -13,7 +12,6 @@ export const useAuthProvider = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch user profile from Supabase
   const fetchUserProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
@@ -34,19 +32,16 @@ export const useAuthProvider = () => {
     }
   };
 
-  // Initialize auth session
   useEffect(() => {
     const fetchSession = async () => {
       setIsLoading(true);
       
       try {
-        // Check for hash fragment in URL which could indicate a redirect from OAuth
         const hasHashParams = window.location.hash && window.location.hash.length > 0;
         if (hasHashParams) {
           console.log("Hash params detected, handling auth redirect");
         }
         
-        // Get the current session
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -56,19 +51,16 @@ export const useAuthProvider = () => {
           setSession(session);
           setUser(session?.user || null);
           
-          // If we have a user, fetch their profile
           if (session?.user) {
             const profileData = await fetchUserProfile(session.user.id);
             if (profileData) {
-              // Map profile data to UserProfile type
               setUserProfile({
                 id: profileData.id,
-                email: session.user.email || '', // Use email from session user
+                email: session.user.email || '',
                 full_name: profileData.full_name || '',
                 avatar_url: profileData.avatar_url || ''
               });
             } else {
-              // Create a minimal profile if none exists
               setUserProfile({
                 id: session.user.id,
                 email: session.user.email || '',
@@ -81,34 +73,28 @@ export const useAuthProvider = () => {
       } catch (error) {
         console.error("Unexpected error in auth initialization:", error);
       } finally {
-        // Always set loading to false, even if there was an error
         setIsLoading(false);
       }
     };
     
-    // Fetch the session immediately
     fetchSession();
     
-    // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
         console.log("Auth state changed:", event);
         setSession(newSession);
         setUser(newSession?.user || null);
         
-        // Handle user profile when session changes
         if (newSession?.user) {
           const profileData = await fetchUserProfile(newSession.user.id);
           if (profileData) {
-            // Map to UserProfile type
             setUserProfile({
               id: profileData.id,
-              email: newSession.user.email || '', // Use email from session user
+              email: newSession.user.email || '',
               full_name: profileData.full_name || '',
               avatar_url: profileData.avatar_url || ''
             });
           } else {
-            // Create a minimal profile if none exists
             setUserProfile({
               id: newSession.user.id,
               email: newSession.user.email || '',
@@ -120,7 +106,6 @@ export const useAuthProvider = () => {
           setUserProfile(null);
         }
         
-        // Redirect logic
         if (event === 'SIGNED_IN') {
           navigate('/dashboard');
           toast.success("Login successful!");
@@ -135,22 +120,18 @@ export const useAuthProvider = () => {
       }
     );
     
-    // Set a timeout to stop showing loading state even if there's an issue
     const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
     }, 5000);
     
-    // Cleanup subscription and timeout
     return () => {
       subscription.unsubscribe();
       clearTimeout(loadingTimeout);
     };
   }, [navigate]);
   
-  // Authentication methods
   const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     try {
-      // Special handling for demo account
       if (email === 'demo@example.com' && password === 'password123') {
         console.log("Using demo account credentials");
       }
@@ -159,10 +140,9 @@ export const useAuthProvider = () => {
         email, 
         password,
         options: {
-          // Control session duration based on rememberMe checkbox
-          // Default session duration is 1 hour (3600 seconds)
-          // Extended session (if rememberMe) is 30 days (2592000 seconds)
-          expiresIn: rememberMe ? 2592000 : 3600
+          session: {
+            expiresIn: rememberMe ? 2592000 : 3600
+          }
         }
       });
       
@@ -170,7 +150,6 @@ export const useAuthProvider = () => {
     } catch (error: any) {
       console.error("Error signing in:", error);
       
-      // Provide more helpful error messages
       if (error.message.includes("Invalid login credentials")) {
         toast.error("Invalid email or password. Please try again.");
       } else {
@@ -182,7 +161,6 @@ export const useAuthProvider = () => {
   
   const signUp = async (email: string, password: string) => {
     try {
-      // Get the current site URL dynamically
       const currentUrl = window.location.origin;
       const { error } = await supabase.auth.signUp({ 
         email, 
@@ -201,7 +179,6 @@ export const useAuthProvider = () => {
     } catch (error: any) {
       console.error("Error signing up:", error);
       
-      // Provide more specific error messages
       if (error.message.includes("User already registered")) {
         toast.error("This email is already registered. Please sign in instead.");
       } else {
@@ -213,7 +190,6 @@ export const useAuthProvider = () => {
   
   const signInWithGoogle = async () => {
     try {
-      // Get the current site URL dynamically
       const currentUrl = window.location.origin;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -242,7 +218,6 @@ export const useAuthProvider = () => {
 
   const resetPassword = async (email: string) => {
     try {
-      // Get the current site URL dynamically
       const currentUrl = window.location.origin;
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${currentUrl}/auth`,
