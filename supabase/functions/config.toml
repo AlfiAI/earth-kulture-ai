@@ -4,7 +4,7 @@
 
 project_id = "ihijlloxwfjrrnhxqlfa"
 
-# Define functions
+# Define functions with their own configuration sections
 [functions.esg-scraper]
 verify_jwt = false
 
@@ -14,11 +14,11 @@ verify_jwt = false
 [functions.setup-esg-cron]
 verify_jwt = false
 
+# Define server port
+[functions.serve]
+port = 54335
+
 # Configure Deno for edge functions
 [functions]
 node_modules = false
 import_map = "./import_map.json"
-
-# Define the port for the server
-[functions.serve]
-port = 54335
