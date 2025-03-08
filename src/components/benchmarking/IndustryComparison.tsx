@@ -13,6 +13,13 @@ interface IndustryComparisonProps {
   description?: string;
 }
 
+// Default industries for benchmarking
+const defaultIndustries = [
+  { id: 'your_company', name: 'Your Company' },
+  { id: 'industry_avg', name: 'Industry Average' },
+  { id: 'top_performer', name: 'Top Performer' }
+];
+
 const IndustryComparison = ({ 
   title = "Industry ESG Comparison", 
   description = "Compare your ESG performance against industry benchmarks"
@@ -37,6 +44,22 @@ const IndustryComparison = ({
     fetchData();
   }, [activeTab]);
 
+  // Get display names and units for each category
+  const getCategoryInfo = (category: string) => {
+    switch (category) {
+      case 'esg':
+        return { title: 'ESG Score', unit: 'Points', metricName: 'esg score' };
+      case 'carbon':
+        return { title: 'Carbon Emissions', unit: 'tCO2e', metricName: 'carbon emissions' };
+      case 'compliance':
+        return { title: 'Compliance', unit: '%', metricName: 'compliance score' };
+      case 'financial':
+        return { title: 'Financial Impact', unit: '$', metricName: 'financial impact' };
+      default:
+        return { title: 'Metrics', unit: 'Value', metricName: 'metrics' };
+    }
+  };
+
   return (
     <Card className="shadow-md">
       <CardHeader className="pb-2">
@@ -55,33 +78,38 @@ const IndustryComparison = ({
         </div>
         
         <CardContent>
-          <TabsContent value="esg" className="mt-0 pt-4">
-            <BenchmarkHeader title="ESG Score" data={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFilters industry="all" metric="esg_score" />
-            <BenchmarkChart chartData={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFooter sourceText="ESG industry data" />
-          </TabsContent>
-          
-          <TabsContent value="carbon" className="mt-0 pt-4">
-            <BenchmarkHeader title="Carbon Emissions" data={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFilters industry="all" metric="carbon_emissions" />
-            <BenchmarkChart chartData={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFooter sourceText="Carbon emissions data" />
-          </TabsContent>
-          
-          <TabsContent value="compliance" className="mt-0 pt-4">
-            <BenchmarkHeader title="Compliance" data={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFilters industry="all" metric="compliance_score" />
-            <BenchmarkChart chartData={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFooter sourceText="Compliance data" />
-          </TabsContent>
-          
-          <TabsContent value="financial" className="mt-0 pt-4">
-            <BenchmarkHeader title="Financial Impact" data={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFilters industry="all" metric="financial_impact" />
-            <BenchmarkChart chartData={benchmarkData} isLoading={isLoading} />
-            <BenchmarkFooter sourceText="Financial impact data" />
-          </TabsContent>
+          {['esg', 'carbon', 'compliance', 'financial'].map(category => {
+            const { title: categoryTitle, unit, metricName } = getCategoryInfo(category);
+            
+            return (
+              <TabsContent key={category} value={category} className="mt-0 pt-4">
+                <BenchmarkHeader 
+                  title={categoryTitle} 
+                  data={benchmarkData} 
+                  isLoading={isLoading} 
+                />
+                
+                <BenchmarkFilters 
+                  industry="all" 
+                  metric={`${category}_metric`}
+                  industries={defaultIndustries}
+                />
+                
+                <BenchmarkChart 
+                  chartData={benchmarkData} 
+                  isLoading={isLoading}
+                  industries={defaultIndustries} 
+                />
+                
+                <BenchmarkFooter 
+                  sourceText={`${categoryTitle} industry data`}
+                  metricUnit={unit}
+                  performanceText="12% better"
+                  selectedMetricName={metricName}
+                />
+              </TabsContent>
+            );
+          })}
         </CardContent>
       </Tabs>
     </Card>

@@ -4,11 +4,21 @@ import { getIndustryColor } from "./benchmarkUtils";
 
 interface BenchmarkChartProps {
   chartData: any[];
-  industries: { id: string; name: string }[];
+  industries?: { id: string; name: string }[];
   isLoading: boolean;
 }
 
-const BenchmarkChart = ({ chartData, industries, isLoading }: BenchmarkChartProps) => {
+const defaultIndustries = [
+  { id: 'your_company', name: 'Your Company' },
+  { id: 'industry_avg', name: 'Industry Average' },
+  { id: 'top_performer', name: 'Top Performer' }
+];
+
+const BenchmarkChart = ({ 
+  chartData, 
+  industries = defaultIndustries, 
+  isLoading 
+}: BenchmarkChartProps) => {
   if (isLoading) {
     return (
       <div className="h-80 flex items-center justify-center">

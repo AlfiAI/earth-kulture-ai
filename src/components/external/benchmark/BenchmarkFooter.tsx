@@ -1,16 +1,16 @@
 
 interface BenchmarkFooterProps {
   sourceText: string;
-  metricUnit: string;
-  performanceText: string;
-  selectedMetricName: string;
+  metricUnit?: string;
+  performanceText?: string;
+  selectedMetricName?: string;
 }
 
 const BenchmarkFooter = ({ 
   sourceText, 
-  metricUnit, 
-  performanceText,
-  selectedMetricName
+  metricUnit = 'Value', 
+  performanceText = '12% better',
+  selectedMetricName = 'this metric'
 }: BenchmarkFooterProps) => {
   return (
     <div className="mt-4 text-sm">
@@ -22,7 +22,7 @@ const BenchmarkFooter = ({
       </div>
       
       <p className="mt-2">
-        Your company is <span className="font-semibold text-green-600">12% better</span> than 
+        Your company is <span className="font-semibold text-green-600">{performanceText}</span> than 
         the industry average for {selectedMetricName}.
       </p>
     </div>
