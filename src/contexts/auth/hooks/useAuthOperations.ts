@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { captureException } from "@/services/monitoring/errorTracking";
@@ -152,11 +151,11 @@ export const useAuthOperations = () => {
 
   const verifyMFA = async (token: string) => {
     try {
-      // The correct parameter for the challenge API is 'factorId' and 'code'
-      // not 'challenge'. The previous implementation was incorrect.
-      const { error } = await supabase.auth.mfa.challenge({
+      // The Supabase MFA API has changed, and we need to verify the token differently
+      // Instead of using challenge, we need to use verify
+      const { error } = await supabase.auth.mfa.verify({
         factorId: 'totp',
-        code: token  // Use 'code' instead of 'challenge'
+        code: token
       });
 
       if (error) throw error;
