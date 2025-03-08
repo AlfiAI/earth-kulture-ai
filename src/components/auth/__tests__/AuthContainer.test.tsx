@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@/tests/test-utils';
 import userEvent from '@testing-library/user-event';
 import AuthContainer from '../AuthContainer';
 import { supabase } from '@/integrations/supabase/client';
+import '@testing-library/jest-dom'; // Add this import to ensure the matchers are available
 
 // Mock auth hooks
 const mockSignIn = jest.fn();

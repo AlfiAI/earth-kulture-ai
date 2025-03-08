@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@/tests/test-utils';
 import userEvent from '@testing-library/user-event';
 import AuthPage from '../AuthPage';
 import { supabase } from '@/integrations/supabase/client';
+import '@testing-library/jest-dom'; // Add this import to ensure the matchers are available
 
 // Mock useNavigate
 const mockNavigate = jest.fn();

@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@/tests/test-utils';
 import { useAuth, AuthProvider } from '../AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import React from 'react';
+import '@testing-library/jest-dom'; // Add this import to ensure the matchers are available
 
 // Mock supabase
 jest.mock('@/integrations/supabase/client', () => ({
