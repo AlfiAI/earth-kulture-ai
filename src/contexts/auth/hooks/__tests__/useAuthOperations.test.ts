@@ -13,6 +13,12 @@ jest.mock('@/integrations/supabase/client', () => ({
       signInWithOAuth: jest.fn(),
       signOut: jest.fn(),
       resetPasswordForEmail: jest.fn(),
+      mfa: {
+        enroll: jest.fn(),
+        challenge: jest.fn(),
+        verify: jest.fn(),
+        unenroll: jest.fn(),
+      }
     },
   },
 }));
@@ -41,9 +47,6 @@ describe('useAuthOperations', () => {
       expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'password123',
-        options: {
-          captchaToken: undefined
-        }
       });
       
       // Check localStorage was set for "remember me"
@@ -110,7 +113,7 @@ describe('useAuthOperations', () => {
     });
   });
 
-  // Additional tests for other authentication operations
+  // Additional test for resetPassword
   describe('resetPassword', () => {
     it('should call supabase.auth.resetPasswordForEmail with correct parameters', async () => {
       (supabase.auth.resetPasswordForEmail as jest.Mock).mockResolvedValueOnce({ error: null });
@@ -132,6 +135,22 @@ describe('useAuthOperations', () => {
       
       // Restore original location
       Object.defineProperty(window, 'location', { value: originalLocation });
+    });
+  });
+
+  // Add basic tests for MFA operations
+  describe('MFA operations', () => {
+    it('should handle MFA setup', async () => {
+      (supabase.auth.mfa.enroll as jest.Mock).mockResolvedValueOnce({ 
+        data: { totp: { qr_code: 'qr-data', secret: 'secret-code' } },
+        error: null 
+      });
+      
+      const { result } = renderHook(() => useAuthOperations());
+      const mfaData = await result.current.setupMFA();
+      
+      expect(supabase.auth.mfa.enroll).toHaveBeenCalledWith({ factorType: 'totp' });
+      expect(mfaData).toEqual({ qr: 'qr-data', secret: 'secret-code' });
     });
   });
 });
