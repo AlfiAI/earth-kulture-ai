@@ -53,25 +53,45 @@ class AIBenchmarkingService {
 
       return data.map(result => {
         // Safely transform recommendations JSON
-        const rawRecommendations = result.recommendations as Record<string, any>[] || [];
-        const recommendations: AIBenchmarkRecommendation[] = Array.isArray(rawRecommendations)
-          ? rawRecommendations.map(rec => ({
-              title: rec.title || '',
-              description: rec.description || '',
-              impact: (rec.impact as 'high' | 'medium' | 'low') || 'medium'
-            }))
-          : [];
+        let recommendations: AIBenchmarkRecommendation[] = [];
+        try {
+          if (result.recommendations) {
+            const rawRecommendations = typeof result.recommendations === 'string' 
+              ? JSON.parse(result.recommendations) 
+              : result.recommendations;
+              
+            if (Array.isArray(rawRecommendations)) {
+              recommendations = rawRecommendations.map(rec => ({
+                title: rec.title || '',
+                description: rec.description || '',
+                impact: (rec.impact as 'high' | 'medium' | 'low') || 'medium'
+              }));
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing recommendations:', e);
+        }
 
         // Safely transform comparison details JSON
-        const rawComparisons = result.comparison_details as Record<string, any>[] || [];
-        const comparisonDetails: AIBenchmarkComparison[] = Array.isArray(rawComparisons)
-          ? rawComparisons.map(comp => ({
-              metricName: comp.metricName || '',
-              yourValue: comp.yourValue || 0,
-              industryAvg: comp.industryAvg || 0,
-              difference: comp.difference || 0
-            }))
-          : [];
+        let comparisonDetails: AIBenchmarkComparison[] = [];
+        try {
+          if (result.comparison_details) {
+            const rawComparisons = typeof result.comparison_details === 'string'
+              ? JSON.parse(result.comparison_details)
+              : result.comparison_details;
+              
+            if (Array.isArray(rawComparisons)) {
+              comparisonDetails = rawComparisons.map(comp => ({
+                metricName: comp.metricName || '',
+                yourValue: comp.yourValue || 0,
+                industryAvg: comp.industryAvg || 0,
+                difference: comp.difference || 0
+              }));
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing comparison details:', e);
+        }
 
         return {
           id: result.id,
@@ -140,7 +160,7 @@ class AIBenchmarkingService {
       const trends = ['improving', 'stable', 'declining'];
       const trend = trends[Math.floor(Math.random() * trends.length)] as 'improving' | 'declining' | 'stable';
 
-      // Insert the benchmark result
+      // Insert the benchmark result - converting complex objects to JSON for Supabase
       const benchmarkData = {
         user_id: userId,
         category: request.category,
@@ -148,8 +168,8 @@ class AIBenchmarkingService {
         industry_average: industryAverage,
         percentile,
         trend,
-        comparison_details: comparisonDetails,
-        recommendations
+        comparison_details: comparisonDetails as any, // Cast to any to avoid type errors
+        recommendations: recommendations as any // Cast to any to avoid type errors
       };
 
       const { data, error } = await supabase

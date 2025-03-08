@@ -36,15 +36,25 @@ class ComplianceAlertService {
       }
 
       return data.map(alert => {
-        // Type cast and safely handle the JSON data
-        const steps = alert.resolution_steps as Record<string, any>[] || [];
-        const resolutionSteps: ResolutionStep[] = Array.isArray(steps) 
-          ? steps.map(step => ({
-              step: step.step || '',
-              description: step.description || '',
-              completed: step.completed || false
-            }))
-          : [];
+        // Safely parse and transform resolution steps from JSON
+        let resolutionSteps: ResolutionStep[] = [];
+        try {
+          if (alert.resolution_steps) {
+            const rawSteps = typeof alert.resolution_steps === 'string'
+              ? JSON.parse(alert.resolution_steps)
+              : alert.resolution_steps;
+              
+            if (Array.isArray(rawSteps)) {
+              resolutionSteps = rawSteps.map(step => ({
+                step: step.step || '',
+                description: step.description || '',
+                completed: step.completed || false
+              }));
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing resolution steps:', e);
+        }
           
         return {
           id: alert.id,
@@ -54,7 +64,7 @@ class ComplianceAlertService {
           createdAt: new Date(alert.created_at).toISOString(),
           status: alert.status as 'active' | 'resolved' | 'ignored',
           framework: alert.compliance_framework,
-          resolutionSteps: resolutionSteps,
+          resolutionSteps,
           resolvedAt: alert.resolved_at ? new Date(alert.resolved_at).toISOString() : undefined,
         };
       });
@@ -111,7 +121,7 @@ class ComplianceAlertService {
       const { error } = await supabase
         .from('esg_compliance_alerts')
         .update({
-          resolution_steps: stepsForDb
+          resolution_steps: stepsForDb as any // Cast to any to avoid type errors with Supabase
         })
         .eq('id', alertId);
 
