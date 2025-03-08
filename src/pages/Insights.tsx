@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InsightCard from "@/components/dashboard/InsightCard";
-import WalyAssistant from "@/components/ai/WalyAssistant";
+import EnhancedWalyAssistant from "@/components/ai/EnhancedWalyAssistant";
 import { Download, Filter, Zap, RefreshCw } from 'lucide-react';
 
 // Sample insights data
@@ -147,11 +147,11 @@ const Insights = () => {
               <div className="flex-1">
                 <h2 className="text-xl font-semibold mb-1">AI-Powered ESG Insights</h2>
                 <p className="text-muted-foreground mb-3">
-                  Waly analyzes your sustainability data to provide valuable insights, trend detection, and actionable recommendations.
+                  Waly Pro analyzes your sustainability data using DeepSeek-R1 to provide advanced insights, trend detection, and actionable recommendations.
                 </p>
                 <Button variant="default" size="sm" className="gap-1">
                   <Zap className="h-4 w-4" />
-                  <span>Ask Waly a Question</span>
+                  <span>Ask Waly Pro a Question</span>
                 </Button>
               </div>
             </div>
@@ -234,7 +234,7 @@ const Insights = () => {
         </main>
       </div>
       
-      <WalyAssistant initialOpen={false} />
+      <EnhancedWalyAssistant initialOpen={false} />
     </div>
   );
 };

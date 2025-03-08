@@ -1,8 +1,7 @@
-
 import { toast } from "sonner";
 import { esgDataService } from '@/services/esgDataService';
 import { MessageProps } from '@/components/ai/Message';
-import { deepseekService } from './deepseekService';
+import { deepseekR1Service } from './deepseekR1Service';
 
 // AI context data for enhanced responses
 export const aiContext = {
@@ -22,6 +21,9 @@ export const aiContext = {
     'Risk assessment',
     'Benchmarking',
     'Trend detection',
+    'Predictive analytics',
+    'Industry comparison',
+    'Goal setting automation',
   ],
   knowledge: {
     scope1: 'Direct emissions from owned or controlled sources',
@@ -30,22 +32,66 @@ export const aiContext = {
     esg: 'Environmental, Social, and Governance criteria used to evaluate company performance',
     ghgProtocol: 'Global standardized frameworks for measuring and managing greenhouse gas emissions',
     carbonIntensity: 'The amount of carbon emitted per unit of activity, production, or revenue',
+    scienceBasedTargets: 'Emissions reduction targets in line with what latest climate science says is necessary to meet Paris Agreement goals',
+    circularEconomy: 'An economic system aimed at eliminating waste and the continual use of resources',
+  },
+  conversationMemory: {
+    recentTopics: [],
+    userPreferences: {},
+    activeContexts: []
   }
 };
 
 export class WalyAIService {
-  // Enhanced AI processing function using DeepSeek API
+  // Track conversation context for improved responses
+  private conversationContext = {
+    recentTopics: [] as string[],
+    userPreferences: {} as Record<string, any>,
+    lastQuery: '',
+    sessionStartTime: new Date()
+  };
+
+  // Enhanced AI processing function using DeepSeek R1 API
   async processQuery(query: string, messageHistory: MessageProps[] = []): Promise<string> {
     try {
+      // Update conversation context
+      this.updateConversationContext(query, messageHistory);
+      
       // Process the query using DeepSeek R1 API
-      const response = await deepseekService.processQuery(query, messageHistory);
+      const response = await deepseekR1Service.processQuery(query, messageHistory);
       return response;
     } catch (error) {
-      console.error('Error processing query with DeepSeek:', error);
+      console.error('Error processing query with DeepSeek R1:', error);
       
       // Fallback to legacy processing
       return this.legacyProcessQuery(query);
     }
+  }
+  
+  // Update conversation context for improved contextual understanding
+  private updateConversationContext(query: string, messageHistory: MessageProps[]): void {
+    // Save the current query
+    this.conversationContext.lastQuery = query;
+    
+    // Extract intent from the query
+    const intent = deepseekR1Service.categorizeIntent(query);
+    
+    // Update recent topics (keep last 5)
+    this.conversationContext.recentTopics.unshift(intent);
+    if (this.conversationContext.recentTopics.length > 5) {
+      this.conversationContext.recentTopics.pop();
+    }
+    
+    // Extract and update user preferences based on query and history
+    if (query.toLowerCase().includes('prefer') || query.toLowerCase().includes('like')) {
+      // Simple preference extraction, could be enhanced
+      const preference = query.split(' ').slice(-1)[0].toLowerCase();
+      this.conversationContext.userPreferences[preference] = true;
+    }
+    
+    // Update aiContext for potential future use
+    aiContext.conversationMemory.recentTopics = this.conversationContext.recentTopics;
+    aiContext.conversationMemory.userPreferences = this.conversationContext.userPreferences;
   }
   
   // Legacy processing function (kept as fallback)
@@ -170,6 +216,16 @@ What specific area would you like assistance with today?`;
     return {
       id: '1',
       content: "Hello! I'm Waly, your ESG & Carbon Intelligence Assistant. I can help with sustainability reporting, carbon footprint analysis, ESG compliance, and more. How can I assist you today?",
+      sender: 'ai',
+      timestamp: new Date(),
+    };
+  }
+  
+  // Get enhanced welcome message
+  getEnhancedWelcomeMessage(): MessageProps {
+    return {
+      id: '1',
+      content: "Hello! I'm Waly Pro, your enhanced ESG & Carbon Intelligence Assistant. I now offer advanced benchmarking, predictive analytics, and industry comparisons. How can I assist you today?",
       sender: 'ai',
       timestamp: new Date(),
     };

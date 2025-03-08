@@ -1,5 +1,5 @@
 
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import ChatHeader from './ChatHeader';

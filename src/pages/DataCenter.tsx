@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
-import WalyAssistant from "@/components/ai/WalyAssistant";
+import EnhancedWalyAssistant from "@/components/ai/EnhancedWalyAssistant";
 import DataHeader from "@/components/data/DataHeader";
 import DataSourceCard from "@/components/data/DataSourceCard";
 import DataValidation from "@/components/data/DataValidation";
@@ -44,7 +44,7 @@ const DataCenter = () => {
         </main>
       </div>
       
-      <WalyAssistant initialOpen={false} />
+      <EnhancedWalyAssistant initialOpen={false} />
     </div>
   );
 };
