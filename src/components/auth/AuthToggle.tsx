@@ -1,20 +1,31 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 
 type AuthToggleProps = {
-  authMode: 'login' | 'signup';
-  setAuthMode: React.Dispatch<React.SetStateAction<'login' | 'signup'>>;
+  authMode: 'login' | 'signup' | 'reset-password';
+  setAuthMode: React.Dispatch<React.SetStateAction<'login' | 'signup' | 'reset-password'>>;
 };
 
 const AuthToggle = ({ authMode, setAuthMode }: AuthToggleProps) => {
+  // Don't show toggle on reset-password screen
+  if (authMode === 'reset-password') {
+    return null;
+  }
+
   return (
-    <div className="text-center text-sm">
+    <motion.div 
+      className="text-center text-sm"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", damping: 25, stiffness: 500, delay: 0.2 }}
+    >
       {authMode === 'login' ? (
         <p>
           Don't have an account?{" "}
           <button 
             onClick={() => setAuthMode('signup')} 
-            className="text-primary hover:underline font-medium"
+            className="text-primary hover:underline font-medium transition-colors"
           >
             Sign up
           </button>
@@ -24,13 +35,13 @@ const AuthToggle = ({ authMode, setAuthMode }: AuthToggleProps) => {
           Already have an account?{" "}
           <button 
             onClick={() => setAuthMode('login')} 
-            className="text-primary hover:underline font-medium"
+            className="text-primary hover:underline font-medium transition-colors"
           >
             Sign in
           </button>
         </p>
       )}
-    </div>
+    </motion.div>
   );
 };
 

@@ -148,14 +148,24 @@ export const useAuthProvider = () => {
   }, [navigate]);
   
   // Authentication methods
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     try {
       // Special handling for demo account
       if (email === 'demo@example.com' && password === 'password123') {
         console.log("Using demo account credentials");
       }
       
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password,
+        options: {
+          // Control session duration based on rememberMe checkbox
+          // Default session duration is 1 hour (3600 seconds)
+          // Extended session (if rememberMe) is 30 days (2592000 seconds)
+          expiresIn: rememberMe ? 2592000 : 3600
+        }
+      });
+      
       if (error) throw error;
     } catch (error: any) {
       console.error("Error signing in:", error);
@@ -230,6 +240,24 @@ export const useAuthProvider = () => {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      // Get the current site URL dynamically
+      const currentUrl = window.location.origin;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${currentUrl}/auth`,
+      });
+      
+      if (error) throw error;
+      
+      toast.success("Password reset instructions sent to your email");
+    } catch (error: any) {
+      console.error("Error resetting password:", error);
+      toast.error(error.message || "Failed to send password reset email");
+      throw error;
+    }
+  };
+
   return {
     session,
     user,
@@ -240,5 +268,6 @@ export const useAuthProvider = () => {
     signUp,
     signInWithGoogle,
     signOut,
+    resetPassword,
   };
 };
