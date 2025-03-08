@@ -34,6 +34,7 @@ class RegulationService {
         throw new Error("Invalid response format from ESG regulations query");
       }
       
+      // Use type assertion to handle the conversion
       return data as unknown as ESGRegulation[];
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulations", {

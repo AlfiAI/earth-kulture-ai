@@ -14,6 +14,10 @@ verify_jwt = false
 [functions.setup-esg-cron]
 verify_jwt = false
 
-# Configure imported paths correctly
+# Configure function settings
 [functions]
+# Port to use for the Deno CLI
 port = 54335
+
+[functions.imported_paths]
+supabase = "https://esm.sh/@supabase/supabase-js@2"
