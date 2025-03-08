@@ -54,17 +54,36 @@ class AIBenchmarkingService {
         throw error;
       }
 
-      return data.map(result => ({
-        id: result.id,
-        category: result.category,
-        score: result.score,
-        industryAverage: result.industry_average,
-        percentile: result.percentile,
-        trend: result.trend as 'improving' | 'declining' | 'stable',
-        date: new Date(result.benchmark_date).toISOString(),
-        recommendations: result.recommendations || [],
-        comparisonDetails: result.comparison_details || []
-      }));
+      return data.map(result => {
+        const recommendations = Array.isArray(result.recommendations) 
+          ? result.recommendations.map((rec: any) => ({
+              title: rec.title || '',
+              description: rec.description || '',
+              impact: (rec.impact as 'high' | 'medium' | 'low') || 'medium'
+            }))
+          : [];
+          
+        const comparisonDetails = Array.isArray(result.comparison_details)
+          ? result.comparison_details.map((detail: any) => ({
+              metricName: detail.metricName || '',
+              yourValue: detail.yourValue || 0,
+              industryAvg: detail.industryAvg || 0,
+              difference: detail.difference || 0
+            }))
+          : [];
+          
+        return {
+          id: result.id,
+          category: result.category,
+          score: result.score,
+          industryAverage: result.industry_average,
+          percentile: result.percentile,
+          trend: result.trend as 'improving' | 'declining' | 'stable',
+          date: new Date(result.benchmark_date).toISOString(),
+          recommendations,
+          comparisonDetails
+        };
+      });
     } catch (error) {
       console.error('Error fetching benchmark results:', error);
       toast.error('Failed to load benchmark results');
@@ -159,8 +178,12 @@ class AIBenchmarkingService {
         percentile: data.percentile,
         trend: data.trend as 'improving' | 'declining' | 'stable',
         date: new Date(data.benchmark_date).toISOString(),
-        recommendations: data.recommendations,
-        comparisonDetails: data.comparison_details
+        recommendations: Array.isArray(data.recommendations) 
+          ? data.recommendations
+          : [],
+        comparisonDetails: Array.isArray(data.comparison_details)
+          ? data.comparison_details
+          : []
       };
     } catch (error) {
       console.error('Error running benchmark analysis:', error);

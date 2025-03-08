@@ -35,17 +35,23 @@ class ComplianceAlertService {
         throw error;
       }
 
-      return data.map(alert => ({
-        id: alert.id,
-        alertType: alert.alert_type,
-        severity: alert.severity as 'high' | 'medium' | 'low',
-        message: alert.message,
-        createdAt: new Date(alert.created_at).toISOString(),
-        status: alert.status as 'active' | 'resolved' | 'ignored',
-        framework: alert.compliance_framework,
-        resolutionSteps: alert.resolution_steps,
-        resolvedAt: alert.resolved_at ? new Date(alert.resolved_at).toISOString() : undefined,
-      }));
+      return data.map(alert => {
+        const resolutionSteps: ResolutionStep[] = Array.isArray(alert.resolution_steps) 
+          ? alert.resolution_steps 
+          : [];
+          
+        return {
+          id: alert.id,
+          alertType: alert.alert_type,
+          severity: alert.severity as 'high' | 'medium' | 'low',
+          message: alert.message,
+          createdAt: new Date(alert.created_at).toISOString(),
+          status: alert.status as 'active' | 'resolved' | 'ignored',
+          framework: alert.compliance_framework,
+          resolutionSteps: resolutionSteps,
+          resolvedAt: alert.resolved_at ? new Date(alert.resolved_at).toISOString() : undefined,
+        };
+      });
     } catch (error) {
       console.error('Error fetching compliance alerts:', error);
       toast.error('Failed to load compliance alerts');
@@ -89,10 +95,17 @@ class ComplianceAlertService {
    */
   async updateResolutionSteps(alertId: string, steps: ResolutionStep[]): Promise<boolean> {
     try {
+      // Convert to appropriate format for database
+      const stepsForDb = steps.map(step => ({
+        step: step.step,
+        description: step.description,
+        completed: step.completed || false
+      }));
+
       const { error } = await supabase
         .from('esg_compliance_alerts')
         .update({
-          resolution_steps: steps
+          resolution_steps: stepsForDb
         })
         .eq('id', alertId);
 

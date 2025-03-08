@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Lightbulb, AlertTriangle, Loader2, TrendingUp, Bar } from "lucide-react";
+import { Lightbulb, AlertTriangle, Loader2, TrendingUp, BarChart } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { riskPredictionService, RiskPrediction } from "@/services/ai/riskPredict
 import { complianceAlertService, ComplianceAlert } from "@/services/compliance/alertService";
 import { aiBenchmarkingService, AIBenchmarkResult } from "@/services/benchmarking/aiBenchmarkingService";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function AIInsights() {
   const [activeTab, setActiveTab] = useState("risks");
@@ -46,8 +47,9 @@ export default function AIInsights() {
     setIsLoading(true);
     try {
       // Mock data for demonstration
+      const userData = await supabase.auth.getUser();
       const demoRequest = {
-        userId: (await supabase.auth.getUser()).data.user?.id || 'test-user',
+        userId: userData.data.user?.id || 'test-user',
         category: 'carbon',
         dataPoints: [
           { metric: 'Scope 1 Emissions', value: 120, date: '2023-01-01' },
@@ -125,7 +127,7 @@ export default function AIInsights() {
               onClick={runDemoBenchmark}
               disabled={isLoading}
             >
-              <Bar className="mr-2 h-4 w-4" />
+              <BarChart className="mr-2 h-4 w-4" />
               Run Benchmark
             </Button>
             <Button 
@@ -246,7 +248,7 @@ export default function AIInsights() {
                   </CardHeader>
                   <CardContent>
                     <Button onClick={runDemoBenchmark}>
-                      <Bar className="mr-2 h-4 w-4" />
+                      <BarChart className="mr-2 h-4 w-4" />
                       Run Demo Benchmark
                     </Button>
                   </CardContent>

@@ -13,89 +13,96 @@ import {
   Lightbulb
 } from 'lucide-react';
 
-const SidebarNavigation = () => {
+interface SidebarNavigationProps {
+  open: boolean;
+  onToggle: () => void;
+}
+
+const SidebarNavigation = ({ open, onToggle }: SidebarNavigationProps) => {
   const location = useLocation();
 
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
+  const expanded = open;
+
   return (
     <div className="px-3 py-2">
       <div className="space-y-1">
         <NavItem 
-          href="/" 
+          to="/" 
           active={isActive('/')} 
           icon={<BarChart className="h-4 w-4" />}
-        >
-          Dashboard
-        </NavItem>
+          label="Dashboard"
+          expanded={expanded}
+        />
         
         <NavItem 
-          href="/analytics" 
+          to="/analytics" 
           active={isActive('/analytics')} 
           icon={<LineChart className="h-4 w-4" />}
-        >
-          Analytics
-        </NavItem>
+          label="Analytics"
+          expanded={expanded}
+        />
         
         <NavItem 
-          href="/data" 
+          to="/data" 
           active={isActive('/data')} 
           icon={<Database className="h-4 w-4" />}
-        >
-          Data
-        </NavItem>
+          label="Data"
+          expanded={expanded}
+        />
         
         <NavItem 
-          href="/ai-insights" 
+          to="/ai-insights" 
           active={isActive('/ai-insights')} 
           icon={<Lightbulb className="h-4 w-4" />}
-        >
-          AI Insights
-        </NavItem>
+          label="AI Insights"
+          expanded={expanded}
+        />
         
         <NavItem 
-          href="/reports" 
+          to="/reports" 
           active={isActive('/reports')} 
           icon={<FileText className="h-4 w-4" />}
-        >
-          Reports
-        </NavItem>
+          label="Reports"
+          expanded={expanded}
+        />
         
         <NavItem 
-          href="/goals" 
+          to="/goals" 
           active={isActive('/goals')} 
           icon={<GanttChart className="h-4 w-4" />}
-        >
-          Goals
-        </NavItem>
+          label="Goals"
+          expanded={expanded}
+        />
         
         <NavItem 
-          href="/compliance" 
+          to="/compliance" 
           active={isActive('/compliance')} 
           icon={<AlertTriangle className="h-4 w-4" />}
-        >
-          Compliance
-        </NavItem>
+          label="Compliance"
+          expanded={expanded}
+        />
         
         <NavItem 
-          href="/external-data" 
+          to="/external-data" 
           active={isActive('/external-data')} 
           icon={<ExternalLink className="h-4 w-4" />}
-        >
-          External Data
-        </NavItem>
+          label="External Data"
+          expanded={expanded}
+        />
       </div>
 
       <div className="pt-6">
         <NavItem 
-          href="/settings" 
+          to="/settings" 
           active={isActive('/settings')} 
           icon={<Settings className="h-4 w-4" />}
-        >
-          Settings
-        </NavItem>
+          label="Settings"
+          expanded={expanded}
+        />
       </div>
     </div>
   );
