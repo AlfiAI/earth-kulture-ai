@@ -63,4 +63,4 @@ class RiskPredictionService {
 }
 
 export const riskPredictionService = new RiskPredictionService();
-export { RiskPrediction, RiskFactor, RiskPredictionDetail, ESGRiskPredictionRequest } from './types/riskPredictionTypes';
+export type { RiskPrediction, RiskFactor, RiskPredictionDetail, ESGRiskPredictionRequest } from './types/riskPredictionTypes';
