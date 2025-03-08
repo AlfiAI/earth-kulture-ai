@@ -24,7 +24,7 @@ const ChatInput = ({ inputValue, setInputValue, handleSend, inputRef, placeholde
   };
 
   return (
-    <div className="p-3 border-t">
+    <div className="p-3 border-t chat-input">
       <div className="relative">
         <Textarea
           ref={textareaRef}
