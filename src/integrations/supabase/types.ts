@@ -274,6 +274,45 @@ export type Database = {
         }
         Relationships: []
       }
+      esg_benchmark_results: {
+        Row: {
+          benchmark_date: string
+          category: string
+          comparison_details: Json | null
+          id: string
+          industry_average: number
+          percentile: number | null
+          recommendations: Json | null
+          score: number
+          trend: string | null
+          user_id: string
+        }
+        Insert: {
+          benchmark_date?: string
+          category: string
+          comparison_details?: Json | null
+          id?: string
+          industry_average: number
+          percentile?: number | null
+          recommendations?: Json | null
+          score: number
+          trend?: string | null
+          user_id: string
+        }
+        Update: {
+          benchmark_date?: string
+          category?: string
+          comparison_details?: Json | null
+          id?: string
+          industry_average?: number
+          percentile?: number | null
+          recommendations?: Json | null
+          score?: number
+          trend?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       esg_benchmarks: {
         Row: {
           benchmark_name: string
@@ -355,6 +394,48 @@ export type Database = {
           report_url?: string | null
           report_year?: number | null
           social_score?: number | null
+        }
+        Relationships: []
+      }
+      esg_compliance_alerts: {
+        Row: {
+          alert_type: string
+          compliance_framework: string | null
+          created_at: string
+          id: string
+          message: string
+          resolution_steps: Json | null
+          resolved_at: string | null
+          severity: string
+          source_data: Json | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          alert_type: string
+          compliance_framework?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          resolution_steps?: Json | null
+          resolved_at?: string | null
+          severity: string
+          source_data?: Json | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          compliance_framework?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          resolution_steps?: Json | null
+          resolved_at?: string | null
+          severity?: string
+          source_data?: Json | null
+          status?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -447,6 +528,48 @@ export type Database = {
           tags?: string[] | null
           title?: string
           url?: string
+        }
+        Relationships: []
+      }
+      esg_risk_predictions: {
+        Row: {
+          confidence_level: number
+          id: string
+          is_critical: boolean
+          model_version: string
+          notification_sent: boolean
+          prediction_date: string
+          prediction_details: Json
+          risk_category: string
+          risk_score: number
+          training_data_range: Json | null
+          user_id: string
+        }
+        Insert: {
+          confidence_level: number
+          id?: string
+          is_critical?: boolean
+          model_version: string
+          notification_sent?: boolean
+          prediction_date?: string
+          prediction_details: Json
+          risk_category: string
+          risk_score: number
+          training_data_range?: Json | null
+          user_id: string
+        }
+        Update: {
+          confidence_level?: number
+          id?: string
+          is_critical?: boolean
+          model_version?: string
+          notification_sent?: boolean
+          prediction_date?: string
+          prediction_details?: Json
+          risk_category?: string
+          risk_score?: number
+          training_data_range?: Json | null
+          user_id?: string
         }
         Relationships: []
       }

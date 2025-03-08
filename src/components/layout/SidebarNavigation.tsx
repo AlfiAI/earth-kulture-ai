@@ -1,162 +1,103 @@
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
+import NavItem from './NavItem';
 import { 
-  LayoutDashboard, 
-  AreaChart, 
-  FileCheck, 
-  LightbulbIcon, 
+  BarChart, 
+  LineChart, 
+  FileText, 
   Settings, 
-  LogOut,
-  FileText,
   Database,
-  Bot,
-  BarChart3,
-  Target
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuth } from "@/contexts/auth"; // Updated import path
-import NavItem from "./NavItem";
-import { cn } from "@/lib/utils";
+  GanttChart,
+  ExternalLink,
+  AlertTriangle,
+  Lightbulb
+} from 'lucide-react';
 
-interface SidebarNavigationProps {
-  open: boolean;
-  onToggle: () => void;
-}
-
-const SidebarNavigation = ({ open, onToggle }: SidebarNavigationProps) => {
+const SidebarNavigation = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const { signOut } = useAuth();
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    if (isMobile && open) {
-      onToggle();
-    }
+  const isActive = (path: string) => {
+    return location.pathname === path;
   };
 
   return (
-    <>
+    <div className="px-3 py-2">
       <div className="space-y-1">
-        <NavItem
-          to="/dashboard"
-          label="Dashboard"
-          icon={<LayoutDashboard className="h-5 w-5" />}
-          active={location.pathname === '/dashboard'}
-          expanded={open}
-          onClick={() => handleNavigation('/dashboard')}
-        />
+        <NavItem 
+          href="/" 
+          active={isActive('/')} 
+          icon={<BarChart className="h-4 w-4" />}
+        >
+          Dashboard
+        </NavItem>
         
-        <NavItem
-          to="/benchmarks"
-          label="Benchmarking"
-          icon={<BarChart3 className="h-5 w-5" />}
-          active={location.pathname === '/benchmarks'}
-          expanded={open}
-          onClick={() => handleNavigation('/benchmarks')}
-        />
+        <NavItem 
+          href="/analytics" 
+          active={isActive('/analytics')} 
+          icon={<LineChart className="h-4 w-4" />}
+        >
+          Analytics
+        </NavItem>
         
-        <NavItem
-          to="/compliance"
-          label="Compliance"
-          icon={<FileCheck className="h-5 w-5" />}
-          active={location.pathname === '/compliance'}
-          expanded={open}
-          onClick={() => handleNavigation('/compliance')}
-        />
+        <NavItem 
+          href="/data" 
+          active={isActive('/data')} 
+          icon={<Database className="h-4 w-4" />}
+        >
+          Data
+        </NavItem>
         
-        <NavItem
-          to="/insights"
-          label="Insights"
-          icon={<LightbulbIcon className="h-5 w-5" />}
-          active={location.pathname === '/insights'}
-          expanded={open}
-          onClick={() => handleNavigation('/insights')}
-        />
+        <NavItem 
+          href="/ai-insights" 
+          active={isActive('/ai-insights')} 
+          icon={<Lightbulb className="h-4 w-4" />}
+        >
+          AI Insights
+        </NavItem>
         
-        <NavItem
-          to="/goals"
-          label="Goals"
-          icon={<Target className="h-5 w-5" />}
-          active={location.pathname === '/goals'}
-          expanded={open}
-          onClick={() => handleNavigation('/goals')}
-        />
+        <NavItem 
+          href="/reports" 
+          active={isActive('/reports')} 
+          icon={<FileText className="h-4 w-4" />}
+        >
+          Reports
+        </NavItem>
         
-        <NavItem
-          to="/reports"
-          label="Reports"
-          icon={<FileText className="h-5 w-5" />}
-          active={location.pathname === '/reports'}
-          expanded={open}
-          onClick={() => handleNavigation('/reports')}
-        />
+        <NavItem 
+          href="/goals" 
+          active={isActive('/goals')} 
+          icon={<GanttChart className="h-4 w-4" />}
+        >
+          Goals
+        </NavItem>
         
-        <NavItem
-          to="/data"
-          label="Data Center"
-          icon={<Database className="h-5 w-5" />}
-          active={location.pathname === '/data'}
-          expanded={open}
-          onClick={() => handleNavigation('/data')}
-        />
+        <NavItem 
+          href="/compliance" 
+          active={isActive('/compliance')} 
+          icon={<AlertTriangle className="h-4 w-4" />}
+        >
+          Compliance
+        </NavItem>
         
-        <NavItem
-          to="/analytics"
-          label="Analytics"
-          icon={<AreaChart className="h-5 w-5" />}
-          active={location.pathname === '/analytics'}
-          expanded={open}
-          onClick={() => handleNavigation('/analytics')}
-        />
+        <NavItem 
+          href="/external-data" 
+          active={isActive('/external-data')} 
+          icon={<ExternalLink className="h-4 w-4" />}
+        >
+          External Data
+        </NavItem>
       </div>
 
-      <div className="space-y-1 mt-auto">
-        <NavItem
-          to="/settings"
-          label="Settings"
-          icon={<Settings className="h-5 w-5" />}
-          active={location.pathname === '/settings'}
-          expanded={open}
-          onClick={() => handleNavigation('/settings')}
-        />
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "w-full justify-start",
-            open ? "px-3" : "px-0 justify-center"
-          )}
-          onClick={signOut}
+      <div className="pt-6">
+        <NavItem 
+          href="/settings" 
+          active={isActive('/settings')} 
+          icon={<Settings className="h-4 w-4" />}
         >
-          <LogOut className="h-5 w-5" />
-          {open && <span className="ml-2">Logout</span>}
-        </Button>
+          Settings
+        </NavItem>
       </div>
-
-      <div className="mt-6 border-t pt-4">
-        <Button
-          variant="outline"
-          size="sm"
-          className={cn(
-            "w-full",
-            open ? "justify-start px-3" : "justify-center px-0"
-          )}
-          onClick={() => {
-            const walyButton = document.querySelector('[class*="fixed right-4 bottom-4 rounded-full"]') as HTMLButtonElement;
-            if (walyButton) {
-              walyButton.click();
-            }
-          }}
-        >
-          <Bot className="h-5 w-5 text-primary" />
-          {open && <span className="ml-2">Ask Waly</span>}
-        </Button>
-      </div>
-    </>
+    </div>
   );
 };
 
