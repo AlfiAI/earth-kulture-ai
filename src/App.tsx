@@ -1,102 +1,155 @@
 
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, lazy, Suspense } from "react";
-import { AuthProvider } from "./contexts/auth";
-import { initErrorTracking } from "./services/monitoring/errorTracking";
-import { initAnalytics, trackPageView } from "./services/monitoring/analytics";
+import { Toaster as SonnerToaster } from "sonner";
 
-// Eager load components
-import LoadingSpinner from "./components/auth/LoadingSpinner";
+// Pages
+import AuthPage from "@/pages/AuthPage";
+import NotFound from "@/pages/NotFound";
+import Index from "@/pages/Index";
+import About from "@/pages/About";
+import Features from "@/pages/Features";
+import Landing from "@/pages/Landing";
+import DataCenter from "@/pages/DataCenter";
+import ExternalData from "@/pages/ExternalData";
+import Analytics from "@/pages/Analytics";
+import Compliance from "@/pages/Compliance";
+import Reports from "@/pages/Reports";
+import Goals from "@/pages/Goals";
+import BenchmarkDashboard from "@/pages/BenchmarkDashboard";
+import Insights from "@/pages/Insights";
+import Settings from "@/pages/Settings";
+import Pricing from "@/pages/Pricing";
+import Onboarding from "@/pages/Onboarding";
 
-// Lazy load pages for performance optimization
-const Index = lazy(() => import("./pages/Index"));
-const Landing = lazy(() => import("./pages/Landing"));
-const Compliance = lazy(() => import("./pages/Compliance"));
-const Insights = lazy(() => import("./pages/Insights"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const AuthPage = lazy(() => import("./pages/AuthPage"));
-const Onboarding = lazy(() => import("./pages/Onboarding"));
-const About = lazy(() => import("./pages/About"));
-const Features = lazy(() => import("./pages/Features"));
-const Pricing = lazy(() => import("./pages/Pricing"));
-const Reports = lazy(() => import("./pages/Reports"));
-const DataCenter = lazy(() => import("./pages/DataCenter"));
-const Analytics = lazy(() => import("./pages/Analytics"));
-const Settings = lazy(() => import("./pages/Settings"));
-const BenchmarkDashboard = lazy(() => import("./pages/BenchmarkDashboard"));
-const Goals = lazy(() => import("./pages/Goals"));
+// Auth Components
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { AuthProvider } from "@/contexts/auth";
 
-// Initialize error tracking and analytics
-initErrorTracking();
-initAnalytics();
+// UI/UX Components
+import WalyAssistant from "@/components/ai/WalyAssistant";
+import EnhancedWalyAssistant from "@/components/ai/EnhancedWalyAssistant";
 
-// Full-page spinner for lazy-loaded components
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <LoadingSpinner size="lg" />
-  </div>
-);
+import "./App.css";
 
-// Analytics Router tracker component
-const AnalyticsTracker = () => {
-  const location = useLocation();
-  
-  useEffect(() => {
-    trackPageView({
-      path: location.pathname,
-      title: document.title
-    });
-  }, [location]);
-  
-  return null;
-};
+function App() {
+  // Check if user is subscribed to Pro plan - this would typically come from user data
+  const userIsPro = true; // For demo purposes
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 30000,
-    },
-  },
-});
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
+  return (
+    <AuthProvider>
       <BrowserRouter>
-        <AuthProvider>
-          <AnalyticsTracker />
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/dashboard" element={<Index />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/compliance" element={<Compliance />} />
-              <Route path="/insights" element={<Insights />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/features" element={<Features />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/data" element={<DataCenter />} />
-              <Route path="/benchmarks" element={<BenchmarkDashboard />} />
-              <Route path="/goals" element={<Goals />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </AuthProvider>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/pricing" element={<Pricing />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <Onboarding />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/data"
+            element={
+              <ProtectedRoute>
+                <DataCenter />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/external-data"
+            element={
+              <ProtectedRoute>
+                <ExternalData />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/compliance"
+            element={
+              <ProtectedRoute>
+                <Compliance />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute>
+                <Reports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/goals"
+            element={
+              <ProtectedRoute>
+                <Goals />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/benchmarks"
+            element={
+              <ProtectedRoute>
+                <BenchmarkDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/insights"
+            element={
+              <ProtectedRoute>
+                <Insights />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+
+        {/* AI Assistant */}
+        {userIsPro ? <EnhancedWalyAssistant /> : <WalyAssistant />}
+
+        {/* Toast notifications */}
+        <Toaster />
+        <SonnerToaster position="bottom-right" />
       </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </AuthProvider>
+  );
+}
 
 export default App;
