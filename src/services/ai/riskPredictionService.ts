@@ -5,6 +5,7 @@ import { toast } from "sonner";
 export interface RiskFactor {
   name: string;
   impact: number; // -1 to 1 range, negative means reducing the risk
+  recommendation?: string;
 }
 
 export interface RiskPredictionDetail {
@@ -54,23 +55,35 @@ class RiskPredictionService {
         throw error;
       }
 
-      return data.map(item => ({
-        id: item.id,
-        category: item.risk_category,
-        metricName: item.prediction_details.metric_name || 'Unknown Metric',
-        riskScore: item.risk_score,
-        confidenceLevel: item.confidence_level,
-        prediction: item.prediction_details.prediction || 'No prediction available',
-        date: new Date(item.prediction_date).toISOString(),
-        isCritical: item.is_critical,
-        factors: Array.isArray(item.prediction_details.factors) 
-          ? item.prediction_details.factors 
-          : [],
-        trend: (item.prediction_details.trend as 'increasing' | 'decreasing' | 'stable') || 'stable',
-        details: Array.isArray(item.prediction_details.details) 
-          ? item.prediction_details.details 
-          : []
-      }));
+      return data.map(item => {
+        const predictionDetails = item.prediction_details as Record<string, any>;
+        
+        return {
+          id: item.id,
+          category: item.risk_category,
+          metricName: predictionDetails?.metric_name || 'Unknown Metric',
+          riskScore: item.risk_score,
+          confidenceLevel: item.confidence_level,
+          prediction: predictionDetails?.prediction || 'No prediction available',
+          date: new Date(item.prediction_date).toISOString(),
+          isCritical: item.is_critical,
+          factors: Array.isArray(predictionDetails?.factors) 
+            ? predictionDetails.factors.map((f: any) => ({
+                name: f.name || '',
+                impact: f.impact || 0,
+                recommendation: f.recommendation || ''
+              }))
+            : [],
+          trend: (predictionDetails?.trend as 'increasing' | 'decreasing' | 'stable') || 'stable',
+          details: Array.isArray(predictionDetails?.details) 
+            ? predictionDetails.details.map((d: any) => ({
+                key: d.key || '',
+                value: d.value || '',
+                icon: d.icon
+              }))
+            : []
+        };
+      });
     } catch (error) {
       console.error('Error fetching risk predictions:', error);
       toast.error('Failed to load risk predictions');
@@ -98,15 +111,18 @@ class RiskPredictionService {
           factors: [
             {
               name: 'Historical Trend',
-              impact: 0.8
+              impact: 0.8,
+              recommendation: 'Review historical data patterns to understand the trend trajectory.'
             },
             {
               name: 'Seasonal Patterns',
-              impact: 0.5
+              impact: 0.5,
+              recommendation: 'Adjust for seasonal variations in your data reporting.'
             },
             {
               name: 'Regulatory Changes',
-              impact: -0.3
+              impact: -0.3,
+              recommendation: 'Monitor upcoming regulatory changes that may impact compliance.'
             }
           ],
           trend: Math.random() > 0.5 ? 'increasing' : 'decreasing',
@@ -140,21 +156,30 @@ class RiskPredictionService {
       toast.success('Risk prediction generated successfully');
 
       // Convert the format to match our application model
+      const predictionDetails = data.prediction_details as Record<string, any>;
       return {
         id: data.id,
         category: data.risk_category,
-        metricName: data.prediction_details.metric_name || 'Unknown Metric',
+        metricName: predictionDetails?.metric_name || 'Unknown Metric',
         riskScore: data.risk_score,
         confidenceLevel: data.confidence_level,
-        prediction: data.prediction_details.prediction || 'No prediction available',
+        prediction: predictionDetails?.prediction || 'No prediction available',
         date: new Date(data.prediction_date).toISOString(),
         isCritical: data.is_critical,
-        factors: Array.isArray(data.prediction_details.factors) 
-          ? data.prediction_details.factors 
+        factors: Array.isArray(predictionDetails?.factors) 
+          ? predictionDetails.factors.map((f: any) => ({
+              name: f.name || '',
+              impact: f.impact || 0,
+              recommendation: f.recommendation || ''
+            }))
           : [],
-        trend: (data.prediction_details.trend as 'increasing' | 'decreasing' | 'stable') || 'stable',
-        details: Array.isArray(data.prediction_details.details) 
-          ? data.prediction_details.details 
+        trend: (predictionDetails?.trend as 'increasing' | 'decreasing' | 'stable') || 'stable',
+        details: Array.isArray(predictionDetails?.details) 
+          ? predictionDetails.details.map((d: any) => ({
+              key: d.key || '',
+              value: d.value || '',
+              icon: d.icon
+            }))
           : []
       };
     } catch (error) {

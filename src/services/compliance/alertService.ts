@@ -36,8 +36,14 @@ class ComplianceAlertService {
       }
 
       return data.map(alert => {
-        const resolutionSteps: ResolutionStep[] = Array.isArray(alert.resolution_steps) 
-          ? alert.resolution_steps 
+        // Type cast and safely handle the JSON data
+        const steps = alert.resolution_steps as Record<string, any>[] || [];
+        const resolutionSteps: ResolutionStep[] = Array.isArray(steps) 
+          ? steps.map(step => ({
+              step: step.step || '',
+              description: step.description || '',
+              completed: step.completed || false
+            }))
           : [];
           
         return {

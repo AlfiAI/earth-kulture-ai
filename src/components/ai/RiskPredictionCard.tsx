@@ -39,10 +39,10 @@ const RiskPredictionCard = ({ prediction, className }: RiskPredictionCardProps) 
 
   const getTrendIcon = () => {
     switch (prediction.trend) {
-      case 'improving':
-        return <ArrowUpIcon className="h-4 w-4 text-green-500" />;
-      case 'declining':
-        return <ArrowDownIcon className="h-4 w-4 text-red-500" />;
+      case 'increasing':
+        return <ArrowUpIcon className="h-4 w-4 text-red-500" />;
+      case 'decreasing':
+        return <ArrowDownIcon className="h-4 w-4 text-green-500" />;
       case 'stable':
       default:
         return <MinusIcon className="h-4 w-4 text-amber-500" />;
@@ -51,10 +51,10 @@ const RiskPredictionCard = ({ prediction, className }: RiskPredictionCardProps) 
 
   const getTrendText = () => {
     switch (prediction.trend) {
-      case 'improving':
-        return "Risk decreasing";
-      case 'declining':
+      case 'increasing':
         return "Risk increasing";
+      case 'decreasing':
+        return "Risk decreasing";
       case 'stable':
       default:
         return "Risk stable";
@@ -88,12 +88,12 @@ const RiskPredictionCard = ({ prediction, className }: RiskPredictionCardProps) 
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span>Risk Score</span>
-            <span className="font-medium">{Math.round(prediction.score)}/100</span>
+            <span className="font-medium">{Math.round(prediction.riskScore)}/100</span>
           </div>
           <Progress 
-            value={prediction.score} 
+            value={prediction.riskScore} 
             className="h-2" 
-            indicatorClassName={getRiskColor(prediction.score)} 
+            indicatorClassName={getRiskColor(prediction.riskScore)} 
           />
           
           <div className="flex justify-between text-xs">
@@ -112,7 +112,7 @@ const RiskPredictionCard = ({ prediction, className }: RiskPredictionCardProps) 
                 <TooltipTrigger asChild>
                   <div className="flex items-center cursor-help">
                     <span className="text-muted-foreground">
-                      {Math.round(prediction.confidence * 100)}% confidence
+                      {Math.round(prediction.confidenceLevel * 100)}% confidence
                     </span>
                     <Info className="h-3 w-3 ml-1 text-muted-foreground" />
                   </div>
@@ -140,7 +140,7 @@ const RiskPredictionCard = ({ prediction, className }: RiskPredictionCardProps) 
                     {factor.impact > 0 ? '+' : ''}{Math.round(factor.impact * 100)}% impact
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground">{factor.recommendation}</p>
+                <p className="text-xs text-muted-foreground">{factor.recommendation || ''}</p>
               </div>
             ))}
           </div>
