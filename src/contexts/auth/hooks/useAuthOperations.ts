@@ -152,10 +152,11 @@ export const useAuthOperations = () => {
 
   const verifyMFA = async (token: string) => {
     try {
+      // The correct parameter for the challenge API is 'factorId' and 'code'
+      // not 'challenge'. The previous implementation was incorrect.
       const { error } = await supabase.auth.mfa.challenge({
         factorId: 'totp',
-        // Remove the 'code' property and use the correct API format
-        challenge: token
+        code: token  // Use 'code' instead of 'challenge'
       });
 
       if (error) throw error;
