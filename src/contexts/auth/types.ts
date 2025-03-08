@@ -9,6 +9,9 @@ export interface UserProfile {
   company?: string;
   role?: string;
   industry?: string;
+  email_verified?: boolean;
+  mfa_enabled?: boolean;
+  last_sign_in?: string;
 }
 
 export interface AuthContextType {
@@ -22,4 +25,7 @@ export interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  setupMFA: () => Promise<{ qr: string; secret: string } | null>;
+  verifyMFA: (token: string) => Promise<boolean>;
+  disableMFA: () => Promise<boolean>;
 }

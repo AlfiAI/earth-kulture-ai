@@ -1,6 +1,7 @@
 
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { captureException } from "@/services/monitoring/errorTracking";
 
 export interface UserProfile {
   id: string;
@@ -9,6 +10,9 @@ export interface UserProfile {
   company?: string;
   role?: string;
   industry?: string;
+  email_verified?: boolean;
+  mfa_enabled?: boolean;
+  last_sign_in?: string;
 }
 
 class ProfileService {
@@ -23,12 +27,25 @@ class ProfileService {
       
       if (error) {
         console.error("Error fetching user profile:", error);
+        captureException(error, { context: 'getUserProfile', userId });
         return null;
+      }
+      
+      // Get MFA status from auth.users.factors
+      const { data: userData, error: userError } = await supabase.auth.admin.getUserById(userId);
+      
+      if (!userError && userData) {
+        return {
+          ...data,
+          mfa_enabled: userData.user.factors && userData.user.factors.length > 0,
+          email_verified: userData.user.email_confirmed_at !== null
+        };
       }
       
       return data;
     } catch (error) {
       console.error("Error in getUserProfile:", error);
+      captureException(error, { context: 'getUserProfile', userId });
       return null;
     }
   }
@@ -45,6 +62,7 @@ class ProfileService {
       
       if (error) {
         console.error("Error updating user profile:", error);
+        captureException(error, { context: 'updateUserProfile', userId });
         toast.error("Failed to update profile");
         return null;
       }
@@ -53,6 +71,7 @@ class ProfileService {
       return data;
     } catch (error) {
       console.error("Error in updateUserProfile:", error);
+      captureException(error, { context: 'updateUserProfile', userId });
       toast.error("An error occurred while updating your profile");
       return null;
     }
@@ -66,12 +85,16 @@ class ProfileService {
       const fileName = `${userId}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
       
+      // Optimize image before upload
+      const optimizedFile = await this.optimizeImage(file);
+      
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, optimizedFile);
         
       if (uploadError) {
         console.error("Error uploading avatar:", uploadError);
+        captureException(uploadError, { context: 'updateAvatar', userId });
         toast.error("Failed to upload avatar");
         return null;
       }
@@ -89,6 +112,7 @@ class ProfileService {
       
       if (updateError) {
         console.error("Error updating profile with avatar:", updateError);
+        captureException(updateError, { context: 'updateAvatar', userId });
         toast.error("Failed to update profile with new avatar");
         return null;
       }
@@ -97,8 +121,81 @@ class ProfileService {
       return publicUrl;
     } catch (error) {
       console.error("Error in updateAvatar:", error);
+      captureException(error, { context: 'updateAvatar', userId });
       toast.error("An error occurred while updating your avatar");
       return null;
+    }
+  }
+  
+  // Optimize image for upload
+  private async optimizeImage(file: File): Promise<File> {
+    // If the file is small enough, just return it
+    if (file.size < 500 * 1024) { // less than 500KB
+      return file;
+    }
+    
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Calculate new dimensions while maintaining aspect ratio
+          const maxDimension = 1200;
+          if (width > height && width > maxDimension) {
+            height = (height * maxDimension) / width;
+            width = maxDimension;
+          } else if (height > maxDimension) {
+            width = (width * maxDimension) / height;
+            height = maxDimension;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Convert to blob with reduced quality
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const optimizedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(optimizedFile);
+            } else {
+              resolve(file); // Fallback to original if optimization fails
+            }
+          }, 'image/jpeg', 0.8);
+        };
+      };
+    });
+  }
+  
+  // Update MFA status
+  async updateMFAStatus(userId: string, enabled: boolean): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ mfa_enabled: enabled })
+        .eq('id', userId);
+      
+      if (error) {
+        console.error("Error updating MFA status:", error);
+        captureException(error, { context: 'updateMFAStatus', userId });
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Error in updateMFAStatus:", error);
+      captureException(error, { context: 'updateMFAStatus', userId });
+      return false;
     }
   }
 }

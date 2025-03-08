@@ -23,7 +23,10 @@ export const useAuthProvider = () => {
     signUp, 
     signInWithGoogle, 
     signOut, 
-    resetPassword 
+    resetPassword,
+    setupMFA,
+    verifyMFA,
+    disableMFA 
   } = useAuthOperations();
   
   useAuthStateChange(
@@ -44,5 +47,8 @@ export const useAuthProvider = () => {
     signInWithGoogle,
     signOut,
     resetPassword,
+    setupMFA,
+    verifyMFA,
+    disableMFA
   };
 };

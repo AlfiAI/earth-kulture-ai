@@ -6,6 +6,7 @@ import SocialLoginButtons from "./SocialLoginButtons";
 import AuthToggle from "./AuthToggle";
 import ResetPasswordForm from "./ResetPasswordForm";
 import AnimatedAlert from "./AnimatedAlert";
+import MFAVerification from "./MFAVerification";
 import { useAuth } from "@/contexts/auth";
 import { motion } from "framer-motion";
 import { containerVariants, itemVariants } from "./authAnimations";
@@ -22,6 +23,8 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError }: AuthContainerPro
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [showMFAVerification, setShowMFAVerification] = useState(false);
+  const [mfaFactorId, setMfaFactorId] = useState<string | undefined>(undefined);
 
   const handleFormSubmit = async (values: { email: string; password: string }) => {
     setIsSubmitting(true);
@@ -30,7 +33,13 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError }: AuthContainerPro
     
     try {
       if (authMode === 'login') {
-        await signIn(values.email, values.password, rememberMe);
+        const result = await signIn(values.email, values.password, rememberMe);
+        
+        // Check if MFA is required
+        if (result?.requiresMFA) {
+          setShowMFAVerification(true);
+          setMfaFactorId(result.factorId);
+        }
       } else if (authMode === 'signup') {
         await signUp(values.email, values.password);
         setSignupSuccess(true);
@@ -48,6 +57,8 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError }: AuthContainerPro
       } else if (error.message.includes("User already registered")) {
         setAuthError("This email is already registered. Please sign in instead.");
         setAuthMode('login');
+      } else if (error.message.includes("Email not confirmed")) {
+        setAuthError("Please verify your email before signing in. Check your inbox for a verification link.");
       } else {
         setAuthError(error.message || "Authentication failed. Please try again.");
       }
@@ -114,6 +125,11 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError }: AuthContainerPro
           onBack={() => setAuthMode('login')}
           onSubmit={handleResetPassword}
           isSubmitting={isSubmitting}
+        />
+      ) : showMFAVerification ? (
+        <MFAVerification 
+          onBack={() => setShowMFAVerification(false)} 
+          factorId={mfaFactorId}
         />
       ) : (
         <>
