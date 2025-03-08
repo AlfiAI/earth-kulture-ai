@@ -8,6 +8,17 @@ import { UserProfile } from "../types";
 
 type FetchUserProfileFn = (userId: string) => Promise<any>;
 
+// Define the possible auth event types to include all events we're handling
+type AuthEventType = 
+  | 'INITIAL_SESSION' 
+  | 'SIGNED_IN' 
+  | 'SIGNED_OUT' 
+  | 'USER_UPDATED' 
+  | 'USER_DELETED' 
+  | 'PASSWORD_RECOVERY'
+  | 'TOKEN_REFRESHED'
+  | 'MFA_CHALLENGE_VERIFIED';
+
 export const useAuthStateChange = (
   setSession: (session: Session | null) => void,
   setUser: (user: User | null) => void,
