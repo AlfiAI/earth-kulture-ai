@@ -6,6 +6,7 @@ import { getDemoBenchmarks, prepareChartDataFromDemoData } from "./benchmarkUtil
 export function useBenchmarkData() {
   const [benchmarks, setBenchmarks] = useState<ESGBenchmark[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [industry, setIndustry] = useState("all");
   const [chartData, setChartData] = useState<any[]>([]);
   const [selectedMetric, setSelectedMetric] = useState("carbon_intensity");
@@ -42,6 +43,7 @@ export function useBenchmarkData() {
   
   const fetchBenchmarks = async () => {
     setIsLoading(true);
+    setIsError(false);
     
     try {
       const industryFilter = industry !== "all" ? industry : undefined;
@@ -50,10 +52,12 @@ export function useBenchmarkData() {
       if (data && data.length > 0) {
         setBenchmarks(data);
       } else {
+        // If no data is returned or empty array, use demo data
         setBenchmarks(getDemoBenchmarks());
       }
     } catch (error) {
       console.error("Error fetching benchmarks:", error);
+      setIsError(true);
       setBenchmarks(getDemoBenchmarks());
     } finally {
       setIsLoading(false);
@@ -90,12 +94,14 @@ export function useBenchmarkData() {
   return {
     benchmarks,
     isLoading,
+    isError,
     industry,
     setIndustry,
     chartData,
     selectedMetric,
     setSelectedMetric,
     metrics,
-    industries
+    industries,
+    refreshData: fetchBenchmarks
   };
 }

@@ -1,5 +1,6 @@
 
 import { toast } from "sonner";
+import { captureException } from "@/services/monitoring/errorTracking";
 
 // External data interfaces
 export interface ExternalESGDataset {
@@ -63,8 +64,30 @@ export interface PaginatedResponse<T> {
   count: number;
 }
 
-// Error handling utility
-export const handleServiceError = (error: any, errorMessage: string): void => {
-  console.error(errorMessage, error);
+// Error details interface for better error context
+export interface ErrorDetails {
+  context?: Record<string, any>;
+  operation: string;
+  message: string;
+  originalError?: any;
+}
+
+// Error handling utility with improved context and logging
+export const handleServiceError = (error: any, errorMessage: string, context?: Record<string, any>): void => {
+  // Create structured error details
+  const errorDetails: ErrorDetails = {
+    message: errorMessage,
+    operation: context?.operation || 'unknown_operation',
+    context: context || {},
+    originalError: error
+  };
+  
+  // Log error with full context
+  console.error(errorMessage, errorDetails);
+  
+  // Send to error tracking system
+  captureException(error, errorDetails);
+  
+  // Show user-friendly message
   toast.error(errorMessage);
 };
