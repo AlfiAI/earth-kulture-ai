@@ -14,13 +14,18 @@ export interface UserProfile {
   last_sign_in?: string;
 }
 
+export interface MFASignInResult {
+  requiresMFA: boolean;
+  factorId?: string;
+}
+
 export interface AuthContextType {
   session: Session | null;
   user: User | null;
   userProfile: UserProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<MFASignInResult>;
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;

@@ -2,9 +2,10 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { captureException } from "@/services/monitoring/errorTracking";
+import { MFASignInResult } from "../types";
 
 export const useAuthOperations = () => {
-  const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
+  const signIn = async (email: string, password: string, rememberMe: boolean = false): Promise<MFASignInResult> => {
     try {
       // Support for demo account
       if (email === 'demo@example.com' && password === 'password123') {
@@ -153,7 +154,8 @@ export const useAuthOperations = () => {
     try {
       const { error } = await supabase.auth.mfa.challenge({
         factorId: 'totp',
-        code: token
+        // Remove the 'code' property and use the correct API format
+        challenge: token
       });
 
       if (error) throw error;

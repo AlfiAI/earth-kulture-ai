@@ -36,7 +36,7 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError }: AuthContainerPro
         const result = await signIn(values.email, values.password, rememberMe);
         
         // Check if MFA is required
-        if (result?.requiresMFA) {
+        if (result.requiresMFA) {
           setShowMFAVerification(true);
           setMfaFactorId(result.factorId);
         }

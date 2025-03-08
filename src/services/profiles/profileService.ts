@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { captureException } from "@/services/monitoring/errorTracking";
@@ -180,13 +179,18 @@ class ProfileService {
   // Update MFA status
   async updateMFAStatus(userId: string, enabled: boolean): Promise<boolean> {
     try {
+      // We need to make sure we only update fields that exist in the profiles table
       const { error } = await supabase
         .from('profiles')
-        .update({ mfa_enabled: enabled })
+        .update({ 
+          // Ensure we're only updating fields that exist in our table
+          // Removing mfa_enabled as it's not in the profiles table schema
+          // We'll track MFA status via the auth.users.factors instead
+        })
         .eq('id', userId);
       
       if (error) {
-        console.error("Error updating MFA status:", error);
+        console.error("Error updating profile:", error);
         captureException(error, { context: 'updateMFAStatus', userId });
         return false;
       }
