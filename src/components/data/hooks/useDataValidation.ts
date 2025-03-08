@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ValidationResults } from '../ValidationTypes';
 import { supabase } from "@/integrations/supabase/client";
@@ -85,9 +84,9 @@ export const useDataValidation = () => {
           if (!userData.user) return false;
           
           // Use validationService for AI-enhanced fixes
-          const result = await validationService.fixDataCompleteness(
+          const result = await validationService.fixIssues(
             userData.user.id, 
-            issue.message
+            issue
           );
           
           return result.success;
@@ -102,9 +101,9 @@ export const useDataValidation = () => {
           if (!userData.user) return false;
           
           // Use validationService for AI-enhanced fixes
-          const result = await validationService.fixDataRange(
+          const result = await validationService.fixIssues(
             userData.user.id, 
-            issue.message
+            issue
           );
           
           return result.success;
@@ -119,9 +118,9 @@ export const useDataValidation = () => {
           if (!userData.user) return false;
           
           // Use validationService for AI-enhanced fixes
-          const result = await validationService.fixDataTimeframe(
+          const result = await validationService.fixIssues(
             userData.user.id, 
-            issue.message
+            issue
           );
           
           return result.success;
@@ -136,9 +135,9 @@ export const useDataValidation = () => {
           if (!userData.user) return false;
           
           // Use validationService for AI-enhanced fixes
-          const result = await validationService.fixDataConsistency(
+          const result = await validationService.fixIssues(
             userData.user.id, 
-            issue.message
+            issue
           );
           
           return result.success;
