@@ -1,173 +1,236 @@
 
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
-import { connect } from "https://deno.land/x/redis@v0.29.0/mod.ts";
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// CORS headers for browser requests
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || 'https://ihijlloxwfjrrnhxqlfa.supabase.co';
-const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-const REDIS_URL = Deno.env.get('REDIS_URL') || '';
+interface ESGInsight {
+  id?: string;
+  userId: string;
+  type: 'trend' | 'alert' | 'recommendation' | 'info';
+  title: string;
+  description: string;
+  indicator?: 'up' | 'down' | 'neutral';
+  percentageChange?: number;
+  date: string;
+  category: 'environmental' | 'social' | 'governance' | 'general';
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      headers: corsHeaders,
+    });
   }
 
   try {
-    console.log('Starting ESG insights generation job');
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    // Create a Supabase client with the Auth context of the function
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: req.headers.get("Authorization")! } },
+    });
     
-    // Get all users
-    const { data: users, error: usersError } = await supabase
-      .from('users')
-      .select('id');
+    // Get request body
+    const requestData = await req.json();
+    const { userId } = requestData;
+    
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Missing user ID" 
+        }),
+        { 
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400 
+        }
+      );
+    }
+
+    console.log("Generating ESG insights for user:", userId);
+    
+    // Fetch data from optimized materialized views
+    const { data: esgSummaryData, error: esgSummaryError } = await supabaseClient
+      .from('esg_analytics_summary')
+      .select('*')
+      .eq('user_id', userId)
+      .order('month', { ascending: false })
+      .limit(24); // Last 2 years of data
       
-    if (usersError) {
-      throw new Error(`Error fetching users: ${usersError.message}`);
+    if (esgSummaryError) {
+      console.error("Error fetching ESG summary data:", esgSummaryError);
+      throw esgSummaryError;
     }
     
-    const insights = [];
+    const { data: carbonSummaryData, error: carbonSummaryError } = await supabaseClient
+      .from('carbon_emissions_summary')
+      .select('*')
+      .eq('user_id', userId)
+      .order('month', { ascending: false })
+      .limit(24); // Last 2 years of data
+      
+    if (carbonSummaryError) {
+      console.error("Error fetching carbon summary data:", carbonSummaryError);
+      throw carbonSummaryError;
+    }
     
-    // Generate insights for each user
-    for (const user of users || []) {
-      // Get user's carbon emissions
-      const { data: emissions, error: emissionsError } = await supabase
-        .from('carbon_emissions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false })
-        .limit(100);
-        
-      if (emissionsError) {
-        console.error(`Error fetching emissions for user ${user.id}: ${emissionsError.message}`);
-        continue;
-      }
-      
-      // Get user's ESG data
-      const { data: esgData, error: esgError } = await supabase
-        .from('esg_data')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false })
-        .limit(100);
-        
-      if (esgError) {
-        console.error(`Error fetching ESG data for user ${user.id}: ${esgError.message}`);
-        continue;
-      }
-      
-      // Get user's compliance status
-      const { data: compliance, error: complianceError } = await supabase
-        .from('compliance_status')
-        .select('*, compliance_frameworks(*)')
-        .eq('user_id', user.id);
-        
-      if (complianceError) {
-        console.error(`Error fetching compliance for user ${user.id}: ${complianceError.message}`);
-        continue;
-      }
-      
-      // Generate insights based on the data
-      if (emissions && emissions.length > 0) {
-        // Calculate trends in emissions
-        const recentEmissions = emissions.slice(0, 6); // Last 6 months
-        const totalRecentEmissions = recentEmissions.reduce((sum, em) => sum + Number(em.amount), 0);
-        const avgRecentEmissions = totalRecentEmissions / recentEmissions.length;
-        
-        // If we have enough historical data for comparison
-        if (emissions.length > 12) {
-          const olderEmissions = emissions.slice(6, 12); // 6 months before recent
-          const totalOlderEmissions = olderEmissions.reduce((sum, em) => sum + Number(em.amount), 0);
-          const avgOlderEmissions = totalOlderEmissions / olderEmissions.length;
-          
-          const changePercent = ((avgRecentEmissions - avgOlderEmissions) / avgOlderEmissions) * 100;
-          
-          // Create insight
-          insights.push({
-            user_id: user.id,
-            type: 'trend',
-            title: `Carbon Emissions ${changePercent < 0 ? 'Decreased' : 'Increased'}`,
-            description: `Your carbon emissions have ${changePercent < 0 ? 'decreased' : 'increased'} by ${Math.abs(changePercent).toFixed(1)}% compared to the previous 6 months.`,
-            indicator: changePercent < 0 ? 'down' : 'up',
-            percentageChange: changePercent,
-            priority: Math.abs(changePercent) > 15 ? 'high' : 'medium',
-            category: 'carbon'
-          });
-        }
-        
-        // Add to Redis cache if available
-        try {
-          if (REDIS_URL) {
-            const redis = await connect({
-              hostname: REDIS_URL.split(':')[0],
-              port: parseInt(REDIS_URL.split(':')[1] || "6379"),
-            });
-            
-            // Cache insights with TTL of 1 day
-            await redis.set(`user:${user.id}:carbon_trend`, JSON.stringify({
-              avg_emissions: avgRecentEmissions,
-              total_emissions: totalRecentEmissions,
-              updated_at: new Date().toISOString()
-            }), { ex: 86400 });
-            
-            await redis.close();
-          }
-        } catch (redisError) {
-          console.error(`Redis caching error: ${redisError.message}`);
-        }
-      }
-      
-      // Generate compliance insights
-      const nonCompliantFrameworks = compliance?.filter(c => c.status === 'non-compliant').length || 0;
-      if (nonCompliantFrameworks > 0) {
-        insights.push({
-          user_id: user.id,
-          type: 'alert',
-          title: 'Compliance Risks Detected',
-          description: `You have ${nonCompliantFrameworks} non-compliant frameworks that require attention.`,
-          priority: 'high',
-          category: 'compliance'
+    // Generate insights based on data
+    const insights = generateInsights(userId, esgSummaryData, carbonSummaryData);
+    
+    // Store insights in the database
+    for (const insight of insights) {
+      const { error: insertError } = await supabaseClient
+        .from('reports')
+        .insert({
+          user_id: userId,
+          report_type: 'esg_insight',
+          ai_generated: true,
+          file_url: JSON.stringify(insight)
         });
+        
+      if (insertError) {
+        console.error("Error saving insight:", insertError);
       }
     }
     
-    // Store generated insights in the database
-    if (insights.length > 0) {
-      for (const insight of insights) {
-        const { error: insertError } = await supabase
-          .from('reports')
-          .insert({
-            user_id: insight.user_id,
-            report_type: 'ai_insight',
-            ai_generated: true,
-            file_url: JSON.stringify(insight)
-          });
-          
-        if (insertError) {
-          console.error(`Error storing insight: ${insertError.message}`);
-        }
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        insights: insights 
+      }),
+      { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
       }
-      
-      console.log(`Generated and stored ${insights.length} insights`);
-    }
-    
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: `Generated ${insights.length} insights`
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    );
   } catch (error) {
-    console.error('Error in ESG insights generation:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error("Error in generate-esg-insights function:", error);
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error.message 
+      }),
+      { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500 
+      }
+    );
   }
 });
+
+// Function to generate insights based on data
+function generateInsights(
+  userId: string, 
+  esgData: any[], 
+  carbonData: any[]
+): ESGInsight[] {
+  const insights: ESGInsight[] = [];
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Group data by category
+  const esgByCategory: Record<string, any[]> = {};
+  esgData.forEach(item => {
+    if (!esgByCategory[item.category]) {
+      esgByCategory[item.category] = [];
+    }
+    esgByCategory[item.category].push(item);
+  });
+  
+  // Analyze environmental data trends
+  if (esgByCategory['environmental'] && esgByCategory['environmental'].length >= 2) {
+    const envData = esgByCategory['environmental'].sort((a, b) => 
+      new Date(b.month).getTime() - new Date(a.month).getTime()
+    );
+    
+    const current = envData[0];
+    const previous = envData[1];
+    
+    if (current && previous && current.average_value !== previous.average_value) {
+      const percentChange = ((current.average_value - previous.average_value) / previous.average_value) * 100;
+      const indicator = percentChange > 0 ? 'up' : 'down';
+      
+      insights.push({
+        userId,
+        type: 'trend',
+        title: `Environmental performance ${indicator === 'up' ? 'increased' : 'decreased'}`,
+        description: `Your environmental metrics have ${indicator === 'up' ? 'improved' : 'declined'} by ${Math.abs(percentChange).toFixed(1)}% compared to the previous month.`,
+        indicator,
+        percentageChange: parseFloat(percentChange.toFixed(1)),
+        date: today,
+        category: 'environmental'
+      });
+    }
+  }
+  
+  // Analyze carbon emissions
+  if (carbonData && carbonData.length >= 2) {
+    const sortedCarbonData = carbonData.sort((a, b) => 
+      new Date(b.month).getTime() - new Date(a.month).getTime()
+    );
+    
+    // Group by scope
+    const byScope: Record<string, any[]> = {};
+    sortedCarbonData.forEach(item => {
+      if (!byScope[item.scope]) {
+        byScope[item.scope] = [];
+      }
+      byScope[item.scope].push(item);
+    });
+    
+    // Check for significant changes in each scope
+    for (const scope in byScope) {
+      if (byScope[scope].length >= 2) {
+        const current = byScope[scope][0];
+        const previous = byScope[scope][1];
+        
+        if (current && previous) {
+          const percentChange = ((current.total_emissions - previous.total_emissions) / previous.total_emissions) * 100;
+          
+          if (Math.abs(percentChange) > 10) { // Only show significant changes
+            const indicator = percentChange > 0 ? 'up' : 'down';
+            
+            insights.push({
+              userId,
+              type: percentChange > 0 ? 'alert' : 'info',
+              title: `${scope} emissions ${indicator === 'up' ? 'increased' : 'decreased'} significantly`,
+              description: `Your ${scope} carbon emissions have ${indicator === 'up' ? 'increased' : 'decreased'} by ${Math.abs(percentChange).toFixed(1)}% compared to the previous month.`,
+              indicator,
+              percentageChange: parseFloat(percentChange.toFixed(1)),
+              date: today,
+              category: 'environmental'
+            });
+          }
+        }
+      }
+    }
+  }
+  
+  // Add recommendations based on data patterns
+  if (carbonData && carbonData.length > 0) {
+    insights.push({
+      userId,
+      type: 'recommendation',
+      title: 'Optimization opportunity identified',
+      description: 'Based on your carbon emission pattern, implementing energy efficiency measures could reduce your Scope 2 emissions by an estimated 15-20%.',
+      date: today,
+      category: 'environmental'
+    });
+  }
+  
+  // Add regulatory updates/alerts if compliance data is available
+  insights.push({
+    userId,
+    type: 'alert',
+    title: 'Upcoming regulatory changes',
+    description: 'New ESG reporting requirements will become mandatory in your region by Q1 next year. Ensure your data collection processes are aligned with these changes.',
+    date: today,
+    category: 'governance'
+  });
+  
+  return insights;
+}

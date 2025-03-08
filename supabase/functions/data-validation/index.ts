@@ -1,146 +1,213 @@
 
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// CORS headers for browser requests
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || 'https://ihijlloxwfjrrnhxqlfa.supabase.co';
-const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+// The function structure to validate ESG data
+interface ESGDataPoint {
+  id?: string;
+  category: string;
+  subCategory: string;
+  value: number;
+  unit: string;
+  source: string;
+  date: string;
+  verified?: boolean;
+}
+
+interface ValidationIssue {
+  type: 'warning' | 'error';
+  message: string;
+  source: string;
+  recommendation: string;
+}
+
+interface ValidationResults {
+  valid: number;
+  warning: number;
+  error: number;
+  total: number;
+  issues: ValidationIssue[];
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      headers: corsHeaders,
+    });
   }
 
   try {
-    console.log('Starting data validation job');
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-    
-    // Fetch all ESG data from the past week
-    const now = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(now.getDate() - 7);
-    
-    // Use the optimized query with indexes
-    const { data: esgData, error: esgError } = await supabase
+    // Create a Supabase client with the Auth context of the function
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: req.headers.get("Authorization")! } },
+    });
+
+    // Get request body
+    const requestData = await req.json();
+    const { userId, dataSourceId } = requestData;
+
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Missing user ID" 
+        }),
+        { 
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400 
+        }
+      );
+    }
+
+    console.log("Validating ESG data for user:", userId);
+
+    // Fetch ESG data to validate
+    let query = supabaseClient
       .from('esg_data')
       .select('*')
-      .gte('date', oneWeekAgo.toISOString())
-      .order('date', { ascending: false });
-      
-    if (esgError) {
-      throw new Error(`Error fetching ESG data: ${esgError.message}`);
+      .eq('user_id', userId);
+    
+    if (dataSourceId) {
+      query = query.eq('data_source_id', dataSourceId);
     }
-    
-    // Process the data to check for common issues
-    const validationIssues = [];
-    
-    // Check for missing values
-    for (const record of esgData || []) {
-      if (!record.value && record.value !== 0) {
-        validationIssues.push({
-          id: record.id,
-          issue: 'missing_value',
-          message: `Missing value for ${record.metric_name}`
-        });
-      }
-      
-      if (!record.date) {
-        validationIssues.push({
-          id: record.id,
-          issue: 'missing_date',
-          message: `Missing date for ${record.metric_name}`
-        });
-      }
+
+    const { data: esgData, error: fetchError } = await query;
+
+    if (fetchError) {
+      console.error("Error fetching data for validation:", fetchError);
+      throw fetchError;
     }
+
+    // Perform validation
+    const validationResults = await validateESGData(esgData);
     
-    // Check for outliers in numeric values
-    const metricGroups = {};
-    esgData?.forEach(record => {
-      if (!metricGroups[record.metric_name]) {
-        metricGroups[record.metric_name] = [];
-      }
-      metricGroups[record.metric_name].push(record.value);
-    });
-    
-    // Use standard deviation to detect outliers
-    for (const [metric, values] of Object.entries(metricGroups)) {
-      if (values.length >= 5) { // Need enough data points
-        const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
-        const squaredDiffs = values.map(val => Math.pow(val - mean, 2));
-        const variance = squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length;
-        const stdDev = Math.sqrt(variance);
-        
-        // Check each record for being outside 3 standard deviations
-        esgData?.forEach(record => {
-          if (record.metric_name === metric && 
-              Math.abs(record.value - mean) > 3 * stdDev) {
-            validationIssues.push({
-              id: record.id,
-              issue: 'outlier',
-              message: `Outlier detected for ${record.metric_name}: value ${record.value} is far from mean ${mean.toFixed(2)}`
-            });
-          }
-        });
-      }
-    }
-    
-    // Store validation results in the database
-    if (validationIssues.length > 0) {
-      const { error: insertError } = await supabase
-        .from('reports')
-        .insert({
-          report_type: 'data_validation',
-          ai_generated: true,
-          file_url: JSON.stringify(validationIssues)
-        });
-        
-      if (insertError) {
-        throw new Error(`Error storing validation issues: ${insertError.message}`);
-      }
-      
-      console.log(`Stored ${validationIssues.length} validation issues`);
-    } else {
-      console.log('No validation issues found');
-    }
-    
-    // Update database health information
-    const { error: healthError } = await supabase
+    // Record validation run in the reports table
+    const { error: reportError } = await supabaseClient
       .from('reports')
       .insert({
-        report_type: 'database_health',
+        user_id: userId,
+        report_type: 'data_validation',
         ai_generated: true,
-        file_url: JSON.stringify({
-          indexes: 12,
-          partitions: 3,
-          automations: 2,
-          lastValidation: new Date().toISOString(),
-          validationResult: validationIssues.length === 0 ? 'passed' : 'issues_found',
-          issueCount: validationIssues.length
-        })
+        file_url: JSON.stringify(validationResults)
       });
-      
-    if (healthError) {
-      console.log(`Error updating database health info: ${healthError.message}`);
+
+    if (reportError) {
+      console.error("Error recording validation report:", reportError);
     }
-    
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: `Data validation completed with ${validationIssues.length} issues found`,
-      issues: validationIssues
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        results: validationResults 
+      }),
+      { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
+    );
   } catch (error) {
-    console.error('Error in data validation function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error("Error in data-validation function:", error);
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error.message 
+      }),
+      { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500 
+      }
+    );
   }
 });
+
+// Function to validate ESG data
+async function validateESGData(data: any[]): Promise<ValidationResults> {
+  const results: ValidationResults = {
+    valid: 0,
+    warning: 0,
+    error: 0,
+    total: data.length,
+    issues: []
+  };
+
+  // Validation rules
+  const validationRules = [
+    {
+      // Check for missing critical fields
+      test: (item: any) => item.value !== null && item.value !== undefined,
+      errorMessage: 'Missing value for ESG data point',
+      issueType: 'error' as const,
+      source: 'data_completeness',
+      recommendation: 'Add a numeric value for this ESG data point'
+    },
+    {
+      // Check for negative values when they should be positive
+      test: (item: any) => !(item.category === 'environmental' && item.value < 0),
+      errorMessage: 'Negative value for environmental metric',
+      issueType: 'error' as const,
+      source: 'data_range',
+      recommendation: 'Environmental metrics typically require positive values'
+    },
+    {
+      // Check for outliers - values that are much higher than typical
+      test: (item: any) => !(item.category === 'environmental' && item.value > 10000),
+      errorMessage: 'Potential outlier value detected',
+      issueType: 'warning' as const,
+      source: 'data_range',
+      recommendation: 'Verify this unusually high value for accuracy'
+    },
+    {
+      // Check for missing units
+      test: (item: any) => item.unit && item.unit.trim() !== '',
+      errorMessage: 'Missing unit of measurement',
+      issueType: 'warning' as const,
+      source: 'data_completeness',
+      recommendation: 'Add appropriate unit of measurement for this metric'
+    },
+    {
+      // Check for dates in the future
+      test: (item: any) => new Date(item.date) <= new Date(),
+      errorMessage: 'Future date detected',
+      issueType: 'error' as const,
+      source: 'data_timeframe',
+      recommendation: 'Change date to current or past date'
+    }
+  ];
+
+  // Apply validation rules to each data point
+  data.forEach(dataPoint => {
+    let isValid = true;
+    
+    for (const rule of validationRules) {
+      if (!rule.test(dataPoint)) {
+        if (rule.issueType === 'error') {
+          results.error++;
+          isValid = false;
+        } else {
+          results.warning++;
+        }
+        
+        results.issues.push({
+          type: rule.issueType,
+          message: rule.errorMessage,
+          source: rule.source,
+          recommendation: rule.recommendation
+        });
+      }
+    }
+    
+    if (isValid) {
+      results.valid++;
+    }
+  });
+
+  return results;
+}

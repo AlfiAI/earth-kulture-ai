@@ -1,2 +1,8 @@
 
 project_id = "ihijlloxwfjrrnhxqlfa"
+
+[data-validation]
+verify_jwt = true
+
+[generate-esg-insights]
+verify_jwt = true

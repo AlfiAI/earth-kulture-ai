@@ -447,10 +447,32 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      carbon_emissions_summary: {
+        Row: {
+          month: string | null
+          scope: string | null
+          total_emissions: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      esg_analytics_summary: {
+        Row: {
+          average_value: number | null
+          category: string | null
+          data_points: number | null
+          month: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       create_compliance_partition_tables: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      refresh_materialized_views: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

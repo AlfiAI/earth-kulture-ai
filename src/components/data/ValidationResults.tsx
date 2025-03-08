@@ -1,14 +1,41 @@
 
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, FileText, Download } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ValidationResults as ValidationResultsType } from './ValidationTypes';
 import { Separator } from "@/components/ui/separator";
+import { useState } from 'react';
 
 interface ValidationResultsProps {
   results: ValidationResultsType;
 }
 
 const ValidationResults = ({ results }: ValidationResultsProps) => {
+  const [filterType, setFilterType] = useState<'all' | 'error' | 'warning'>('all');
+  const filteredIssues = results.issues.filter(issue => 
+    filterType === 'all' || issue.type === filterType
+  );
+
+  const handleExportResults = () => {
+    // Create a CSV string from validation results
+    let csvContent = "issue_type,message,source,recommendation\n";
+    
+    results.issues.forEach(issue => {
+      csvContent += `${issue.type},${issue.message.replace(',', ' ')},${issue.source},${issue.recommendation.replace(',', ' ')}\n`;
+    });
+    
+    // Create a download link and trigger click
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'validation_results.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
@@ -19,7 +46,7 @@ const ValidationResults = ({ results }: ValidationResultsProps) => {
           </p>
         </div>
         
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <div className="flex items-center gap-1">
             <CheckCircle className="h-4 w-4 text-green-600" />
             <span className="text-sm font-medium">{results.valid}</span>
@@ -40,7 +67,40 @@ const ValidationResults = ({ results }: ValidationResultsProps) => {
       
       <Separator />
       
-      <ValidationIssuesList issues={results.issues} />
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <div className="flex gap-2">
+          <Button 
+            variant={filterType === 'all' ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setFilterType('all')}
+          >
+            All ({results.issues.length})
+          </Button>
+          <Button 
+            variant={filterType === 'error' ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setFilterType('error')}
+            className={filterType === 'error' ? "bg-red-600 hover:bg-red-700" : "text-red-600"}
+          >
+            Errors ({results.issues.filter(i => i.type === 'error').length})
+          </Button>
+          <Button 
+            variant={filterType === 'warning' ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setFilterType('warning')}
+            className={filterType === 'warning' ? "bg-amber-600 hover:bg-amber-700" : "text-amber-600"}
+          >
+            Warnings ({results.issues.filter(i => i.type === 'warning').length})
+          </Button>
+        </div>
+        
+        <Button variant="outline" size="sm" onClick={handleExportResults} className="gap-1">
+          <Download className="h-4 w-4" />
+          <span>Export Results</span>
+        </Button>
+      </div>
+      
+      <ValidationIssuesList issues={filteredIssues} />
     </div>
   );
 };
