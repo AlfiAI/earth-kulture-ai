@@ -27,7 +27,7 @@ const AuthToggle = ({ authMode, setAuthMode }: AuthToggleProps) => {
             onClick={() => setAuthMode('signup')} 
             className="text-primary hover:underline font-medium transition-colors"
           >
-            Sign up
+            Create Account
           </button>
         </p>
       ) : (

@@ -6,6 +6,9 @@ export interface UserProfile {
   email: string;
   full_name?: string;
   avatar_url?: string;
+  company?: string;
+  role?: string;
+  industry?: string;
 }
 
 export interface AuthContextType {

@@ -8,6 +8,7 @@ export interface UserProfile {
   avatar_url?: string;
   company?: string;
   role?: string;
+  industry?: string;
 }
 
 class ProfileService {

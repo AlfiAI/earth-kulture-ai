@@ -10,6 +10,7 @@ import Compliance from "./pages/Compliance";
 import Insights from "./pages/Insights";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
+import Onboarding from "./pages/Onboarding";
 import About from "./pages/About";
 import Features from "./pages/Features";
 import Pricing from "./pages/Pricing";
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/dashboard" element={<Index />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/compliance" element={<Compliance />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/analytics" element={<Analytics />} />

@@ -66,8 +66,19 @@ export const useAuthStateChange = (
         }
         
         if (event === 'SIGNED_IN') {
-          navigate('/dashboard');
-          toast.success("Login successful!");
+          // Check if this is a new user by seeing if they have a profile with data
+          const profileData = newSession?.user ? await fetchUserProfile(newSession.user.id) : null;
+          const isNewUser = !profileData?.full_name;
+          
+          if (isNewUser) {
+            // Redirect to onboarding for new users
+            navigate('/onboarding');
+            toast.success("Account created! Let's set up your profile.");
+          } else {
+            // Regular login for existing users
+            navigate('/dashboard');
+            toast.success("Login successful!");
+          }
         } else if (event === 'SIGNED_OUT') {
           navigate('/auth');
           toast.success("You have been logged out");

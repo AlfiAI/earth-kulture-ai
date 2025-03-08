@@ -137,11 +137,11 @@ const EmailLoginForm = ({
             {isSubmitting ? (
               <>
                 <LoadingSpinner size="sm" />
-                <span className="ml-2">{authMode === 'login' ? 'Signing In...' : 'Signing Up...'}</span>
+                <span className="ml-2">{authMode === 'login' ? 'Signing In...' : 'Creating Account...'}</span>
               </>
             ) : (
               <>
-                {authMode === 'login' ? 'Sign In' : 'Sign Up'} 
+                {authMode === 'login' ? 'Sign In' : 'Create Account'} 
                 <ArrowRight className="ml-2 h-4 w-4" />
               </>
             )}
