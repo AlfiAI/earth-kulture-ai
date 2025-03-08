@@ -13,7 +13,9 @@ export const useAuthProvider = () => {
     isAuthenticated, 
     isLoading,
     setSession,
-    setUser
+    setUser,
+    authError,
+    setAuthError
   } = useAuthState();
   
   const { fetchUserProfile } = useProfileManagement(user, setUserProfile);
@@ -42,6 +44,7 @@ export const useAuthProvider = () => {
     userProfile,
     isAuthenticated,
     isLoading,
+    authError,
     signIn,
     signUp,
     signInWithGoogle,
