@@ -99,10 +99,10 @@ class DataService {
       
     if (error) throw error;
     
-    // Transform data to match our format
+    // Transform data to match our format with proper typing
     const formattedData: ESGDataPoint[] = (data || []).map(item => ({
       id: item.id,
-      category: this.mapCategoryToEnum(item.category), // Map to valid enum value
+      category: this.mapCategoryToEnum(item.category),
       subCategory: item.metric_name, // Using metric_name as subCategory
       value: item.value,
       unit: item.unit || '',
