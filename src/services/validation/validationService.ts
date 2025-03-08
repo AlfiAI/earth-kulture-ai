@@ -111,6 +111,7 @@ export const validationService = {
         valid: 96,
         warning: 6,
         error: 0,
+        total: 102, // Added total property to fix TypeScript error
         issues: [
           // Return a filtered list of issues without the fixed one
         ]

@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { ValidationResults } from '../../ValidationTypes';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -22,15 +21,18 @@ export const useValidationProcess = (
         throw new Error("User not authenticated");
       }
       
+      // Start with initial progress
+      let currentProgress = 0;
+      setProgress(currentProgress);
+      
       // Start progress indicator
       const progressInterval = setInterval(() => {
-        setProgress(prev => {
-          const newProgress = prev + 5;
-          if (newProgress >= 95) {
-            clearInterval(progressInterval);
-          }
-          return newProgress < 95 ? newProgress : 95;
-        });
+        currentProgress += 5;
+        if (currentProgress >= 95) {
+          clearInterval(progressInterval);
+          return;
+        }
+        setProgress(currentProgress);
       }, 100); // Slightly faster progress updates
       
       // Performance monitoring
