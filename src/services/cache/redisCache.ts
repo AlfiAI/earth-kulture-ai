@@ -50,6 +50,32 @@ class RedisCacheService {
   async keys(): Promise<string[]> {
     return Object.keys(this.cache);
   }
+  
+  // Get multiple keys at once (batch operation)
+  async mget<T>(keys: string[]): Promise<Record<string, T | null>> {
+    const result: Record<string, T | null> = {};
+    
+    for (const key of keys) {
+      result[key] = await this.get<T>(key);
+    }
+    
+    return result;
+  }
+  
+  // Set multiple keys at once (batch operation)
+  async mset(keyValues: Record<string, any>, ttlInSeconds?: number): Promise<void> {
+    for (const [key, value] of Object.entries(keyValues)) {
+      await this.set(key, value, ttlInSeconds);
+    }
+  }
+  
+  // Get cache stats (size, hit rate, etc.)
+  getStats(): { size: number, keys: string[] } {
+    return {
+      size: Object.keys(this.cache).length,
+      keys: Object.keys(this.cache)
+    };
+  }
 }
 
 export const redisCache = new RedisCacheService();

@@ -148,6 +148,96 @@ export type Database = {
           },
         ]
       }
+      compliance_status_2024: {
+        Row: {
+          created_at: string | null
+          framework_id: string
+          id: string
+          notes: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          framework_id: string
+          id?: string
+          notes?: string | null
+          status: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          framework_id?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      compliance_status_2025: {
+        Row: {
+          created_at: string | null
+          framework_id: string
+          id: string
+          notes: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          framework_id: string
+          id?: string
+          notes?: string | null
+          status: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          framework_id?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      compliance_status_2026: {
+        Row: {
+          created_at: string | null
+          framework_id: string
+          id: string
+          notes: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          framework_id: string
+          id?: string
+          notes?: string | null
+          status: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          framework_id?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       data_sources: {
         Row: {
           category: string
@@ -360,7 +450,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_compliance_partition_tables: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

@@ -8,6 +8,7 @@ import WalyAssistant from "@/components/ai/WalyAssistant";
 import DataHeader from "@/components/data/DataHeader";
 import DataSourceCard from "@/components/data/DataSourceCard";
 import DataValidation from "@/components/data/DataValidation";
+import DatabaseOptimizationStatus from "@/components/data/DatabaseOptimizationStatus";
 
 const DataCenter = () => {
   const isMobile = useIsMobile();
@@ -35,6 +36,10 @@ const DataCenter = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <DataSourceCard />
             <DataValidation />
+          </div>
+
+          <div className="mb-6">
+            <DatabaseOptimizationStatus />
           </div>
         </main>
       </div>

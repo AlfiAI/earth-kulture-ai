@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ESGDataPoint } from '../types/esgTypes';
+import { redisCache } from "../cache/redisCache";
 
 class DataService {
   // Cache for storing fetched data
@@ -21,9 +22,18 @@ class DataService {
     count: number;
   }> {
     try {
-      // Check cache if enabled
+      // First check Redis cache
+      const cacheKey = `esg_data_page_${page}_size_${pageSize}`;
+      const cachedData = await redisCache.get<{data: ESGDataPoint[], count: number}>(cacheKey);
+      
+      if (useCache && cachedData) {
+        console.log("Using Redis cached ESG data");
+        return cachedData;
+      }
+      
+      // Check in-memory cache if enabled and Redis cache miss
       if (useCache && this.cache.esgData && (Date.now() - this.cache.esgData.timestamp < this.CACHE_TTL)) {
-        console.log("Using cached ESG data");
+        console.log("Using in-memory cached ESG data");
         
         // Apply pagination to cached data
         const startIndex = (page - 1) * pageSize;
@@ -39,6 +49,10 @@ class DataService {
       // In a real implementation, this would be removed
       try {
         const { data, count } = await this.fetchFromSupabase(page, pageSize);
+        
+        // Cache results in Redis
+        await redisCache.set(cacheKey, { data, count }, 300); // Cache for 5 minutes
+        
         return { data, count };
       } catch (error) {
         console.log("Falling back to mock data service");
@@ -88,7 +102,7 @@ class DataService {
     // Transform data to match our format
     const formattedData: ESGDataPoint[] = (data || []).map(item => ({
       id: item.id,
-      category: item.category,
+      category: this.mapCategoryToEnum(item.category), // Map to valid enum value
       subCategory: item.metric_name, // Using metric_name as subCategory
       value: item.value,
       unit: item.unit || '',
@@ -138,10 +152,13 @@ class DataService {
       throw new Error("User not authenticated");
     }
     
+    // Ensure the category is valid
+    const validCategory = this.mapCategoryToEnum(dataPoint.category || 'environmental');
+    
     // Prepare data for insertion
     const insertData = {
       user_id: userData.user.id,
-      category: dataPoint.category || 'environmental',
+      category: validCategory,
       metric_name: dataPoint.subCategory || 'other',
       value: dataPoint.value,
       unit: dataPoint.unit,
@@ -164,10 +181,13 @@ class DataService {
     // Clear cache to ensure fresh data on next fetch
     this.cache = {};
     
+    // Also clear Redis cache keys related to ESG data
+    await this.clearRedisCache();
+    
     // Transform to ESGDataPoint format
     return {
       id: data.id,
-      category: data.category,
+      category: this.mapCategoryToEnum(data.category),
       subCategory: data.metric_name,
       value: data.value,
       unit: data.unit || '',
@@ -177,9 +197,31 @@ class DataService {
     };
   }
 
+  // Helper method to map string category to valid enum value
+  private mapCategoryToEnum(category: string): "environmental" | "social" | "governance" {
+    const lowerCategory = category.toLowerCase();
+    
+    if (lowerCategory === "social") return "social";
+    if (lowerCategory === "governance") return "governance";
+    
+    // Default to environmental for any other value
+    return "environmental";
+  }
+
+  // Clear Redis cache for ESG data
+  private async clearRedisCache(): Promise<void> {
+    const keys = await redisCache.keys();
+    const esgKeys = keys.filter(key => key.startsWith('esg_data_'));
+    
+    for (const key of esgKeys) {
+      await redisCache.delete(key);
+    }
+  }
+
   // Clear cache to force fresh data fetch
   clearCache(): void {
     this.cache = {};
+    this.clearRedisCache();
     console.log("Cache cleared");
   }
 }
