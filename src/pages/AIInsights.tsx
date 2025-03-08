@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Lightbulb, AlertTriangle, Loader2, TrendingUp, BarChart } from "lucide-react";
+import { Lightbulb, AlertTriangle, Loader2, TrendingUp, BarChart, BarChart2 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import RiskPredictionCard from "@/components/ai/RiskPredictionCard";
 import ComplianceAlertCard from "@/components/compliance/ComplianceAlertCard";
 import AIBenchmarkCard from "@/components/benchmarking/AIBenchmarkCard";
+import PredictionAccuracyTesting from "@/components/ai/PredictionAccuracyTesting";
 import { riskPredictionService, RiskPrediction } from "@/services/ai/riskPredictionService";
 import { complianceAlertService, ComplianceAlert } from "@/services/compliance/alertService";
 import { aiBenchmarkingService, AIBenchmarkResult } from "@/services/benchmarking/aiBenchmarkingService";
@@ -156,6 +157,9 @@ export default function AIInsights() {
             </div>
           </CardContent>
         </Card>
+        
+        {/* Prediction Accuracy Testing Component */}
+        <PredictionAccuracyTesting />
         
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
