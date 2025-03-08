@@ -5,7 +5,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Pagination } from "@/components/ui/pagination";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination";
 import { externalDataService, ESGRegulation } from "@/services/external/externalDataService";
 
 const ESGRegulationsList = () => {
@@ -61,6 +68,58 @@ const ESGRegulationsList = () => {
   useEffect(() => {
     fetchRegulations();
   }, []);
+
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(count / pageSize);
+  
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total pages is less than max visible
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always include page 1
+      pages.push(1);
+      
+      // Calculate start and end of middle pages
+      let start = Math.max(2, page - 1);
+      let end = Math.min(totalPages - 1, page + 1);
+      
+      // Adjust if we're at the start or end
+      if (page <= 2) {
+        end = Math.min(4, totalPages - 1);
+      } else if (page >= totalPages - 1) {
+        start = Math.max(2, totalPages - 3);
+      }
+      
+      // Add ellipsis after page 1 if needed
+      if (start > 2) {
+        pages.push('ellipsis');
+      }
+      
+      // Add middle pages
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      
+      // Add ellipsis before last page if needed
+      if (end < totalPages - 1) {
+        pages.push('ellipsis');
+      }
+      
+      // Always include last page
+      if (totalPages > 1) {
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
+  };
   
   return (
     <Card>
@@ -184,13 +243,36 @@ const ESGRegulationsList = () => {
       
       {count > pageSize && (
         <CardFooter className="flex justify-center">
-          <Pagination
-            page={page}
-            count={count}
-            pageSize={pageSize}
-            onPageChange={handlePageChange}
-            showPageIndicator
-          />
+          <Pagination>
+            <PaginationContent>
+              {page > 1 && (
+                <PaginationItem>
+                  <PaginationPrevious onClick={() => handlePageChange(page - 1)} />
+                </PaginationItem>
+              )}
+              
+              {getPageNumbers().map((pageNum, index) => (
+                <PaginationItem key={index}>
+                  {pageNum === 'ellipsis' ? (
+                    <span className="flex h-9 w-9 items-center justify-center">...</span>
+                  ) : (
+                    <PaginationLink 
+                      isActive={pageNum === page}
+                      onClick={() => handlePageChange(Number(pageNum))}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
+              
+              {page < totalPages && (
+                <PaginationItem>
+                  <PaginationNext onClick={() => handlePageChange(page + 1)} />
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
         </CardFooter>
       )}
     </Card>

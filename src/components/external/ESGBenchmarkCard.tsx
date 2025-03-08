@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { BarChart3, Award, ChevronDown } from "lucide-react";
@@ -115,8 +114,6 @@ const ESGBenchmarkCard = () => {
         ) : (
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
               <LineChart 
                 data={chartData} 
                 margin={{ top: 5, right: 30, left: 20, bottom: 25 }}
@@ -158,7 +155,6 @@ const ESGBenchmarkCard = () => {
   );
 };
 
-// Demo data for initial display
 function getDemoBenchmarks(): ESGBenchmark[] {
   return [
     { 
