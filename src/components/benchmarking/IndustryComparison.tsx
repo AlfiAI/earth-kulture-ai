@@ -1,136 +1,90 @@
 
 import { useState, useEffect } from 'react';
-import { Dices, TrendingUp, BarChart3 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import BenchmarkChart from "@/components/external/benchmark/BenchmarkChart";
+import BenchmarkFilters from "@/components/external/benchmark/BenchmarkFilters";
+import BenchmarkHeader from "@/components/external/benchmark/BenchmarkHeader";
+import BenchmarkFooter from "@/components/external/benchmark/BenchmarkFooter";
 import { benchmarkingService } from '@/services/benchmarkingService';
-import { esgDataService } from '@/services/esgDataService';
 
-const IndustryComparison = () => {
-  const [loading, setLoading] = useState(true);
-  const [comparison, setComparison] = useState<{
-    overallPercentile: number;
-    environmentalPercentile: number;
-    socialPercentile: number;
-    governancePercentile: number;
-  } | null>(null);
-  
+interface IndustryComparisonProps {
+  title?: string;
+  description?: string;
+}
+
+const IndustryComparison = ({ 
+  title = "Industry ESG Comparison", 
+  description = "Compare your ESG performance against industry benchmarks"
+}: IndustryComparisonProps) => {
+  const [activeTab, setActiveTab] = useState("esg");
+  const [benchmarkData, setBenchmarkData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
-        const esgScore = await esgDataService.calculateESGScore(
-          await esgDataService.getAllESGData(),
-          await esgDataService.getCarbonEmissions(),
-          await esgDataService.getComplianceFrameworks()
-        );
-        
-        const comparisonData = await benchmarkingService.compareToIndustry(esgScore);
-        setComparison({
-          overallPercentile: comparisonData.overallPercentile,
-          environmentalPercentile: comparisonData.environmentalPercentile,
-          socialPercentile: comparisonData.socialPercentile,
-          governancePercentile: comparisonData.governancePercentile,
-        });
+        setIsLoading(true);
+        // Fix: Using getPredictions instead of compareToIndustry
+        const data = await benchmarkingService.getPredictions(activeTab as any);
+        setBenchmarkData(data);
       } catch (error) {
-        console.error('Error fetching comparison data:', error);
+        console.error(`Error fetching ${activeTab} benchmark data:`, error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
-    
-    fetchData();
-  }, []);
 
-  const getPercentileColor = (percentile: number) => {
-    if (percentile >= 80) return "bg-green-500";
-    if (percentile >= 60) return "bg-blue-500";
-    if (percentile >= 40) return "bg-yellow-500";
-    return "bg-red-500";
-  };
+    fetchData();
+  }, [activeTab]);
 
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <BarChart3 className="h-5 w-5 text-primary" />
-          Industry Benchmarking
-        </CardTitle>
-        <CardDescription>
-          Your performance compared to industry peers
-        </CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </CardHeader>
-      <CardContent>
-        {loading ? (
-          <div className="flex justify-center items-center h-32">
-            <Dices className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : comparison ? (
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between mb-1">
-                <p className="text-sm font-medium">Overall ESG Score</p>
-                <p className="text-sm font-medium">{comparison.overallPercentile}th percentile</p>
-              </div>
-              <Progress 
-                value={comparison.overallPercentile} 
-                className="h-2" 
-                indicatorClassName={getPercentileColor(comparison.overallPercentile)}
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <p className="text-xs">Environmental</p>
-                  <p className="text-xs">{comparison.environmentalPercentile}%</p>
-                </div>
-                <Progress 
-                  value={comparison.environmentalPercentile} 
-                  className="h-1.5" 
-                  indicatorClassName={getPercentileColor(comparison.environmentalPercentile)}
-                />
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <p className="text-xs">Social</p>
-                  <p className="text-xs">{comparison.socialPercentile}%</p>
-                </div>
-                <Progress 
-                  value={comparison.socialPercentile} 
-                  className="h-1.5" 
-                  indicatorClassName={getPercentileColor(comparison.socialPercentile)}
-                />
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <p className="text-xs">Governance</p>
-                  <p className="text-xs">{comparison.governancePercentile}%</p>
-                </div>
-                <Progress 
-                  value={comparison.governancePercentile} 
-                  className="h-1.5" 
-                  indicatorClassName={getPercentileColor(comparison.governancePercentile)}
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between text-sm pt-2 mt-2 border-t">
-              <div className="flex items-center text-green-600">
-                <TrendingUp className="h-4 w-4 mr-1" />
-                <span>Top 20% in energy efficiency</span>
-              </div>
-              <span className="text-xs text-muted-foreground">Tech industry</span>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center text-muted-foreground p-4">
-            Unable to load benchmark data
-          </div>
-        )}
-      </CardContent>
+      
+      <Tabs defaultValue="esg" value={activeTab} onValueChange={setActiveTab}>
+        <div className="px-6">
+          <TabsList className="grid grid-cols-4">
+            <TabsTrigger value="esg">ESG Score</TabsTrigger>
+            <TabsTrigger value="carbon">Carbon</TabsTrigger>
+            <TabsTrigger value="compliance">Compliance</TabsTrigger>
+            <TabsTrigger value="financial">Financial</TabsTrigger>
+          </TabsList>
+        </div>
+        
+        <CardContent>
+          <TabsContent value="esg" className="mt-0 pt-4">
+            <BenchmarkHeader category="ESG Score" data={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFilters category="esg" />
+            <BenchmarkChart data={benchmarkData} category="esg" isLoading={isLoading} />
+            <BenchmarkFooter category="esg" />
+          </TabsContent>
+          
+          <TabsContent value="carbon" className="mt-0 pt-4">
+            <BenchmarkHeader category="Carbon Emissions" data={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFilters category="carbon" />
+            <BenchmarkChart data={benchmarkData} category="carbon" isLoading={isLoading} />
+            <BenchmarkFooter category="carbon" />
+          </TabsContent>
+          
+          <TabsContent value="compliance" className="mt-0 pt-4">
+            <BenchmarkHeader category="Compliance" data={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFilters category="compliance" />
+            <BenchmarkChart data={benchmarkData} category="compliance" isLoading={isLoading} />
+            <BenchmarkFooter category="compliance" />
+          </TabsContent>
+          
+          <TabsContent value="financial" className="mt-0 pt-4">
+            <BenchmarkHeader category="Financial Impact" data={benchmarkData} isLoading={isLoading} />
+            <BenchmarkFilters category="financial" />
+            <BenchmarkChart data={benchmarkData} category="financial" isLoading={isLoading} />
+            <BenchmarkFooter category="financial" />
+          </TabsContent>
+        </CardContent>
+      </Tabs>
     </Card>
   );
 };
