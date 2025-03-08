@@ -41,7 +41,7 @@ interface DeepseekResponse {
 }
 
 class DeepseekService {
-  // Process query using DeepSeek-R1 API
+  // Process query using DeepSeek API
   async processQuery(query: string, previousMessages: MessageProps[] = []): Promise<string> {
     try {
       // Format previous messages for context
@@ -64,7 +64,7 @@ class DeepseekService {
           'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
         },
         body: JSON.stringify({
-          model: "deepseek-r1",
+          model: "deepseek-chat",  // Updated to use a valid model name
           messages: messages,
           temperature: 0.7,
           top_p: 0.95,
