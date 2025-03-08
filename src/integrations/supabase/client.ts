@@ -10,10 +10,11 @@ const getSiteUrl = () => {
   // In browser environment
   if (typeof window !== 'undefined') {
     const url = new URL(window.location.href);
+    // Use the full origin including the protocol
     return `${url.protocol}//${url.host}`;
   }
   // Fallback for non-browser environments
-  return 'http://localhost:3000';
+  return 'http://localhost:8080';
 };
 
 export const supabase = createClient<Database>(

@@ -17,6 +17,16 @@ export const useAuthStateChange = (
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Handle URL hash fragments for auth redirects
+    const handleHashParams = async () => {
+      if (window.location.hash && window.location.hash.includes('access_token')) {
+        console.log("Detected auth redirect in URL hash, handling...");
+        // Supabase will automatically handle this with detectSessionInUrl
+      }
+    };
+    
+    handleHashParams();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
         console.log("Auth state changed:", event);
@@ -54,6 +64,11 @@ export const useAuthStateChange = (
           toast.success("Your profile has been updated");
         } else if (event === 'PASSWORD_RECOVERY') {
           toast.success("Password recovery email sent");
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log("Auth token refreshed");
+        } else if (event === 'USER_DELETED') {
+          navigate('/auth');
+          toast.info("Your account has been deleted");
         }
       }
     );

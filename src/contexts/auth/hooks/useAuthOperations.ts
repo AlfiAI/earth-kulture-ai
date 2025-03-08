@@ -40,7 +40,10 @@ export const useAuthOperations = () => {
   
   const signUp = async (email: string, password: string) => {
     try {
+      // Get the current site URL for redirect
       const currentUrl = window.location.origin;
+      console.log("Signup with redirect to:", `${currentUrl}/auth`);
+      
       const { error } = await supabase.auth.signUp({ 
         email, 
         password,
