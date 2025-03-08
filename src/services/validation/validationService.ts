@@ -1,5 +1,5 @@
 
-import { ValidationResults } from "@/components/data/ValidationTypes";
+import { ValidationIssue, ValidationResults } from "@/components/data/ValidationTypes";
 import { deepseekService } from '@/services/ai/deepseekService';
 import { toast } from "sonner";
 
@@ -92,11 +92,11 @@ export const validationService = {
     }
   },
 
-  async fixIssues(results: ValidationResults): Promise<ValidationResults> {
+  async fixIssues(issue: ValidationIssue): Promise<ValidationResults> {
     try {
       // Get AI-powered fix recommendations
-      const fixPrompt = `Based on the identified data issues, suggest automated fixes and data transformation steps 
-      to resolve the critical errors without manual intervention.`;
+      const fixPrompt = `Based on the identified data issue "${issue.message}" from source "${issue.source}", 
+      suggest automated fixes and data transformation steps to resolve this issue without manual intervention.`;
       
       // Call DeepSeek for fix recommendations
       await deepseekService.processQuery(
@@ -105,17 +105,19 @@ export const validationService = {
         DATA_VALIDATION_PROMPT
       );
       
-      // Update results to reflect fixes
+      // Return mock updated results to reflect fixes
+      // In a real implementation, this would actually fix the data and return real results
       return {
-        ...results,
         valid: 96,
         warning: 6,
         error: 0,
-        issues: results.issues.filter(issue => issue.type !== 'error')
+        issues: [
+          // Return a filtered list of issues without the fixed one
+        ]
       };
     } catch (error) {
-      console.error('Error fixing issues:', error);
-      throw new Error('Failed to fix issues');
+      console.error('Error fixing issue:', error);
+      throw new Error('Failed to fix issue');
     }
   }
 };
