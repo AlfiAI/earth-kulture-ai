@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { captureException } from "@/services/monitoring/errorTracking";
@@ -100,8 +99,47 @@ export const useSocialAuth = () => {
     }
   };
 
+  const signInWithLinkedIn = async () => {
+    try {
+      const redirectUrl = `${getSiteUrl()}/auth`;
+      console.log("Signing in with LinkedIn, redirect URL:", redirectUrl);
+      
+      const { error, data } = await supabase.auth.signInWithOAuth({
+        provider: 'linkedin',
+        options: {
+          redirectTo: redirectUrl,
+          scopes: 'r_liteprofile r_emailaddress'
+        }
+      });
+      
+      if (error) {
+        if (error.message.includes("provider is not enabled")) {
+          console.error("LinkedIn provider is not enabled in Supabase:", error);
+          toast.error("LinkedIn authentication is not enabled. Please contact support or use email login.");
+          throw new Error("LinkedIn provider is not enabled in Supabase Auth settings");
+        }
+        throw error;
+      }
+      
+      return data;
+    } catch (error: any) {
+      console.error("Error signing in with LinkedIn:", error);
+      captureException(error);
+      
+      // Show more specific error message
+      if (error.message.includes("provider is not enabled")) {
+        toast.error("LinkedIn authentication is not enabled. Please use email login or contact support.");
+      } else {
+        toast.error(error.message || "Failed to sign in with LinkedIn");
+      }
+      
+      throw error;
+    }
+  };
+
   return {
     signInWithGoogle,
-    signInWithGithub
+    signInWithGithub,
+    signInWithLinkedIn
   };
 };

@@ -1,6 +1,5 @@
-
 import { Button } from "@/components/ui/button";
-import { Github } from "lucide-react";
+import { Github, Linkedin } from "lucide-react";
 import { toast } from "sonner";
 
 type SocialLoginButtonsProps = {
@@ -36,6 +35,21 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
     }
     
     onSocialLogin('github');
+  };
+
+  const handleLinkedInSignIn = () => {
+    // Check if we're in development mode, show a helpful message
+    if (process.env.NODE_ENV === 'development') {
+      toast.info("Make sure LinkedIn provider is enabled in Supabase Auth settings", {
+        duration: 5000,
+        action: {
+          label: 'Learn More',
+          onClick: () => window.open('https://supabase.com/dashboard/project/ihijlloxwfjrrnhxqlfa/auth/providers', '_blank')
+        }
+      });
+    }
+    
+    onSocialLogin('linkedin');
   };
 
   return (
@@ -74,6 +88,15 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
       >
         <Github className="mr-2 h-4 w-4" />
         Continue with GitHub
+      </Button>
+      
+      <Button 
+        variant="outline" 
+        className="w-full justify-start" 
+        onClick={handleLinkedInSignIn}
+      >
+        <Linkedin className="mr-2 h-4 w-4" />
+        Continue with LinkedIn
       </Button>
     </div>
   );

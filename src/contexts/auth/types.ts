@@ -30,6 +30,7 @@ export interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<any>;
   signInWithGithub: () => Promise<any>;
+  signInWithLinkedIn: () => Promise<any>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   setupMFA: () => Promise<{ qr: string; secret: string } | null>;
