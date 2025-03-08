@@ -18,7 +18,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="flex flex-1 pt-16">
-        <Sidebar />
+        <Sidebar isCollapsed={!sidebarOpen} />
         <main
           className={`flex-1 transition-all duration-200 ${
             sidebarOpen ? "lg:ml-64" : "lg:ml-16"

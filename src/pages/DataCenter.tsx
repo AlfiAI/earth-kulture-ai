@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -22,7 +21,7 @@ const DataCenter = () => {
 
   return (
     <div className="min-h-screen flex w-full">
-      <Sidebar open={sidebarOpen} onToggle={toggleSidebar} />
+      <Sidebar isCollapsed={!sidebarOpen} />
       
       <div className={cn(
         "flex-1 transition-all duration-300",

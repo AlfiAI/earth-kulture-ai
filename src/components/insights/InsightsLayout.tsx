@@ -19,7 +19,7 @@ const InsightsLayout = ({
 }: InsightsLayoutProps) => {
   return (
     <div className="min-h-screen flex w-full">
-      <Sidebar />
+      <Sidebar isCollapsed={!sidebarOpen} />
       
       <div className={cn(
         "flex-1 transition-all duration-300",

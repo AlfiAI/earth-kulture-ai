@@ -13,3 +13,7 @@ verify_jwt = false
 
 [functions.setup-esg-cron]
 verify_jwt = false
+
+# Configure imported paths correctly
+[functions]
+port = 54335

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { FileText, Download, Zap } from 'lucide-react';
 import { cn } from "@/lib/utils";
@@ -18,7 +17,7 @@ const Reports = () => {
 
   return (
     <div className="min-h-screen flex w-full">
-      <Sidebar open={sidebarOpen} onToggle={toggleSidebar} />
+      <Sidebar isCollapsed={!sidebarOpen} />
       
       <div className={cn(
         "flex-1 transition-all duration-300",

@@ -34,7 +34,7 @@ class RegulationService {
         throw new Error("Invalid response format from ESG regulations query");
       }
       
-      return data as ESGRegulation[];
+      return data as unknown as ESGRegulation[];
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulations", {
         operation: 'getESGRegulations',
@@ -59,7 +59,7 @@ class RegulationService {
       
       if (error) throw error;
       
-      return data as ESGRegulation;
+      return data as unknown as ESGRegulation;
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulation details", {
         operation: 'getESGRegulationById',
@@ -73,7 +73,6 @@ class RegulationService {
   async getRegulationsBySector(sector: string): Promise<ESGRegulation[]> {
     try {
       // Note: This assumes there's a 'tags' column that might contain sector information
-      // Adjust as needed based on your actual database schema
       const { data, error } = await supabase
         .from('esg_regulatory_updates')
         .select('*')
@@ -82,7 +81,7 @@ class RegulationService {
       
       if (error) throw error;
       
-      return data as ESGRegulation[];
+      return data as unknown as ESGRegulation[];
     } catch (error) {
       handleServiceError(error, "Failed to load sector-specific regulations", {
         operation: 'getRegulationsBySector',
