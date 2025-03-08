@@ -57,5 +57,7 @@ export const useAuthState = () => {
     setUserProfile,
     isAuthenticated: !!session,
     isLoading,
+    setSession,
+    setUser
   };
 };
