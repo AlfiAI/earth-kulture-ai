@@ -2,6 +2,7 @@
 import { ValidationResults } from '../../ValidationTypes';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { validationService } from "@/services/validation/validationService";
 
 export const useValidationProcess = (
   setIsValidating: (value: boolean) => void,
@@ -38,13 +39,8 @@ export const useValidationProcess = (
       // Performance monitoring
       const startTime = performance.now();
       
-      // Call the data validation edge function
-      const { data, error } = await supabase.functions.invoke("data-validation", {
-        body: {
-          userId: userData.user.id,
-          validateWith: "deepseek-r1" // Use DeepSeek-R1 for advanced validation
-        }
-      });
+      // For demo, directly use the validation service
+      const results = await validationService.performValidation();
       
       // Performance tracking
       const endTime = performance.now();
@@ -52,14 +48,10 @@ export const useValidationProcess = (
       
       clearInterval(progressInterval);
       
-      if (error) {
-        throw error;
-      }
-      
       setProgress(100);
       setTimeout(() => {
         setIsValidating(false);
-        setValidationResults(data.results);
+        setValidationResults(results);
         setValidationComplete(true);
         toast.success('ESG data validation complete');
       }, 500);

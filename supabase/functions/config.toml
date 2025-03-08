@@ -1,8 +1,5 @@
 
+# This file controls the behavior of the edge functions.
+# Put project_id = "your-project-ref" in here once you've created a project.
+
 project_id = "ihijlloxwfjrrnhxqlfa"
-
-[data-validation]
-verify_jwt = true
-
-[generate-esg-insights]
-verify_jwt = true

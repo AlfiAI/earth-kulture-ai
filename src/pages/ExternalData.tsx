@@ -1,22 +1,17 @@
 
 import { useState } from 'react';
+import { Globe } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ExternalLink } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import EnhancedWalyAssistant from "@/components/ai/EnhancedWalyAssistant";
-import DataHeader from "@/components/data/DataHeader";
-import DataSourceCard from "@/components/data/DataSourceCard";
-import DataValidation from "@/components/data/DataValidation";
-import DatabaseOptimizationStatus from "@/components/data/DatabaseOptimizationStatus";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import ESGRegulationsList from "@/components/external/ESGRegulationsList";
+import ESGBenchmarkCard from "@/components/external/ESGBenchmarkCard";
 
-const DataCenter = () => {
+const ExternalData = () => {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
-  const navigate = useNavigate();
   
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -32,28 +27,24 @@ const DataCenter = () => {
         <Header toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
         
         <main className="container max-w-7xl mx-auto p-4 lg:p-6 pb-24">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-            <DataHeader 
-              title="Data Management" 
-              subtitle="AI-powered data processing for ESG & carbon tracking" 
-            />
-            <Button 
-              variant="outline" 
-              className="mt-2 sm:mt-0"
-              onClick={() => navigate('/external-data')}
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              External Data Sources
-            </Button>
+          <div className="flex items-center mb-6">
+            <Globe className="h-6 w-6 mr-2" />
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">External ESG Data</h1>
+              <p className="text-muted-foreground">
+                Regulatory updates, benchmarks, and industry data
+              </p>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <DataSourceCard />
-            <DataValidation />
+            <div className="lg:col-span-2">
+              <ESGRegulationsList />
+            </div>
           </div>
-
+          
           <div className="mb-6">
-            <DatabaseOptimizationStatus />
+            <ESGBenchmarkCard />
           </div>
         </main>
       </div>
@@ -63,4 +54,4 @@ const DataCenter = () => {
   );
 };
 
-export default DataCenter;
+export default ExternalData;

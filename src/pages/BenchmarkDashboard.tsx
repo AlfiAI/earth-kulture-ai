@@ -1,23 +1,47 @@
+
+import { useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import ESGBenchmarkCard from "@/components/external/ESGBenchmarkCard";
+import ESGRegulationsList from "@/components/external/ESGRegulationsList";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const BenchmarkDashboard = () => {
+  const [activeTab, setActiveTab] = useState("benchmarks");
+  
   return (
     <DashboardLayout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Industry Benchmarking</h1>
+        <h1 className="text-3xl font-bold mb-6">Industry Benchmarking</h1>
         
-        <div className="grid grid-cols-1 gap-6">
-          <div className="bg-card rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">ESG Performance Benchmarking</h2>
-            <p className="text-muted-foreground mb-6">
-              Compare your ESG performance against industry peers and standards
-            </p>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList>
+            <TabsTrigger value="benchmarks">ESG Benchmarks</TabsTrigger>
+            <TabsTrigger value="regulations">Regulations & Updates</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="benchmarks" className="space-y-6">
+            <ESGBenchmarkCard />
             
-            <div className="border border-dashed border-gray-300 rounded-md p-8 text-center">
-              <p className="text-muted-foreground">Benchmarking tools are being loaded...</p>
-            </div>
-          </div>
-        </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Competitor Analysis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="border border-dashed border-gray-300 rounded-md p-8 text-center">
+                  <p className="text-muted-foreground">
+                    Competitor analysis data is being compiled. Check back soon to see
+                    how your ESG performance compares to competitors in your industry.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="regulations">
+            <ESGRegulationsList />
+          </TabsContent>
+        </Tabs>
       </div>
     </DashboardLayout>
   );

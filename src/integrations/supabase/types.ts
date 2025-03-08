@@ -274,6 +274,90 @@ export type Database = {
         }
         Relationships: []
       }
+      esg_benchmarks: {
+        Row: {
+          benchmark_name: string
+          benchmark_value: number | null
+          category: string
+          created_at: string | null
+          id: string
+          industry: string
+          region: string | null
+          source: string
+          unit: string | null
+          year: number | null
+        }
+        Insert: {
+          benchmark_name: string
+          benchmark_value?: number | null
+          category: string
+          created_at?: string | null
+          id?: string
+          industry: string
+          region?: string | null
+          source: string
+          unit?: string | null
+          year?: number | null
+        }
+        Update: {
+          benchmark_name?: string
+          benchmark_value?: number | null
+          category?: string
+          created_at?: string | null
+          id?: string
+          industry?: string
+          region?: string | null
+          source?: string
+          unit?: string | null
+          year?: number | null
+        }
+        Relationships: []
+      }
+      esg_competitors: {
+        Row: {
+          company_name: string
+          created_at: string | null
+          environmental_score: number | null
+          esg_score: number | null
+          governance_score: number | null
+          highlights: string[] | null
+          id: string
+          industry: string
+          last_updated: string | null
+          report_url: string | null
+          report_year: number | null
+          social_score: number | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string | null
+          environmental_score?: number | null
+          esg_score?: number | null
+          governance_score?: number | null
+          highlights?: string[] | null
+          id?: string
+          industry: string
+          last_updated?: string | null
+          report_url?: string | null
+          report_year?: number | null
+          social_score?: number | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string | null
+          environmental_score?: number | null
+          esg_score?: number | null
+          governance_score?: number | null
+          highlights?: string[] | null
+          id?: string
+          industry?: string
+          last_updated?: string | null
+          report_url?: string | null
+          report_year?: number | null
+          social_score?: number | null
+        }
+        Relationships: []
+      }
       esg_data: {
         Row: {
           category: string
@@ -320,6 +404,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      esg_regulatory_updates: {
+        Row: {
+          category: string
+          content: string
+          country: string | null
+          id: string
+          impact_level: string | null
+          published_date: string | null
+          relevance_score: number | null
+          scraped_at: string | null
+          source: string
+          tags: string[] | null
+          title: string
+          url: string
+        }
+        Insert: {
+          category: string
+          content: string
+          country?: string | null
+          id?: string
+          impact_level?: string | null
+          published_date?: string | null
+          relevance_score?: number | null
+          scraped_at?: string | null
+          source: string
+          tags?: string[] | null
+          title: string
+          url: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          country?: string | null
+          id?: string
+          impact_level?: string | null
+          published_date?: string | null
+          relevance_score?: number | null
+          scraped_at?: string | null
+          source?: string
+          tags?: string[] | null
+          title?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      external_esg_datasets: {
+        Row: {
+          category: string
+          data: Json
+          dataset_description: string | null
+          dataset_name: string
+          id: string
+          last_updated: string | null
+          metrics: string[] | null
+          next_update: string | null
+          source: string
+        }
+        Insert: {
+          category: string
+          data: Json
+          dataset_description?: string | null
+          dataset_name: string
+          id?: string
+          last_updated?: string | null
+          metrics?: string[] | null
+          next_update?: string | null
+          source: string
+        }
+        Update: {
+          category?: string
+          data?: Json
+          dataset_description?: string | null
+          dataset_name?: string
+          id?: string
+          last_updated?: string | null
+          metrics?: string[] | null
+          next_update?: string | null
+          source?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
