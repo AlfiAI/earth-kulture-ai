@@ -1,7 +1,5 @@
 
 # This file controls the behavior of the edge functions.
-# Put project_id = "your-project-ref" in here once you've created a project.
-
 project_id = "ihijlloxwfjrrnhxqlfa"
 
 # Define functions with their own configuration sections
@@ -14,11 +12,9 @@ verify_jwt = false
 [functions.setup-esg-cron]
 verify_jwt = false
 
-# Define server port
-[functions.serve]
-port = 54335
-
 # Configure Deno for edge functions
 [functions]
 node_modules = false
-import_map = "./import_map.json"
+
+# Define server port (as a separate setting, not inside [functions])
+port = 54335
