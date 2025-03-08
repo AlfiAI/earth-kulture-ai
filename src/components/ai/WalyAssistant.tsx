@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { Bot } from 'lucide-react';
+import { Bot, Sparkles } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -39,9 +39,14 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
       {!isOpen && (
         <Button
           onClick={toggleOpen}
-          className="fixed right-4 bottom-4 rounded-full w-14 h-14 shadow-lg p-0 animate-in bg-primary text-white hover:bg-primary/90"
+          className="fixed right-4 bottom-4 rounded-full w-14 h-14 shadow-lg p-0 animate-in bg-primary text-white hover:bg-primary/90 flex items-center justify-center"
         >
-          <Bot className="h-6 w-6" />
+          <div className="relative">
+            <Bot className="h-6 w-6" />
+            <div className="absolute -top-1 -right-1">
+              <Sparkles className="h-3 w-3 text-yellow-300" />
+            </div>
+          </div>
         </Button>
       )}
       
@@ -51,7 +56,11 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
           isOpen ? "h-[550px] max-h-[80vh] opacity-100" : "h-0 opacity-0 pointer-events-none"
         )}
       >
-        <ChatHeader onClose={toggleOpen} />
+        <ChatHeader 
+          onClose={toggleOpen} 
+          title="Waly AI" 
+          subtitle="ESG & Carbon Intelligence" 
+        />
         
         <CardContent className="p-0 flex flex-col h-[calc(100%-56px)]">
           <MessageList 
@@ -64,6 +73,7 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
             setInputValue={setInputValue}
             handleSend={handleSend}
             inputRef={inputRef}
+            placeholder="Ask about ESG performance, carbon tracking, or sustainability..."
           />
         </CardContent>
       </Card>

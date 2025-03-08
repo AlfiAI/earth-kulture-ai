@@ -2,6 +2,7 @@
 import { toast } from "sonner";
 import { esgDataService } from '@/services/esgDataService';
 import { MessageProps } from '@/components/ai/Message';
+import { deepseekService } from './deepseekService';
 
 // AI context data for enhanced responses
 export const aiContext = {
@@ -33,8 +34,22 @@ export const aiContext = {
 };
 
 export class WalyAIService {
-  // Enhanced AI processing function
-  async processQuery(query: string): Promise<string> {
+  // Enhanced AI processing function using DeepSeek API
+  async processQuery(query: string, messageHistory: MessageProps[] = []): Promise<string> {
+    try {
+      // Process the query using DeepSeek R1 API
+      const response = await deepseekService.processQuery(query, messageHistory);
+      return response;
+    } catch (error) {
+      console.error('Error processing query with DeepSeek:', error);
+      
+      // Fallback to legacy processing
+      return this.legacyProcessQuery(query);
+    }
+  }
+  
+  // Legacy processing function (kept as fallback)
+  private async legacyProcessQuery(query: string): Promise<string> {
     // Simple keyword matching to simulate AI understanding
     const lowerQuery = query.toLowerCase();
     

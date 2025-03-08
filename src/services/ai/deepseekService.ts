@@ -1,0 +1,114 @@
+
+import { toast } from "sonner";
+import { MessageProps } from '@/components/ai/Message';
+
+// Constants
+const DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions";
+const DEEPSEEK_API_KEY = "DEMO_KEY"; // In production, this should come from environment variables
+
+// System prompt for ESG & Carbon Intelligence
+const ESG_SYSTEM_PROMPT = `You are Waly, an expert ESG & Carbon Intelligence Assistant specializing in sustainability reporting, emissions analysis, 
+and regulatory compliance. You provide data-driven insights and actionable recommendations to help organizations improve their sustainability practices.
+
+You have expertise in:
+- Carbon footprint calculation (Scope 1, 2, and 3 emissions)
+- ESG reporting frameworks (GHG Protocol, TCFD, GRI, SASB, EU Taxonomy, CDP)
+- Sustainability strategy development
+- Regulatory compliance tracking
+- Industry benchmarking and trend analysis
+
+Always provide specific, actionable insights based on industry best practices. When appropriate, reference relevant regulations, frameworks, or methodologies.`;
+
+// Interface for API response
+interface DeepseekResponse {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: {
+    index: number;
+    message: {
+      role: string;
+      content: string;
+    };
+    finish_reason: string;
+  }[];
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
+
+class DeepseekService {
+  // Process query using DeepSeek-R1 API
+  async processQuery(query: string, previousMessages: MessageProps[] = []): Promise<string> {
+    try {
+      // Format previous messages for context
+      const formattedMessages = this.formatMessagesForAPI(previousMessages);
+      
+      // Add system prompt and user query
+      const messages = [
+        { role: "system", content: ESG_SYSTEM_PROMPT },
+        ...formattedMessages,
+        { role: "user", content: query }
+      ];
+      
+      // Call DeepSeek API
+      const response = await fetch(DEEPSEEK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "deepseek-r1",
+          messages: messages,
+          temperature: 0.7,
+          top_p: 0.95,
+          max_tokens: 1000
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`DeepSeek API Error: ${errorData.error?.message || response.statusText}`);
+      }
+      
+      const data: DeepseekResponse = await response.json();
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error('Error calling DeepSeek API:', error);
+      // Fallback to local processing if API fails
+      return this.fallbackProcessQuery(query);
+    }
+  }
+  
+  // Format message history for API
+  private formatMessagesForAPI(messages: MessageProps[]): { role: string, content: string }[] {
+    return messages
+      .filter(msg => msg.id !== '1') // Filter out the welcome message
+      .map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.content
+      }));
+  }
+  
+  // Fallback method if API fails
+  private fallbackProcessQuery(query: string): string {
+    // Simple keyword matching to simulate AI understanding
+    const lowerQuery = query.toLowerCase();
+    
+    if (lowerQuery.includes('carbon') || lowerQuery.includes('emission')) {
+      return "Based on your carbon emissions data, I can provide some insights. However, I'm currently operating in fallback mode due to API connectivity issues. Please try again later for more detailed analysis.";
+    }
+    
+    if (lowerQuery.includes('esg') || lowerQuery.includes('compliance')) {
+      return "I can help with ESG compliance matters, but I'm currently operating in fallback mode. For accurate compliance insights, please try again when our API connection is restored.";
+    }
+    
+    return "I apologize, but I'm currently experiencing connection issues with my knowledge base. I'm operating in fallback mode with limited capabilities. Please try again later for full functionality.";
+  }
+}
+
+export const deepseekService = new DeepseekService();

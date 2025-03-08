@@ -23,8 +23,8 @@ export const useWalyChat = (initialMessages: MessageProps[] = []) => {
     setIsTyping(true);
     
     try {
-      // Process the user query with AI
-      const aiResponse = await walyAIService.processQuery(userMessage.content);
+      // Process the user query with AI, passing message history for context
+      const aiResponse = await walyAIService.processQuery(userMessage.content, messages);
       
       const aiMessage = walyAIService.createAIMessage(aiResponse);
       
