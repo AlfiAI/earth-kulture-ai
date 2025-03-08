@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { captureException } from "@/services/monitoring/errorTracking";
@@ -151,10 +152,17 @@ export const useAuthOperations = () => {
 
   const verifyMFA = async (token: string) => {
     try {
-      // The Supabase MFA API has changed, and we need to verify the token differently
-      // Instead of using challenge, we need to use verify
+      // First, we need to create a challenge
+      const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
+        factorId: 'totp'
+      });
+      
+      if (challengeError) throw challengeError;
+      
+      // Then verify the challenge with the token
       const { error } = await supabase.auth.mfa.verify({
         factorId: 'totp',
+        challengeId: challengeData.id,
         code: token
       });
 
