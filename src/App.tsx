@@ -36,7 +36,7 @@ function App() {
               ) : null;
             })}
         </Routes>
-        {/* Ensure EnhancedWalyAssistant is always visible and initialized */}
+        {/* Fix: Ensure EnhancedWalyAssistant is rendered properly with correct z-index and positioning */}
         <EnhancedWalyAssistant initialOpen={false} />
         <Toaster />
         <SonnerToaster position="top-center" />

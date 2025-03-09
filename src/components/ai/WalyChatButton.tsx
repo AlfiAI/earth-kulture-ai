@@ -61,9 +61,9 @@ const WalyChatButton = ({
     }
   };
   
-  // Make sure the position values are in pixels, not rem
-  const bottomPx = typeof position.bottom === 'number' ? position.bottom : 20;
-  const rightPx = typeof position.right === 'number' ? position.right : 20;
+  // Fix: Convert rem values to px for consistent positioning
+  const bottomPx = position.bottom * 16; // Convert rem to px (1rem = 16px)
+  const rightPx = position.right * 16; // Convert rem to px (1rem = 16px)
   
   return (
     <motion.div
