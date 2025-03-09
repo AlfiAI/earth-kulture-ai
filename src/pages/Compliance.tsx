@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Download, Filter, ArrowUpRight, ArrowDownRight, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -382,4 +383,10 @@ const Compliance = () => {
               </Card>
             ))}
           </TabsContent>
-       
+        </Tabs>
+      </div>
+    </InsightsLayout>
+  );
+};
+
+export default Compliance;
