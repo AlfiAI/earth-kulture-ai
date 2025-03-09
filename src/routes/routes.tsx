@@ -1,5 +1,7 @@
 
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import { AuthProvider } from "@/contexts/auth";
+import App from "@/App";
 
 // Core pages
 import AuthPage from "@/pages/AuthPage";
@@ -26,7 +28,13 @@ import Onboarding from "@/pages/Onboarding";
 // Protected route layout
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
-const Root = () => <Outlet />;
+// Root component that wraps everything with AuthProvider and includes App for non-route components
+const Root = () => (
+  <AuthProvider>
+    <App />
+    <Outlet />
+  </AuthProvider>
+);
 
 export const router = createBrowserRouter([
   {

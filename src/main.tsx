@@ -14,11 +14,12 @@ initErrorTracking();
 // Create a react-query client
 const queryClient = new QueryClient();
 
-createRoot(document.getElementById("root")!).render(
+// Create a new router that wraps the AuthProvider inside the routes
+const root = createRoot(document.getElementById("root")!);
+
+// Render the application
+root.render(
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <RouterProvider router={router} />
-      <App />
-    </AuthProvider>
+    <RouterProvider router={router} />
   </QueryClientProvider>
 );
