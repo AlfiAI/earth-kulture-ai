@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -27,6 +27,14 @@ const WalyChatButton = ({
   const [showStarters, setShowStarters] = useState(false);
   const isMobile = useIsMobile();
   const isOverlapping = useOverlapDetection('chat-button');
+  
+  // Log the button render for debugging
+  useEffect(() => {
+    console.log("WalyChatButton rendered with avatar path:", walyAvatarPath);
+    // Force a check to ensure the image is in the cache
+    const img = new Image();
+    img.src = walyAvatarPath;
+  }, []);
   
   // Conversation starter questions, use context-aware ones if provided
   const starters = contextAwareStarters || [
@@ -82,6 +90,7 @@ const WalyChatButton = ({
           "bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700",
           "hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300"
         )}
+        aria-label="Chat with Waly AI"
       >
         <ChatButtonAvatar avatarPath={walyAvatarPath} />
         <AnimatedSparkle />
