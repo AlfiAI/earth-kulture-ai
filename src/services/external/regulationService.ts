@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { ESGRegulation, handleServiceError } from "./types/externalTypes";
 
@@ -53,7 +52,7 @@ class RegulationService {
       
       // Break the type recursion by using a simpler type assertion
       return {
-        data: data as unknown as ESGRegulation[],
+        data: data as any,
         count: count || 0
       };
     } catch (error) {
