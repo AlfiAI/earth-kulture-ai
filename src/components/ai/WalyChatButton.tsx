@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
-import { Sparkles, MessageSquare } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+
+import { useState } from 'react';
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useOverlapDetection } from '@/hooks/use-overlap-detection';
+import ChatButtonAvatar from './chat-button/ChatButtonAvatar';
+import AnimatedSparkle from './chat-button/AnimatedSparkle';
+import ConversationStarterDropdown from './chat-button/ConversationStarterDropdown';
 
 interface WalyChatButtonProps {
   onClick: () => void;
@@ -23,8 +25,8 @@ const WalyChatButton = ({
   // Use the same avatar path as in MessageAvatar for consistency
   const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
   const [showStarters, setShowStarters] = useState(false);
-  const [isOverlapping, setIsOverlapping] = useState(false);
   const isMobile = useIsMobile();
+  const isOverlapping = useOverlapDetection('chat-button');
   
   // Conversation starter questions, use context-aware ones if provided
   const starters = contextAwareStarters || [
@@ -33,15 +35,6 @@ const WalyChatButton = ({
     "What ESG metrics should I monitor?",
     "How to start sustainability reporting?"
   ];
-  
-  useEffect(() => {
-    console.log("WalyChatButton mounted with position:", position, "avatar path:", walyAvatarPath);
-    // Verify the avatar image can be loaded
-    const img = new Image();
-    img.onload = () => console.log("Waly avatar image loaded successfully");
-    img.onerror = () => console.error("Failed to load Waly avatar image");
-    img.src = walyAvatarPath;
-  }, [position, walyAvatarPath]);
   
   const handleMouseEnter = () => {
     setShowStarters(true);
@@ -58,54 +51,6 @@ const WalyChatButton = ({
       onClick();
     }
   };
-
-  // Check for overlapping elements
-  useEffect(() => {
-    const checkOverlap = () => {
-      const chatButton = document.getElementById('chat-button');
-      if (!chatButton) return;
-      
-      const buttonRect = chatButton.getBoundingClientRect();
-      const buttonCenterX = buttonRect.left + buttonRect.width / 2;
-      const buttonCenterY = buttonRect.top + buttonRect.height / 2;
-      
-      // Check all clickable elements (buttons, links, etc.)
-      const interactiveElements = document.querySelectorAll('button, a, [role="button"], input, select, textarea');
-      
-      let isOverlapping = false;
-      interactiveElements.forEach(element => {
-        if (element === chatButton) return; // Skip self
-        
-        const elementRect = element.getBoundingClientRect();
-        
-        // Check if the elements overlap
-        if (
-          buttonRect.right > elementRect.left &&
-          buttonRect.left < elementRect.right &&
-          buttonRect.bottom > elementRect.top &&
-          buttonRect.top < elementRect.bottom
-        ) {
-          isOverlapping = true;
-        }
-      });
-      
-      setIsOverlapping(isOverlapping);
-    };
-    
-    // Check overlap initially and on window resize
-    checkOverlap();
-    window.addEventListener('resize', checkOverlap);
-    window.addEventListener('scroll', checkOverlap);
-    
-    // Recheck periodically for dynamic content changes
-    const intervalId = setInterval(checkOverlap, 1000);
-    
-    return () => {
-      window.removeEventListener('resize', checkOverlap);
-      window.removeEventListener('scroll', checkOverlap);
-      clearInterval(intervalId);
-    };
-  }, []);
   
   // Make sure the position values are in pixels, not rem
   const bottomPx = typeof position.bottom === 'number' ? position.bottom : 20;
@@ -138,66 +83,17 @@ const WalyChatButton = ({
           "hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300"
         )}
       >
-        <Avatar className="w-14 h-14 border-2 border-primary/10 overflow-visible">
-          <AvatarImage 
-            src={walyAvatarPath} 
-            alt="Waly Bot"
-            className="object-contain p-1.5" 
-          />
-          <AvatarFallback className="bg-white dark:bg-gray-800">
-            <div className="h-full w-full flex items-center justify-center text-primary">
-              <Sparkles className="h-6 w-6" />
-            </div>
-          </AvatarFallback>
-        </Avatar>
-        <motion.div
-          animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.7, 1, 0.7],
-            rotate: [0, 5, 0]
-          }}
-          transition={{ 
-            duration: 2, 
-            repeat: Infinity,
-            repeatType: "loop" 
-          }}
-          className="absolute -top-1 -right-1"
-        >
-          <Sparkles className="h-4 w-4 text-yellow-300" />
-        </motion.div>
+        <ChatButtonAvatar avatarPath={walyAvatarPath} />
+        <AnimatedSparkle />
       </Button>
       
       {/* Conversation starters dropdown */}
       {showStarters && (
-        <motion.div
-          initial={{ opacity: 0, y: -10, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-          className={cn(
-            "absolute mb-2 z-[9999]", // Ensure high z-index
-            isMobile ? "bottom-[4.5rem] right-0" : "bottom-[4.5rem] right-0"
-          )}
-        >
-          <Card className="p-1.5 bg-white/95 backdrop-blur-sm border border-primary/10 shadow-lg rounded-xl w-[280px]">
-            <div className="text-xs font-medium text-muted-foreground px-2 py-1.5">
-              Quick prompts:
-            </div>
-            <div className="space-y-1">
-              {starters.map((starter, index) => (
-                <Button
-                  key={index}
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start text-xs rounded-lg p-2 h-auto ai-starter"
-                  onClick={() => handleStarterClick(starter)}
-                >
-                  <MessageSquare className="h-3 w-3 mr-2 text-primary" />
-                  <span className="truncate">{starter}</span>
-                </Button>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
+        <ConversationStarterDropdown 
+          starters={starters}
+          onStarterClick={handleStarterClick}
+          isMobile={isMobile}
+        />
       )}
     </motion.div>
   );
