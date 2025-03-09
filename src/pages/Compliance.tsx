@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Download, Filter, ArrowUpRight, ArrowDownRight, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,7 @@ import DashboardCard from "@/components/dashboard/DashboardCard";
 import WalyAssistant from "@/components/ai/WalyAssistant";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useSidebar } from "@/components/ui/sidebar";
 
 // Sample compliance items
 const complianceItems = [
@@ -66,11 +65,8 @@ const complianceItems = [
 ];
 
 const Compliance = () => {
-  const isMobile = useIsMobile();
-  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+  const { open: sidebarOpen, isMobile } = useSidebar();
   const [mounted, setMounted] = useState(true);
-  
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -94,7 +90,7 @@ const Compliance = () => {
         sidebarOpen ? "lg:ml-64" : "lg:ml-16",
         isMobile && "ml-0"
       )}>
-        <Header toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
+        <Header />
         
         <main className="container max-w-7xl mx-auto p-4 lg:p-6 pb-24">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
@@ -291,7 +287,7 @@ const Compliance = () => {
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">{item.description}</p>
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-muted-foreground">
+                        <div className="flex flex-wrap gap-4 mt-2 text-xs text-muted-foreground">
                           <span>Last updated: {item.lastUpdated}</span>
                           {item.deadline && <span>Deadline: {item.deadline}</span>}
                         </div>
@@ -311,7 +307,6 @@ const Compliance = () => {
               
               <TabsContent value="compliant" className="space-y-4">
                 {complianceItems.filter(item => item.status === 'Compliant').map((item, index) => (
-                  // Similar card structure as above
                   <Card key={index} className="p-4">
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
                       <div className="flex-1">
@@ -342,7 +337,6 @@ const Compliance = () => {
               
               <TabsContent value="in-progress" className="space-y-4">
                 {complianceItems.filter(item => item.status === 'In Progress').map((item, index) => (
-                  // Similar card structure with In Progress status
                   <Card key={index} className="p-4">
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
                       <div className="flex-1">
@@ -374,7 +368,6 @@ const Compliance = () => {
               
               <TabsContent value="attention" className="space-y-4">
                 {complianceItems.filter(item => item.status === 'Attention Needed').map((item, index) => (
-                  // Similar card structure with Attention Needed status
                   <Card key={index} className="p-4">
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
                       <div className="flex-1">

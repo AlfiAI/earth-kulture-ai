@@ -1,41 +1,30 @@
 
-import { Link, useLocation } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
+  Gauge,
   BarChart,
-  FileText,
-  Settings,
   Upload,
+  FileText,
   MessageSquare,
-  FileBarChart,
-  BookOpen,
+  Settings,
   HelpCircle,
   Globe,
-  Gauge,
+  FileBarChart,
+  BookOpen,
   ListChecks,
-  Scale,
   TrendingUp,
   Building,
   LightbulbIcon
-} from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+} from 'lucide-react';
 
-export interface SidebarProps {
+interface SidebarProps {
   isCollapsed: boolean;
 }
 
-interface SidebarItem {
-  title: string;
-  icon: React.ReactNode;
-  href: string;
-}
-
-export function Sidebar({ isCollapsed }: SidebarProps) {
-  const { pathname } = useLocation();
-
-  const sidebarItems: SidebarItem[] = [
+const Sidebar = ({ isCollapsed }: SidebarProps) => {
+  const sidebarItems = [
     {
       title: "Dashboard",
       icon: <Gauge className="h-5 w-5" />,
@@ -109,64 +98,52 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
   ];
 
   return (
-    <aside
-      className={cn(
-        "fixed inset-y-0 left-0 z-20 flex h-full flex-col border-r bg-sidebar-background transition-all duration-300 ease-in-out",
-        isCollapsed 
-          ? "w-16 hover:w-64 hover:shadow-lg group" 
-          : "w-64 shadow-md"
-      )}
-    >
-      <div className="flex h-16 items-center justify-center border-b px-4">
+    <aside className={cn(
+      "fixed inset-y-0 left-0 z-10 flex flex-col border-r border-border/40 bg-background shadow-sm transition-all duration-300",
+      isCollapsed ? "w-16" : "w-64",
+      "md:relative md:z-0"
+    )}>
+      <div className="flex h-16 items-center border-b px-4">
         <Link to="/" className="flex items-center">
           <Globe className="h-6 w-6 text-primary" />
-          <span className={cn(
-            "ml-2 text-xl font-bold transition-opacity duration-200",
-            isCollapsed ? "opacity-0 group-hover:opacity-100" : "opacity-100"
-          )}>
-            Earth Kulture
-          </span>
+          {!isCollapsed && (
+            <span className="ml-2 text-xl font-bold">
+              Earth Kulture
+            </span>
+          )}
         </Link>
       </div>
-      <ScrollArea className="flex-1 py-2">
-        <nav className="flex flex-col gap-1 px-2">
-          <TooltipProvider delayDuration={0}>
-            {sidebarItems.map((item) => (
-              <Tooltip key={item.href}>
-                <TooltipTrigger asChild>
-                  <Button
-                    asChild
-                    variant={pathname === item.href ? "secondary" : "ghost"}
-                    className={cn(
-                      "justify-start transition-all duration-300 overflow-hidden",
-                      isCollapsed 
-                        ? "justify-center w-10 mx-auto group-hover:w-full group-hover:justify-start" 
-                        : "justify-start w-full"
-                    )}
-                  >
-                    <Link to={item.href} className="flex items-center w-full">
-                      {item.icon}
-                      <span className={cn(
-                        "ml-2 truncate transition-opacity duration-200",
-                        isCollapsed ? "opacity-0 group-hover:opacity-100" : "opacity-100"
-                      )}>
-                        {item.title}
-                      </span>
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                {isCollapsed && (
-                  <TooltipContent side="right">
-                    <p>{item.title}</p>
-                  </TooltipContent>
+      
+      <nav className="flex-1 overflow-y-auto py-4">
+        <ul className="space-y-1 px-2">
+          {sidebarItems.map((item) => (
+            <li key={item.href}>
+              <Link
+                to={item.href}
+                className="flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                {item.icon}
+                {!isCollapsed && (
+                  <span className="ml-3 truncate">{item.title}</span>
                 )}
-              </Tooltip>
-            ))}
-          </TooltipProvider>
-        </nav>
-      </ScrollArea>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      
+      <div className="border-t p-4">
+        {!isCollapsed && (
+          <Link
+            to="/help"
+            className="flex w-full items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            Need Help?
+          </Link>
+        )}
+      </div>
     </aside>
   );
-}
+};
 
 export default Sidebar;

@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Bell, 
-  Menu, 
   Globe, 
   Settings,
   LogOut
@@ -18,7 +17,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
