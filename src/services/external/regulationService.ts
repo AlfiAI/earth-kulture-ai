@@ -34,8 +34,8 @@ class RegulationService {
         throw new Error("Invalid response format from ESG regulations query");
       }
       
-      // Break the type recursion by using unknown as an intermediate step
-      return data as unknown as ESGRegulation[];
+      // Use a direct type assertion without intermediate steps
+      return data as ESGRegulation[];
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulations", {
         operation: 'getESGRegulations',
@@ -60,8 +60,8 @@ class RegulationService {
       
       if (error) throw error;
       
-      // Break the type recursion by using unknown as an intermediate step
-      return data as unknown as ESGRegulation;
+      // Use a direct type assertion
+      return data as ESGRegulation;
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulation details", {
         operation: 'getESGRegulationById',
@@ -83,8 +83,8 @@ class RegulationService {
       
       if (error) throw error;
       
-      // Break the type recursion by using unknown as an intermediate step
-      return (data || []) as unknown as ESGRegulation[];
+      // Use a direct type assertion
+      return (data || []) as ESGRegulation[];
     } catch (error) {
       handleServiceError(error, "Failed to load sector-specific regulations", {
         operation: 'getRegulationsBySector',
