@@ -1,9 +1,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Sparkles, MessageCirclePlus } from 'lucide-react';
+import { Sparkles, MessageCircle } from 'lucide-react';
 import EnhancedChatPanel from './EnhancedChatPanel';
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface EnhancedWalyAssistantProps {
   initialOpen?: boolean;
@@ -86,12 +87,24 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       {!isOpen && (
         <Button
           onClick={toggleOpen}
-          className="fixed rounded-full w-16 h-16 shadow-xl bg-gradient-to-r from-primary to-sky-500 text-white hover:bg-primary/90 flex items-center justify-center z-50 transition-all duration-300 animate-pulse-gentle"
-          style={{ bottom: `${position.bottom}rem`, right: `${position.right}rem` }}
+          className="fixed rounded-full shadow-xl flex items-center justify-center z-50 p-0 hover:scale-105 transition-all duration-300 group"
+          style={{ 
+            bottom: `${position.bottom}rem`, 
+            right: `${position.right}rem`,
+            width: "64px",
+            height: "64px"
+          }}
         >
-          <div className="relative">
-            <MessageCirclePlus className="h-7 w-7" />
-            <Sparkles className="h-4 w-4 absolute -top-1 -right-1 text-yellow-300 animate-float" />
+          <div className="relative w-full h-full">
+            <Avatar className="w-full h-full border-2 border-white/20">
+              <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
+                <div className="relative">
+                  <MessageCircle className="h-6 w-6" />
+                  <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-yellow-300 animate-pulse" />
+                </div>
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/40 to-sky-500/40 animate-pulse-gentle group-hover:opacity-0 transition-opacity"></div>
           </div>
         </Button>
       )}

@@ -1,8 +1,9 @@
 
-import { X, Bot } from 'lucide-react';
+import { X, Sparkles } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatHeaderProps {
   onClose: () => void;
@@ -17,7 +18,11 @@ const ChatHeader = ({ onClose, title, subtitle }: ChatHeaderProps) => {
   return (
     <div className="bg-primary text-primary-foreground p-3 flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <Bot className="h-5 w-5" />
+        <Avatar className="h-8 w-8 bg-white/20 border-2 border-white/30">
+          <AvatarFallback className="bg-gradient-to-br from-white/90 to-white/70 text-primary">
+            <Sparkles className="h-4 w-4" />
+          </AvatarFallback>
+        </Avatar>
         <div className="flex flex-col">
           <h2 className="font-medium">{displayTitle}</h2>
           {subtitle && <p className="text-xs text-primary-foreground/80">{subtitle}</p>}

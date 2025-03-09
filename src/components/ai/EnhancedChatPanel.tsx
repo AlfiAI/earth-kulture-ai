@@ -8,7 +8,7 @@ import ChatInput from './ChatInput';
 import EnhancedChatBanner from './EnhancedChatBanner';
 import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
 import ConversationStarters from './ConversationStarters';
-import { TrendingUp, Zap, Lightbulb, BarChart } from 'lucide-react';
+import { TrendingUp, Zap, Lightbulb, BarChart, Sparkles } from 'lucide-react';
 
 interface EnhancedChatPanelProps {
   isOpen: boolean;
