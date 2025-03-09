@@ -1,5 +1,5 @@
 
-import { ESGBenchmark } from "@/services/external/externalDataService";
+import { ESGBenchmark } from "@/services/external/types/externalTypes";
 
 export function getIndustryColor(index: number): string {
   const colors = [
@@ -25,8 +25,7 @@ export function getDemoBenchmarks(): ESGBenchmark[] {
       source: 'Industry Reports', 
       year: 2023, 
       region: 'Global', 
-      category: 'emissions', 
-      created_at: new Date().toISOString() 
+      category: 'emissions'
     },
     { 
       id: '2', 
@@ -37,8 +36,7 @@ export function getDemoBenchmarks(): ESGBenchmark[] {
       source: 'Industry Reports', 
       year: 2023, 
       region: 'Global', 
-      category: 'emissions', 
-      created_at: new Date().toISOString() 
+      category: 'emissions'
     },
     { 
       id: '3', 
@@ -49,8 +47,7 @@ export function getDemoBenchmarks(): ESGBenchmark[] {
       source: 'Industry Reports', 
       year: 2023, 
       region: 'Global', 
-      category: 'emissions', 
-      created_at: new Date().toISOString() 
+      category: 'emissions'
     },
     { 
       id: '4', 
@@ -61,8 +58,7 @@ export function getDemoBenchmarks(): ESGBenchmark[] {
       source: 'Industry Reports', 
       year: 2023, 
       region: 'Global', 
-      category: 'emissions', 
-      created_at: new Date().toISOString() 
+      category: 'emissions'
     },
     { 
       id: '5', 
@@ -73,8 +69,7 @@ export function getDemoBenchmarks(): ESGBenchmark[] {
       source: 'Industry Reports', 
       year: 2023, 
       region: 'Global', 
-      category: 'emissions', 
-      created_at: new Date().toISOString() 
+      category: 'emissions'
     }
   ];
 }

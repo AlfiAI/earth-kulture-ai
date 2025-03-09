@@ -1,10 +1,10 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { alertService } from './alerts/alertService';
 import { complianceMonitor } from './compliance/complianceMonitor';
 import { analyticsMonitor } from './analytics/analyticsMonitor';
 import { aiComplianceMonitor } from './compliance/aiComplianceMonitor';
 import { toast } from "sonner";
+import { ESGAlert, AlertSeverity, AlertType } from './types/alertTypes';
 
 /**
  * ESG Intelligence Item from external sources
@@ -118,7 +118,6 @@ class ESGMonitoringService {
         return cached;
       }
       
-      // Call the Supabase function to gather new intelligence
       const { data, error } = await supabase.functions.invoke('esg-intelligence-aggregator', {
         body: { industry, region, category }
       });
@@ -185,7 +184,7 @@ class ESGMonitoringService {
   markAlertAsRead = alertService.markAlertAsRead.bind(alertService);
 }
 
-// Re-export types with 'export type' syntax to fix isolatedModules error
-export type { ESGAlert, AlertSeverity, AlertType } from './types/alertTypes';
+// Re-export ESGAlert and related types
+export { ESGAlert, AlertSeverity, AlertType };
 
 export const esgMonitoringService = new ESGMonitoringService();

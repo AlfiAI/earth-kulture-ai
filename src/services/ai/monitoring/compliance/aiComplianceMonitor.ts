@@ -1,8 +1,8 @@
-
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { aiAgentOrchestrator } from '../../orchestration/aiAgentOrchestrator';
-import { esgMonitoringService, ESGAlert } from '../esgMonitoringService';
+import { ESGAlert } from '../types/alertTypes';
+import { esgMonitoringService } from '../esgMonitoringService';
 
 export interface ComplianceRisk {
   id: string;
@@ -27,17 +27,11 @@ class AIComplianceMonitor {
   private isMonitoring: boolean = false;
   private monitoringInterval: number | null = null;
   
-  /**
-   * Start continuous compliance monitoring
-   */
   startContinuousMonitoring(intervalMinutes: number = 30): void {
-    // Clear any existing monitoring
     this.stopContinuousMonitoring();
     
-    // Run an initial check
     this.runComplianceCheck();
     
-    // Set up interval for regular checks
     this.monitoringInterval = window.setInterval(() => {
       this.runComplianceCheck();
     }, intervalMinutes * 60 * 1000);
@@ -45,9 +39,6 @@ class AIComplianceMonitor {
     console.log(`AI Compliance monitoring started (interval: ${intervalMinutes} minutes)`);
   }
   
-  /**
-   * Stop continuous compliance monitoring
-   */
   stopContinuousMonitoring(): void {
     if (this.monitoringInterval !== null) {
       clearInterval(this.monitoringInterval);
@@ -56,9 +47,6 @@ class AIComplianceMonitor {
     }
   }
   
-  /**
-   * Run a comprehensive compliance check using AI pattern recognition
-   */
   async runComplianceCheck(): Promise<void> {
     if (this.isMonitoring) return;
     
@@ -66,7 +54,6 @@ class AIComplianceMonitor {
     console.log('Running AI compliance check...');
     
     try {
-      // Get current user
       const { data: userData } = await supabase.auth.getUser();
       if (!userData?.user?.id) {
         throw new Error('User not authenticated');
@@ -74,7 +61,6 @@ class AIComplianceMonitor {
       
       const userId = userData.user.id;
       
-      // Fetch recent ESG data
       const { data: esgData, error: esgError } = await supabase
         .from('esg_data')
         .select('*')
@@ -84,7 +70,6 @@ class AIComplianceMonitor {
         
       if (esgError) throw esgError;
       
-      // Fetch current compliance status
       const { data: complianceData, error: complianceError } = await supabase
         .from('compliance_status')
         .select('*, compliance_frameworks(*)')
@@ -94,7 +79,6 @@ class AIComplianceMonitor {
         
       if (complianceError) throw complianceError;
       
-      // Fetch recent regulatory updates
       const { data: regulationsData, error: regulationsError } = await supabase
         .from('esg_regulatory_updates')
         .select('*')
@@ -103,7 +87,6 @@ class AIComplianceMonitor {
         
       if (regulationsError) throw regulationsError;
       
-      // Submit to AI orchestrator for analysis
       const taskId = await aiAgentOrchestrator.submitTask('regulatory-compliance', {
         esgData,
         complianceData,
@@ -112,9 +95,8 @@ class AIComplianceMonitor {
         action: 'detect-compliance-risks'
       }, 'high');
       
-      // Check for task completion
       let retries = 0;
-      const maxRetries = 12; // Check for up to 1 minute
+      const maxRetries = 12;
       
       const checkTaskStatus = async () => {
         if (retries >= maxRetries) {
@@ -132,7 +114,6 @@ class AIComplianceMonitor {
           console.error('Compliance check failed:', taskStatus.error);
           this.isMonitoring = false;
         } else {
-          // Check again in 5 seconds
           retries++;
           setTimeout(checkTaskStatus, 5000);
         }
@@ -146,9 +127,6 @@ class AIComplianceMonitor {
     }
   }
   
-  /**
-   * Process and store compliance check results
-   */
   private async processComplianceResults(results: any, userId: string): Promise<void> {
     try {
       const risks = results.detectedRisks || [];
@@ -159,11 +137,7 @@ class AIComplianceMonitor {
         return;
       }
       
-      // Store each detected risk in the database
-      // Note: We'd need to create an esg_compliance_risks table in Supabase
-      // For now, we'll just log the risks and create alerts for high severity ones
       for (const risk of risks) {
-        // Create alerts for high and critical risks
         if (risk.severity === 'high' || risk.severity === 'critical') {
           const alert: ESGAlert = {
             id: Date.now().toString(),
@@ -176,14 +150,16 @@ class AIComplianceMonitor {
               category: risk.category,
               framework: risk.framework,
               suggestedActions: risk.suggestedActions.join(', ')
-            }
+            },
+            description: risk.description,
+            recommendedActions: risk.suggestedActions,
+            category: risk.category
           };
           
           await esgMonitoringService.createAlert(alert);
         }
       }
       
-      // If high severity risks exist, show a toast notification
       const highSeverityCount = risks.filter(
         (r: any) => r.severity === 'high' || r.severity === 'critical'
       ).length;
@@ -200,16 +176,12 @@ class AIComplianceMonitor {
     }
   }
   
-  /**
-   * Get detected compliance risks
-   */
   async getComplianceRisks(
     status?: string, 
     severity?: string,
     limit = 20
   ): Promise<ComplianceRisk[]> {
     try {
-      // For now, return a mock implementation since we don't have the esg_compliance_risks table yet
       return [
         {
           id: '1',
@@ -254,15 +226,11 @@ class AIComplianceMonitor {
     }
   }
   
-  /**
-   * Update risk status
-   */
   async updateRiskStatus(
     riskId: string, 
     status: 'in-review' | 'mitigated' | 'false-positive'
   ): Promise<boolean> {
     try {
-      // Mock implementation for now
       console.log(`Risk ${riskId} status updated to ${status}`);
       toast.success(`Risk status updated to ${status}`);
       return true;

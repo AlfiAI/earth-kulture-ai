@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
-import { ESGBenchmark, benchmarkService } from "@/services/external/externalDataService";
+import { ESGBenchmark } from "@/services/external/types/externalTypes";
+import { benchmarkService } from "@/services/external/benchmarkService";
 import { getDemoBenchmarks, prepareChartDataFromDemoData } from "./benchmarkUtils";
 import { useAuth } from "@/contexts/auth";
 import { IndustryType } from "@/services/ai/orchestration/types/agentTypes";

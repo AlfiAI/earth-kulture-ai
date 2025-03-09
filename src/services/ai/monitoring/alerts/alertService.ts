@@ -10,7 +10,7 @@ class AlertService {
   /**
    * Create an ESG alert
    */
-  async createAlert(alert: Omit<ESGAlert, 'createdAt' | 'isRead'>): Promise<string | null> {
+  async createAlert(alert: Omit<ESGAlert, 'timestamp' | 'isRead'>): Promise<string | null> {
     try {
       const { data, error } = await supabase
         .from('esg_compliance_alerts')
@@ -99,12 +99,11 @@ class AlertService {
           userId: item.user_id,
           title: item.message,
           description: item.message,
-          // Explicitly cast to AlertSeverity and AlertType to ensure type safety
           severity: item.severity as AlertSeverity,
           type: item.alert_type as AlertType,
           source: item.compliance_framework || 'system',
           category: item.compliance_framework || 'general',
-          createdAt: new Date(item.created_at),
+          timestamp: new Date(item.created_at).toISOString(),
           isRead: item.status === 'resolved',
           relatedData: item.source_data,
           recommendedActions
