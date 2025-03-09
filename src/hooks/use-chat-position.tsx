@@ -1,9 +1,12 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useIsMobile } from './use-mobile';
+import { useLocation } from 'react-router-dom';
 
 export const useChatPosition = () => {
   const isMobile = useIsMobile();
+  const location = useLocation();
+  
   const [position, setPosition] = useState(() => {
     // Fixed positions (in rem)
     return {
@@ -11,6 +14,27 @@ export const useChatPosition = () => {
       right: 2,  // 2rem from right
     };
   });
+  
+  // Force visibility of chat elements
+  const forceVisibility = useCallback(() => {
+    console.log("Forcing chat visibility - current route:", location.pathname);
+    
+    const chatButton = document.getElementById('chat-button');
+    if (chatButton) {
+      chatButton.style.visibility = 'visible';
+      chatButton.style.opacity = '1';
+      chatButton.style.display = 'block';
+      chatButton.style.zIndex = '999999';
+    }
+    
+    const walyContainer = document.getElementById('waly-container');
+    if (walyContainer) {
+      walyContainer.style.visibility = 'visible';
+      walyContainer.style.opacity = '1';
+      walyContainer.style.display = 'block';
+      walyContainer.style.zIndex = '999999';
+    }
+  }, [location.pathname]);
   
   // Update position when screen size changes
   useEffect(() => {
@@ -35,34 +59,22 @@ export const useChatPosition = () => {
   
   // Always force the chat button to be visible
   useEffect(() => {
-    const forceVisibility = () => {
-      const chatButton = document.getElementById('chat-button');
-      if (chatButton) {
-        chatButton.style.visibility = 'visible';
-        chatButton.style.opacity = '1';
-        chatButton.style.display = 'block';
-        chatButton.style.zIndex = '999999';
-        console.log("Force chat button visibility from position hook");
-      }
-      
-      const walyContainer = document.getElementById('waly-container');
-      if (walyContainer) {
-        walyContainer.style.visibility = 'visible';
-        walyContainer.style.opacity = '1';
-        walyContainer.style.display = 'block';
-        walyContainer.style.zIndex = '999999';
-        console.log("Force waly container visibility from position hook");
-      }
-    };
-    
-    // Call immediately and every 500ms for the first few seconds
+    // Immediate call
     forceVisibility();
-    const intervals = [100, 500, 1000, 1500, 2000, 3000].map(delay => 
+    
+    // Call multiple times with increasing delays to handle any race conditions
+    const intervals = [100, 300, 500, 800, 1200, 2000, 3000, 5000].map(delay => 
       setTimeout(forceVisibility, delay)
     );
     
-    return () => intervals.forEach(clearTimeout);
-  }, []);
+    // Also add a recurring interval to ensure visibility
+    const recurringInterval = setInterval(forceVisibility, 10000);
+    
+    return () => {
+      intervals.forEach(clearTimeout);
+      clearInterval(recurringInterval);
+    };
+  }, [forceVisibility, location.pathname]);
   
   return position;
 };

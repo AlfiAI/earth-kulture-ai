@@ -16,23 +16,32 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
     setImageError(false);
     setIsLoaded(false);
     
-    console.log("Loading avatar image:", avatarPath);
+    console.log("ChatButtonAvatar: Loading avatar image:", avatarPath);
+    
+    // Explicitly set the default path if none provided
+    const path = avatarPath || "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png";
     
     // Preload the image and handle fallback cases
     const img = new Image();
-    img.src = avatarPath;
+    img.src = path;
     
     // Set successful load handler
     img.onload = () => {
-      console.log("Avatar image successfully preloaded:", avatarPath);
+      console.log("ChatButtonAvatar: Image successfully loaded:", path);
       setIsLoaded(true);
     };
     
     // Handle loading errors
     img.onerror = () => {
-      console.error("Failed to preload avatar image:", avatarPath);
+      console.error("ChatButtonAvatar: Failed to load image:", path);
       setImageError(true);
       setIsLoaded(true); // Still mark as loaded so we show fallback
+      
+      // Try loading the default image if this was a custom one
+      if (path !== "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png") {
+        const defaultImg = new Image();
+        defaultImg.src = "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png";
+      }
     };
     
     // Force complete load state after short timeout regardless of image status
@@ -47,7 +56,7 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
   }, [avatarPath]);
   
   const handleImageError = () => {
-    console.error("Failed to load avatar image in component:", avatarPath);
+    console.error("ChatButtonAvatar: Runtime error loading image:", avatarPath);
     setImageError(true);
   };
   
@@ -68,7 +77,7 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
     )}>
       {isLoaded ? (
         <img 
-          src={avatarPath} 
+          src={avatarPath || "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png"} 
           alt="Waly AI" 
           className="w-full h-full object-cover p-2"
           onError={handleImageError}

@@ -14,37 +14,49 @@ function App() {
   useEffect(() => {
     console.log('App rendered, current route:', location.pathname);
     
-    // Force immediate chat button visibility
-    const showChatButton = () => {
+    const forceVisibility = () => {
+      console.log("Forcing visibility from App component on route:", location.pathname);
+      
       const chatButton = document.getElementById('chat-button');
       if (chatButton) {
         chatButton.style.visibility = 'visible';
         chatButton.style.opacity = '1';
         chatButton.style.display = 'block';
         chatButton.style.zIndex = '999999';
-        console.log("Forced chat button visibility from App component");
       }
       
-      // Also ensure the container is visible
       const walyContainer = document.getElementById('waly-container');
       if (walyContainer) {
         walyContainer.style.visibility = 'visible';
         walyContainer.style.opacity = '1';
         walyContainer.style.display = 'block';
         walyContainer.style.zIndex = '999999';
-        console.log("Forced waly container visibility from App component");
       }
     };
     
     // Call immediately and also after delays to handle any race conditions
-    showChatButton();
+    forceVisibility();
     
-    // Try multiple times to ensure visibility
-    const intervals = [100, 300, 500, 1000, 2000, 3000, 5000].map(delay => 
-      setTimeout(showChatButton, delay)
+    // Try multiple times with varying delays
+    const intervals = [100, 300, 500, 1000, 1500, 2000, 3000, 5000, 8000].map(delay => 
+      setTimeout(forceVisibility, delay)
     );
     
-    return () => intervals.forEach(clearTimeout);
+    // Add MutationObserver to ensure Waly stays visible even if DOM changes
+    const observer = new MutationObserver((mutations) => {
+      forceVisibility();
+    });
+    
+    // Start observing the document body for DOM changes
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    return () => {
+      intervals.forEach(clearTimeout);
+      observer.disconnect();
+    };
   }, [location.pathname]);
 
   return (
@@ -77,7 +89,8 @@ function App() {
             opacity: 1, 
             visibility: 'visible', 
             display: 'block',
-            zIndex: 999999
+            zIndex: 999999,
+            pointerEvents: 'auto'
           }}
         >
           <EnhancedWalyAssistant initialOpen={false} />

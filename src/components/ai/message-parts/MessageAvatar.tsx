@@ -23,12 +23,36 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
   // Preload AI avatar
   useEffect(() => {
     if (sender === 'ai') {
+      console.log("MessageAvatar: Preloading AI avatar");
       const img = new Image();
       img.src = walyAvatarPath;
-      img.onload = () => setImageLoaded(true);
-      img.onerror = () => setImageError(true);
+      
+      img.onload = () => {
+        console.log("MessageAvatar: AI avatar loaded successfully");
+        setImageLoaded(true);
+      };
+      
+      img.onerror = () => {
+        console.error("MessageAvatar: Failed to load AI avatar");
+        setImageError(true);
+      };
+      
+      // Force complete load state after short timeout
+      const fallbackTimer = setTimeout(() => {
+        if (!imageLoaded) {
+          console.log("MessageAvatar: Using fallback load mechanism");
+          setImageLoaded(true);
+        }
+      }, 500);
+      
+      return () => clearTimeout(fallbackTimer);
     }
-  }, [sender]);
+  }, [sender, imageLoaded]);
+  
+  const handleImageError = () => {
+    console.error("MessageAvatar: Runtime error loading AI avatar");
+    setImageError(true);
+  };
   
   return (
     <motion.div
@@ -39,17 +63,27 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
     >
       {sender === 'ai' ? (
         <Avatar className="h-12 w-12 border-2 border-primary/20 bg-white shadow-sm">
-          <AvatarImage 
-            src={walyAvatarPath}
-            alt="Waly AI" 
-            className="p-1.5"
-            onError={() => setImageError(true)}
-          />
-          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
-            <div className="h-full w-full flex items-center justify-center">
-              <User className="h-6 w-6" />
-            </div>
-          </AvatarFallback>
+          {imageError ? (
+            <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
+              <div className="h-full w-full flex items-center justify-center">
+                <User className="h-6 w-6" />
+              </div>
+            </AvatarFallback>
+          ) : (
+            <>
+              <AvatarImage 
+                src={walyAvatarPath}
+                alt="Waly AI" 
+                className="p-1.5"
+                onError={handleImageError}
+              />
+              <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
+                <div className="h-full w-full flex items-center justify-center">
+                  <User className="h-6 w-6" />
+                </div>
+              </AvatarFallback>
+            </>
+          )}
         </Avatar>
       ) : (
         <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-sm">
