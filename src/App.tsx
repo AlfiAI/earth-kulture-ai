@@ -112,7 +112,7 @@ function App() {
           ref={walyContainerRef}
           className="fixed bottom-0 right-0 z-[999999]" 
           style={{ 
-            visibility: "visible", // Fixed: removed "!important" to match TypeScript's Visibility type
+            visibility: "visible", // Type-safe style without !important
             display: 'block',
             opacity: 1,
             zIndex: 999999,

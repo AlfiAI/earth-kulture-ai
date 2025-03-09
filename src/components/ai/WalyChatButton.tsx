@@ -134,7 +134,7 @@ const WalyChatButton = ({
       style={{ 
         bottom: `${bottomPx}px`, 
         right: `${rightPx}px`,
-        visibility: 'visible',
+        visibility: 'visible', // TypeScript compatible styles
         opacity: 1,
         display: 'block',
         zIndex: 999999,
