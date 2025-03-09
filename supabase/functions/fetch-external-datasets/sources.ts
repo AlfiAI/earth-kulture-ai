@@ -1,8 +1,9 @@
 
-import { processWorldBankData, processOECDData, processWebData } from "./processors.ts";
+import { processWorldBankData, processOECDData, processWebData, processClimateWatchData, processSustainalyticsData } from "./processors.ts";
 
 // Define data sources
 export const DATA_SOURCES = [
+  // Carbon Emissions Data
   {
     name: 'World Bank Climate Data',
     url: 'https://api.worldbank.org/v2/country/all/indicator/EN.ATM.CO2E.PC?format=json&per_page=100&date=2019',
@@ -25,6 +26,16 @@ export const DATA_SOURCES = [
     dataProcessor: processWebData
   },
   {
+    name: 'Climate Watch Data API',
+    url: 'https://www.climatewatchdata.org/api/v1/data/historical_emissions?regions=WORLD',
+    category: 'emissions',
+    sourceType: 'api',
+    dataProcessor: processClimateWatchData,
+    refreshInterval: 7 * 24 * 60 * 60 * 1000 // Weekly
+  },
+  
+  // Sustainability Indices
+  {
     name: 'Global Carbon Atlas',
     url: 'http://www.globalcarbonatlas.org/en/CO2-emissions',
     category: 'carbon',
@@ -37,6 +48,32 @@ export const DATA_SOURCES = [
     category: 'sustainability',
     sourceType: 'web',
     dataProcessor: processWebData
+  },
+  {
+    name: 'World Bank ESG Data API',
+    url: 'https://api.worldbank.org/v2/country/all/indicator/EN.CLC.MDAT.ZS?format=json',
+    category: 'sustainability',
+    sourceType: 'api',
+    dataProcessor: processWorldBankData,
+    refreshInterval: 30 * 24 * 60 * 60 * 1000 // Monthly
+  },
+  
+  // Corporate ESG Ratings
+  {
+    name: 'Sustainalytics ESG Risk Ratings',
+    url: 'https://www.sustainalytics.com/esg-data',
+    category: 'ratings',
+    sourceType: 'web',
+    dataProcessor: processSustainalyticsData,
+    refreshInterval: 30 * 24 * 60 * 60 * 1000 // Monthly
+  },
+  {
+    name: 'Refinitiv ESG Data',
+    url: 'https://www.refinitiv.com/en/sustainable-finance/esg-data',
+    category: 'ratings',
+    sourceType: 'web',
+    dataProcessor: processWebData,
+    refreshInterval: 30 * 24 * 60 * 60 * 1000 // Monthly
   }
 ];
 
@@ -45,7 +82,15 @@ async function fetchFromSource(source: any) {
   console.log(`Fetching data from ${source.name}: ${source.url}`);
   
   try {
-    const response = await fetch(source.url);
+    // Add a random delay between 1-3 seconds to respect rate limits
+    const delay = Math.floor(Math.random() * 2000) + 1000;
+    await new Promise(resolve => setTimeout(resolve, delay));
+    
+    const response = await fetch(source.url, {
+      headers: {
+        'User-Agent': 'Earth Kulture ESG Data Collector/1.0 (https://earthkulture.example.com; info@earthkulture.example.com)'
+      }
+    });
     
     if (!response.ok) {
       throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
@@ -70,7 +115,7 @@ async function fetchFromSource(source: any) {
       data: processed,
       category: source.category,
       last_updated: new Date().toISOString(),
-      next_update: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week later
+      next_update: new Date(Date.now() + (source.refreshInterval || 7 * 24 * 60 * 60 * 1000)).toISOString(), // Default to weekly updates
       metrics: [source.category, 'climate', 'sustainability']
     };
   } catch (error) {

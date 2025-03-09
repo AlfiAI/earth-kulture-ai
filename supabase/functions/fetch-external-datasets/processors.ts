@@ -90,3 +90,129 @@ export function processWebData(htmlContent: string) {
     }
   };
 }
+
+// AI-based NLP analysis of text content
+export function analyzeTextContent(text: string) {
+  // This is a simplified placeholder. In a real implementation,
+  // this would use an NLP model to analyze sentiment, extract entities, etc.
+  
+  const sentimentWords = {
+    positive: ['increase', 'growth', 'improve', 'positive', 'success', 'achievement', 'progress'],
+    negative: ['decrease', 'decline', 'risk', 'challenge', 'issue', 'problem', 'concern', 'threat']
+  };
+  
+  let sentiment = 'neutral';
+  let score = 0;
+  
+  // Simple sentiment analysis
+  const lowerText = text.toLowerCase();
+  
+  // Count positive words
+  let positiveCount = 0;
+  sentimentWords.positive.forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'g');
+    const matches = lowerText.match(regex);
+    if (matches) positiveCount += matches.length;
+  });
+  
+  // Count negative words
+  let negativeCount = 0;
+  sentimentWords.negative.forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'g');
+    const matches = lowerText.match(regex);
+    if (matches) negativeCount += matches.length;
+  });
+  
+  // Calculate sentiment score
+  score = (positiveCount - negativeCount) / (Math.max(1, positiveCount + negativeCount));
+  
+  if (score > 0.2) sentiment = 'positive';
+  else if (score < -0.2) sentiment = 'negative';
+  
+  // Extract key phrases (simplified)
+  const words = lowerText.split(/\W+/).filter(word => word.length > 3);
+  const wordCounts: Record<string, number> = {};
+  
+  words.forEach(word => {
+    if (!wordCounts[word]) wordCounts[word] = 0;
+    wordCounts[word]++;
+  });
+  
+  const keyPhrases = Object.entries(wordCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(entry => entry[0]);
+  
+  return {
+    sentiment,
+    sentimentScore: score,
+    keyPhrases,
+    wordCount: words.length
+  };
+}
+
+// Process climate watch data
+export function processClimateWatchData(data: any) {
+  try {
+    if (!data || !data.data) {
+      return {
+        error: 'Invalid Climate Watch data format',
+        processed: []
+      };
+    }
+    
+    const processed = data.data.map((item: any) => ({
+      country: item.country || 'Global',
+      indicator: 'GHG Emissions',
+      year: item.year || new Date().getFullYear().toString(),
+      value: item.value || 0,
+      unit: item.unit || 'MtCO2e'
+    }));
+    
+    return {
+      processed,
+      metadata: {
+        count: processed.length,
+        source: 'Climate Watch',
+        indicator: 'Greenhouse Gas Emissions',
+        updated: new Date().toISOString()
+      }
+    };
+  } catch (error) {
+    console.error('Error processing Climate Watch data:', error);
+    return { error: error.message, processed: [] };
+  }
+}
+
+// Process Sustainalytics ESG data
+export function processSustainalyticsData(data: any) {
+  try {
+    if (!data || !data.companies) {
+      return {
+        error: 'Invalid Sustainalytics data format',
+        processed: []
+      };
+    }
+    
+    const processed = data.companies.map((company: any) => ({
+      company: company.name || 'Unknown',
+      industry: company.industry || 'General',
+      esg_score: company.esg_score || 0,
+      risk_level: company.risk_level || 'Medium',
+      year: new Date().getFullYear()
+    }));
+    
+    return {
+      processed,
+      metadata: {
+        count: processed.length,
+        source: 'Sustainalytics',
+        indicator: 'ESG Risk Ratings',
+        updated: new Date().toISOString()
+      }
+    };
+  } catch (error) {
+    console.error('Error processing Sustainalytics data:', error);
+    return { error: error.message, processed: [] };
+  }
+}

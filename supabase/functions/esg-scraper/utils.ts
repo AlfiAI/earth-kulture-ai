@@ -1,123 +1,126 @@
 
-// Common CORS headers for all responses
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.21.0";
+
+// CORS headers for edge functions
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Function to create Supabase client
-export function createClient(supabaseUrl: string, supabaseKey: string) {
-  return {
-    from: (table: string) => ({
-      upsert: (data: any, options?: { onConflict?: string; ignoreDuplicates?: boolean }) => {
-        return fetch(`${supabaseUrl}/rest/v1/${table}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Prefer': options?.onConflict ? `resolution=merge-duplicates,duplicate-columns=${options.onConflict}` : '',
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`
-          },
-          body: JSON.stringify(data)
-        }).then(res => res.json())
-          .then(data => ({ data, error: null }))
-          .catch(error => ({ data: null, error }));
-      }
-    })
-  };
-}
-
-// Calculate impact level based on keywords
-export function calculateImpactLevel(title?: string, content?: string): string {
-  const text = `${title || ''} ${content || ''}`.toLowerCase();
+export function calculateImpactLevel(title: string = '', description: string = ''): 'high' | 'medium' | 'low' {
+  const combinedText = (title + ' ' + description).toLowerCase();
   
-  const highImpactTerms = ['urgent', 'critical', 'mandatory', 'regulation', 'law', 'compliance', 'deadline', 'penalty', 'fine'];
-  const mediumImpactTerms = ['important', 'update', 'change', 'new standard', 'requirement'];
+  // Words indicating high impact
+  const highImpactWords = ['mandatory', 'requirement', 'regulation', 'law', 'fine', 'penalty', 'compliance', 'deadline', 'immediate', 'critical', 'urgent'];
   
-  let highMatches = 0;
-  let mediumMatches = 0;
+  // Words indicating medium impact
+  const mediumImpactWords = ['update', 'change', 'modify', 'standard', 'recommendation', 'guidance', 'advise', 'propose'];
   
-  highImpactTerms.forEach(term => {
-    if (text.includes(term)) highMatches++;
-  });
+  for (const word of highImpactWords) {
+    if (combinedText.includes(word)) return 'high';
+  }
   
-  mediumImpactTerms.forEach(term => {
-    if (text.includes(term)) mediumMatches++;
-  });
+  for (const word of mediumImpactWords) {
+    if (combinedText.includes(word)) return 'medium';
+  }
   
-  if (highMatches >= 2) return 'high';
-  if (highMatches >= 1 || mediumMatches >= 2) return 'medium';
   return 'low';
 }
 
-// Calculate relevance score based on ESG keywords
-export function calculateRelevanceScore(title?: string, content?: string): number {
-  const text = `${title || ''} ${content || ''}`.toLowerCase();
+export function calculateRelevanceScore(title: string = '', description: string = ''): number {
+  const combinedText = (title + ' ' + description).toLowerCase();
   
-  const esgKeywords = [
-    'esg', 'sustainability', 'sustainable', 'environment', 'environmental', 
-    'social', 'governance', 'carbon', 'emission', 'climate', 'green', 
-    'renewable', 'reporting', 'disclosure', 'compliance', 'regulation',
-    'framework', 'standard', 'guideline', 'metric', 'target', 'goal',
-    'sdg', 'net zero', 'ghg', 'greenhouse', 'biodiversity'
-  ];
+  // ESG keywords for relevance scoring
+  const esgKeywords = {
+    high: ['carbon', 'emission', 'climate', 'renewable', 'sustainability', 'greenhouse', 'esg', 'tcfd', 'sasb', 'gri', 'sdg'],
+    medium: ['environmental', 'social', 'governance', 'green', 'sustainable', 'ethical', 'responsible', 'energy', 'waste', 'diversity'],
+    low: ['report', 'disclosure', 'policy', 'strategy', 'metric', 'target', 'goal', 'initiative', 'risk', 'opportunity']
+  };
   
-  let matches = 0;
-  esgKeywords.forEach(keyword => {
-    if (text.includes(keyword)) matches++;
-  });
+  let score = 0.5; // Default score
   
-  // Calculate score from 0 to 1
-  return Math.min(1, matches / 8); // max out at 8 matches
+  // Check for high impact keywords (each adds 0.1)
+  for (const keyword of esgKeywords.high) {
+    if (combinedText.includes(keyword)) score += 0.1;
+  }
+  
+  // Check for medium impact keywords (each adds 0.05)
+  for (const keyword of esgKeywords.medium) {
+    if (combinedText.includes(keyword)) score += 0.05;
+  }
+  
+  // Check for low impact keywords (each adds 0.02)
+  for (const keyword of esgKeywords.low) {
+    if (combinedText.includes(keyword)) score += 0.02;
+  }
+  
+  return Math.min(Math.max(score, 0), 1); // Clamp between 0 and 1
 }
 
-// Extract tags from content
-export function extractTags(title?: string, content?: string, category?: string): string[] {
-  const text = `${title || ''} ${content || ''}`.toLowerCase();
-  const tags = [];
+export function extractTags(title: string = '', description: string = '', categories: string | string[] = []): string[] {
+  const combinedText = (title + ' ' + description).toLowerCase();
+  const tags = new Set<string>();
+  
+  // Common ESG tags
+  const tagCategories = {
+    environmental: ['carbon', 'emissions', 'climate', 'renewable', 'waste', 'water', 'biodiversity', 'pollution'],
+    social: ['diversity', 'inclusion', 'labor', 'human rights', 'community', 'health', 'safety', 'privacy'],
+    governance: ['board', 'executive', 'compliance', 'ethics', 'transparency', 'corruption', 'risk', 'policy'],
+    frameworks: ['tcfd', 'sasb', 'gri', 'cdp', 'sdg', 'un global compact', 'eu taxonomy'],
+    regions: ['eu', 'us', 'uk', 'asia', 'global', 'international', 'america', 'europe']
+  };
   
   // Add category as a tag
-  if (category) tags.push(category);
-  
-  // Check for ESG pillar tags
-  if (text.match(/environment|climate|emission|carbon|pollution|energy|water|waste/)) {
-    tags.push('environmental');
+  if (typeof categories === 'string') {
+    tags.add(categories.replace('_', ' '));
+  } else if (Array.isArray(categories)) {
+    categories.forEach(cat => tags.add(cat.replace('_', ' ')));
   }
   
-  if (text.match(/social|community|employee|diversity|inclusion|human right|labor/)) {
-    tags.push('social');
-  }
+  // Extract tags from text based on predefined categories
+  Object.entries(tagCategories).forEach(([category, keywords]) => {
+    keywords.forEach(keyword => {
+      if (combinedText.includes(keyword)) {
+        tags.add(keyword);
+        // Also add the category as a tag
+        if (!tags.has(category)) {
+          tags.add(category);
+        }
+      }
+    });
+  });
   
-  if (text.match(/governance|board|executive|compliance|ethics|transparency|anti-corruption/)) {
-    tags.push('governance');
-  }
-  
-  // Check for regulation/reporting tags
-  if (text.match(/regulation|law|directive|act|policy/)) {
-    tags.push('regulation');
-  }
-  
-  if (text.match(/reporting|disclosure|standard|framework|guideline/)) {
-    tags.push('reporting');
-  }
-  
-  return [...new Set(tags)]; // Remove duplicates
+  return Array.from(tags);
 }
 
-// Extract country references
-export function extractCountry(title?: string, content?: string): string | null {
-  const text = `${title || ''} ${content || ''}`;
+export function extractCountry(title: string = '', description: string = ''): string | null {
+  const combinedText = (title + ' ' + description).toLowerCase();
   
-  const countries = ['EU', 'Europe', 'European Union', 'US', 'USA', 'United States', 
-                     'UK', 'United Kingdom', 'China', 'Japan', 'Canada', 'Australia', 
-                     'India', 'Brazil', 'Germany', 'France', 'Italy', 'Spain'];
+  const countries = {
+    'united states': ['us', 'usa', 'united states', 'america'],
+    'european union': ['eu', 'european union', 'europe'],
+    'united kingdom': ['uk', 'britain', 'united kingdom'],
+    'china': ['china', 'chinese'],
+    'india': ['india', 'indian'],
+    'japan': ['japan', 'japanese'],
+    'canada': ['canada', 'canadian'],
+    'australia': ['australia', 'australian'],
+    'global': ['global', 'worldwide', 'international']
+  };
   
-  for (const country of countries) {
-    const regex = new RegExp(`\\b${country}\\b`, 'i');
-    if (text.match(regex)) {
-      return country;
+  for (const [country, keywords] of Object.entries(countries)) {
+    for (const keyword of keywords) {
+      if (combinedText.includes(keyword)) {
+        return country;
+      }
     }
   }
   
   return null;
 }
+
+// Create Supabase client
+export const createClient = (supabaseUrl: string, supabaseKey: string) => {
+  return createClient(supabaseUrl, supabaseKey);
+};
