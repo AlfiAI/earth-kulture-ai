@@ -22,46 +22,35 @@ const WalyChatButton = ({
   onStarterClick,
   contextAwareStarters
 }: WalyChatButtonProps) => {
-  // Updated to use the provided image
   const walyAvatarPath = "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png";
   const [showStarters, setShowStarters] = useState(false);
   const isMobile = useIsMobile();
   const isOverlapping = useOverlapDetection('chat-button');
   const buttonRef = useRef<HTMLDivElement>(null);
   
-  // Ensure visibility on mount and after route changes
+  // For direct DOM manipulation (index page fix)
   useEffect(() => {
-    console.log("WalyChatButton rendering with position:", position);
+    // First render check
+    if (buttonRef.current) {
+      buttonRef.current.style.visibility = 'visible';
+      buttonRef.current.style.opacity = '1';
+      buttonRef.current.style.display = 'block';
+    }
     
-    // Force the button to be visible through both inline styles and DOM manipulation
-    const forceVisibility = () => {
-      // Apply directly to the ref
-      if (buttonRef.current) {
-        buttonRef.current.style.visibility = 'visible';
-        buttonRef.current.style.opacity = '1';
-        buttonRef.current.style.display = 'block';
-        buttonRef.current.style.zIndex = '999999';
+    // Set a timeout to handle possible race conditions
+    const timeoutId = setTimeout(() => {
+      const button = document.getElementById('chat-button');
+      if (button) {
+        button.style.visibility = 'visible';
+        button.style.opacity = '1';
+        button.style.display = 'block';
+        button.style.zIndex = '999999';
+        console.log("Fixed chat button visibility via setTimeout");
       }
-      
-      // Also force by ID
-      const chatButton = document.getElementById('chat-button');
-      if (chatButton) {
-        chatButton.style.visibility = 'visible';
-        chatButton.style.opacity = '1';
-        chatButton.style.display = 'block';
-        chatButton.style.zIndex = '999999';
-        console.log("Forced chat button visibility directly");
-      }
-    };
+    }, 100);
     
-    // Call immediately and repeatedly
-    forceVisibility();
-    const timeouts = [50, 100, 200, 300, 500, 1000, 2000, 3000].map(delay => 
-      setTimeout(forceVisibility, delay)
-    );
-    
-    return () => timeouts.forEach(clearTimeout);
-  }, [position]);
+    return () => clearTimeout(timeoutId);
+  }, []);
   
   // Conversation starter questions, use context-aware ones if provided
   const starters = contextAwareStarters || [
@@ -87,9 +76,9 @@ const WalyChatButton = ({
     }
   };
   
-  // Convert rem values to px for consistent positioning
-  const bottomPx = position.bottom * 16; // Convert rem to px (1rem = 16px)
-  const rightPx = position.right * 16; // Convert rem to px (1rem = 16px)
+  // Convert rem values to px for positioning
+  const bottomPx = position.bottom * 16; 
+  const rightPx = position.right * 16;
   
   return (
     <motion.div
@@ -99,17 +88,16 @@ const WalyChatButton = ({
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
       className={cn(
-        "fixed z-[999999]", // Ensure maximum z-index
+        "fixed z-[999999]", 
         isOverlapping && "opacity-80 hover:opacity-100"
       )}
       style={{ 
         bottom: `${bottomPx}px`, 
         right: `${rightPx}px`,
-        transition: 'bottom 0.3s ease, right 0.3s ease',
-        visibility: 'visible', // Explicitly set visibility
-        opacity: 1, // Explicitly set opacity
-        display: 'block', // Explicitly set display
-        zIndex: 999999 // Maximum z-index
+        visibility: 'visible',
+        opacity: 1,
+        display: 'block',
+        zIndex: 999999
       }}
       whileHover={{ scale: 1.05, rotate: 3 }}
       onMouseEnter={handleMouseEnter}
@@ -121,11 +109,11 @@ const WalyChatButton = ({
           "relative flex items-center justify-center p-0 w-16 h-16 rounded-full shadow-xl",
           "bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700",
           "hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300",
-          "border-2 border-primary" // Enhanced border for visibility
+          "border-4 border-primary" // Enhanced border for visibility
         )}
         aria-label="Chat with Waly AI"
       >
-        <div className="w-14 h-14 overflow-hidden rounded-full">
+        <div className="w-12 h-12 overflow-hidden rounded-full">
           <ChatButtonAvatar avatarPath={walyAvatarPath} />
         </div>
         <AnimatedSparkle />

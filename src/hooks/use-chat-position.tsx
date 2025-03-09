@@ -15,16 +15,26 @@ export const useChatPosition = () => {
     };
   });
   
-  // Force visibility of chat elements
+  // Make sure Waly is visible
   const forceVisibility = useCallback(() => {
     console.log("Forcing chat visibility - current route:", location.pathname);
     
+    // Handle index page specially
+    const isIndexPage = location.pathname === '/';
+    
+    // Apply visibility directly to DOM elements
     const chatButton = document.getElementById('chat-button');
     if (chatButton) {
       chatButton.style.visibility = 'visible';
       chatButton.style.opacity = '1';
       chatButton.style.display = 'block';
       chatButton.style.zIndex = '999999';
+      
+      if (isIndexPage) {
+        // For index page, ensure it's really visible
+        chatButton.style.pointerEvents = 'auto';
+        chatButton.style.position = 'fixed';
+      }
     }
     
     const walyContainer = document.getElementById('waly-container');
@@ -33,6 +43,12 @@ export const useChatPosition = () => {
       walyContainer.style.opacity = '1';
       walyContainer.style.display = 'block';
       walyContainer.style.zIndex = '999999';
+      
+      if (isIndexPage) {
+        // For index page, ensure it's really visible
+        walyContainer.style.pointerEvents = 'auto';
+        walyContainer.style.position = 'fixed';
+      }
     }
   }, [location.pathname]);
   
@@ -46,10 +62,7 @@ export const useChatPosition = () => {
       });
     };
     
-    // Set immediately
     updatePosition();
-    
-    // Also set on window resize
     window.addEventListener('resize', updatePosition);
     
     return () => {
@@ -63,16 +76,22 @@ export const useChatPosition = () => {
     forceVisibility();
     
     // Call multiple times with increasing delays to handle any race conditions
-    const intervals = [100, 300, 500, 800, 1200, 2000, 3000, 5000].map(delay => 
+    const intervals = [100, 300, 500, 800, 1200, 2000].map(delay => 
       setTimeout(forceVisibility, delay)
     );
     
-    // Also add a recurring interval to ensure visibility
-    const recurringInterval = setInterval(forceVisibility, 10000);
+    // For index page, use more aggressive approach
+    if (location.pathname === '/') {
+      console.log("Index page detected - using enhanced visibility measures");
+      const indexIntervals = setInterval(forceVisibility, 1000);
+      return () => {
+        intervals.forEach(clearTimeout);
+        clearInterval(indexIntervals);
+      };
+    }
     
     return () => {
       intervals.forEach(clearTimeout);
-      clearInterval(recurringInterval);
     };
   }, [forceVisibility, location.pathname]);
   

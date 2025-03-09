@@ -10,53 +10,38 @@ import WalyActionHandler from '@/components/ai/WalyActionHandler';
 function App() {
   const location = useLocation();
   
-  // Debug logging and force visibility
+  // Make sure Waly is visible, especially on index page
   useEffect(() => {
-    console.log('App rendered, current route:', location.pathname);
+    console.log('App: Current route is', location.pathname);
     
-    const forceVisibility = () => {
-      console.log("Forcing visibility from App component on route:", location.pathname);
-      
-      const chatButton = document.getElementById('chat-button');
-      if (chatButton) {
-        chatButton.style.visibility = 'visible';
-        chatButton.style.opacity = '1';
-        chatButton.style.display = 'block';
-        chatButton.style.zIndex = '999999';
-      }
-      
-      const walyContainer = document.getElementById('waly-container');
-      if (walyContainer) {
-        walyContainer.style.visibility = 'visible';
-        walyContainer.style.opacity = '1';
-        walyContainer.style.display = 'block';
-        walyContainer.style.zIndex = '999999';
-      }
+    // Force visibility of Waly components
+    const forceWalyVisibility = () => {
+      // Target container and chat button
+      ['waly-container', 'chat-button'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.visibility = 'visible';
+          el.style.opacity = '1';
+          el.style.display = 'block';
+          el.style.zIndex = '999999';
+        }
+      });
     };
     
-    // Call immediately and also after delays to handle any race conditions
-    forceVisibility();
+    // Index page needs special handling
+    if (location.pathname === '/') {
+      console.log('On index page - ensuring Waly is visible');
+      // Call multiple times with different delays to ensure it works
+      [0, 100, 500, 1000].forEach(delay => {
+        setTimeout(forceWalyVisibility, delay);
+      });
+    }
     
-    // Try multiple times with varying delays
-    const intervals = [100, 300, 500, 1000, 1500, 2000, 3000, 5000, 8000].map(delay => 
-      setTimeout(forceVisibility, delay)
-    );
+    // Call immediately and also on a timer
+    forceWalyVisibility();
+    const interval = setInterval(forceWalyVisibility, 2000);
     
-    // Add MutationObserver to ensure Waly stays visible even if DOM changes
-    const observer = new MutationObserver((mutations) => {
-      forceVisibility();
-    });
-    
-    // Start observing the document body for DOM changes
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-    
-    return () => {
-      intervals.forEach(clearTimeout);
-      observer.disconnect();
-    };
+    return () => clearInterval(interval);
   }, [location.pathname]);
 
   return (
@@ -81,16 +66,15 @@ function App() {
             })}
         </Routes>
         
-        {/* Always render the EnhancedWalyAssistant with maximum z-index and forced visibility */}
+        {/* Always render Waly with inline styles for guaranteed visibility */}
         <div 
           id="waly-container"
           className="fixed bottom-0 right-0 z-[999999]" 
           style={{ 
-            opacity: 1, 
             visibility: 'visible', 
             display: 'block',
-            zIndex: 999999,
-            pointerEvents: 'auto'
+            opacity: 1,
+            zIndex: 999999
           }}
         >
           <EnhancedWalyAssistant initialOpen={false} />
