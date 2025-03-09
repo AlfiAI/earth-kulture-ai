@@ -19,18 +19,22 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
     
     console.log("Attempting to load Waly avatar from:", avatarPath);
     
+    // Create a new image element to test loading
     const img = new Image();
-    img.src = avatarPath;
     
+    // Set event handlers before setting src to ensure they're registered
     img.onload = () => {
       console.log("Waly avatar image loaded successfully");
       setImageLoaded(true);
     };
     
-    img.onerror = (e) => {
-      console.error("Failed to load Waly avatar image:", e);
+    img.onerror = () => {
+      console.error("Failed to load Waly avatar image");
       setImageError(true);
     };
+    
+    // Set the source after attaching event handlers
+    img.src = avatarPath;
     
     // Add a fallback timeout in case the image load event doesn't fire
     const timeout = setTimeout(() => {
@@ -44,14 +48,14 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
   }, [avatarPath, imageLoaded]);
 
   return (
-    <Avatar className="w-14 h-14 border-2 border-primary/10 overflow-visible">
-      {(!imageError) && (
+    <Avatar className="h-full w-full border-2 border-primary/10">
+      {!imageError && (
         <AvatarImage 
           src={avatarPath} 
           alt="Waly Bot"
-          className="object-cover p-0" 
+          className="object-cover" 
           onError={() => {
-            console.error("AvatarImage failed to load Waly avatar");
+            console.error("AvatarImage failed to render - switching to fallback");
             setImageError(true);
           }}
         />

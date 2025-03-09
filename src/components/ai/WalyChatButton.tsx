@@ -22,21 +22,19 @@ const WalyChatButton = ({
   onStarterClick,
   contextAwareStarters
 }: WalyChatButtonProps) => {
-  // Use a directly accessible path to ensure the image loads properly
+  // Use a public URL path that is definitely accessible
   const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
   const [showStarters, setShowStarters] = useState(false);
   const isMobile = useIsMobile();
   const isOverlapping = useOverlapDetection('chat-button');
   
-  // Log the button render for debugging
+  // Preload the image on component mount
   useEffect(() => {
-    console.log("WalyChatButton rendered with avatar path:", walyAvatarPath);
+    console.log("WalyChatButton rendered, preloading avatar from:", walyAvatarPath);
     
-    // Preload the image to ensure it's in the cache
+    // Force browser to load the image into cache
     const preloadImage = new Image();
     preloadImage.src = walyAvatarPath;
-    
-    console.log("Image preloaded:", preloadImage.src);
   }, []);
   
   // Conversation starter questions, use context-aware ones if provided
@@ -95,7 +93,9 @@ const WalyChatButton = ({
         )}
         aria-label="Chat with Waly AI"
       >
-        <ChatButtonAvatar avatarPath={walyAvatarPath} />
+        <div className="w-14 h-14 overflow-hidden">
+          <ChatButtonAvatar avatarPath={walyAvatarPath} />
+        </div>
         <AnimatedSparkle />
       </Button>
       
