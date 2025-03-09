@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useIsMobile } from './use-mobile';
 
@@ -17,10 +16,10 @@ export const useChatPosition = () => {
   // Update position when screen size changes
   useEffect(() => {
     const updatePosition = () => {
-      // Check if mobile and update position accordingly
+      // Keep consistent positioning for better visibility
       const newPosition = {
-        bottom: isMobile ? 2 : 2, // Same for both for consistency
-        right: isMobile ? 2 : 2,  // More space from the edge on desktop
+        bottom: 2, // Consistent position for both mobile and desktop
+        right: 2,  // Consistent position for both mobile and desktop
       };
       
       // Debug position updates
@@ -33,7 +32,13 @@ export const useChatPosition = () => {
     updatePosition();
     window.addEventListener('resize', updatePosition);
     
-    return () => window.removeEventListener('resize', updatePosition);
+    // Force update position after a short delay to ensure correct values
+    const forceUpdateTimer = setTimeout(updatePosition, 500);
+    
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      clearTimeout(forceUpdateTimer);
+    };
   }, [isMobile]);
   
   return position;

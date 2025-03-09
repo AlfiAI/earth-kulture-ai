@@ -14,6 +14,16 @@ function App() {
   useEffect(() => {
     console.log('App rendered, current route:', location.pathname);
     console.log('EnhancedWalyAssistant should be visible on all pages');
+    
+    // Force the chat button to be visible after a delay
+    setTimeout(() => {
+      const chatButton = document.getElementById('chat-button');
+      if (chatButton) {
+        chatButton.style.visibility = 'visible';
+        chatButton.style.opacity = '1';
+        console.log("Forced chat button visibility from App component");
+      }
+    }, 500);
   }, [location.pathname]);
 
   return (
@@ -39,7 +49,7 @@ function App() {
         </Routes>
         
         {/* Always render the EnhancedWalyAssistant with higher z-index */}
-        <div className="fixed bottom-0 right-0 z-[9999]">
+        <div className="fixed bottom-0 right-0 z-[9999] visible pointer-events-auto" style={{ opacity: 1, visibility: 'visible' }}>
           <EnhancedWalyAssistant initialOpen={false} />
         </div>
         
