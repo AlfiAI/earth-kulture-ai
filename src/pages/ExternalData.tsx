@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { Globe } from 'lucide-react';
 import ESGRegulationsList from "@/components/external/ESGRegulationsList";
 import ESGBenchmarkCard from "@/components/external/ESGBenchmarkCard";
@@ -8,6 +9,7 @@ import InsightsLayout from "@/components/insights/InsightsLayout";
 
 const ExternalData = () => {
   const navigate = useNavigate();
+  const [mounted, setMounted] = useState(true);
 
   return (
     <InsightsLayout>

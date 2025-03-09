@@ -1,114 +1,125 @@
 
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Tag } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ESGRegulation } from "@/services/external/externalDataService";
 import { cn } from "@/lib/utils";
-import { ESGRegulation } from "@/services/external/types/externalTypes";
 
-// Define impact level type with specific allowed values
-export type RegulationImpactLevel = 'high' | 'medium' | 'low' | 'unknown';
+export type RegulationImpactLevel = 'high' | 'medium' | 'low';
 
 interface ESGRegulationItemProps {
   regulation: ESGRegulation;
-  className?: string;
-  maxTagsToShow?: number;
-  showCategory?: boolean;
   onTagClick?: (tag: string) => void;
+  showCategory?: boolean;
 }
 
-const ESGRegulationItem = ({ 
-  regulation, 
-  className,
-  maxTagsToShow = 3,
-  showCategory = false,
-  onTagClick
-}: ESGRegulationItemProps) => {
-  // Map impact levels to badge variants
-  const getBadgeVariant = (impact?: string) => {
-    switch(impact) {
-      case 'high': return 'destructive';
-      case 'medium': return 'default';
-      case 'low': return 'outline';
-      default: return 'secondary';
+const ESGRegulationItem = ({ regulation, onTagClick, showCategory = false }: ESGRegulationItemProps) => {
+  const { title, content, source, url, published_date, tags, category, impact_level } = regulation;
+  
+  const getImpactColor = (level?: string) => {
+    switch (level) {
+      case 'high':
+        return "bg-red-100 text-red-800";
+      case 'medium':
+        return "bg-amber-100 text-amber-800";
+      case 'low':
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-blue-100 text-blue-800";
+    }
+  };
+  
+  const getCategoryColor = (cat?: string) => {
+    switch (cat) {
+      case 'regulation':
+        return "bg-blue-100 text-blue-800";
+      case 'reporting_framework':
+        return "bg-purple-100 text-purple-800";
+      case 'guidance':
+        return "bg-teal-100 text-teal-800";
+      default:
+        return "bg-slate-100 text-slate-800";
+    }
+  };
+  
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "No date";
+    
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    } catch (e) {
+      return dateString;
     }
   };
 
-  // Format the date if available
-  const formattedDate = regulation.published_date 
-    ? new Date(regulation.published_date).toLocaleDateString() 
-    : null;
-
   return (
-    <div 
-      className={cn(
-        "p-4 border rounded-lg hover:bg-accent/10 transition-colors",
-        className
-      )}
-    >
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="font-medium">{regulation.title}</h3>
-        <Badge 
-          variant={getBadgeVariant(regulation.impact_level)}
-        >
-          {regulation.impact_level || 'Unknown'} Impact
-        </Badge>
-      </div>
-      
-      <div className="flex items-center text-xs text-muted-foreground mb-2">
-        <span className="mr-2">Source: {regulation.source}</span>
-        {formattedDate && (
-          <span>
-            • Published: {formattedDate}
-          </span>
-        )}
-        {showCategory && regulation.category && (
-          <span className="ml-2">• Category: {regulation.category}</span>
-        )}
-      </div>
-      
-      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-        {regulation.content}
-      </p>
-      
-      <div className="flex items-center">
-        <Button 
-          variant="link" 
-          size="sm" 
-          className="h-auto p-0"
-          asChild
-        >
-          <a 
-            href={regulation.url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center"
-          >
-            Read More
-            <ExternalLink className="h-3 w-3 ml-1" />
-          </a>
-        </Button>
-        
-        {regulation.tags && regulation.tags.length > 0 && (
-          <div className="ml-auto flex gap-1">
-            {regulation.tags.slice(0, maxTagsToShow).map((tag, index) => (
-              <Badge 
-                key={index} 
-                variant="secondary" 
-                className="text-xs cursor-pointer hover:bg-secondary/80"
-                onClick={() => onTagClick && onTagClick(tag)}
-              >
-                {tag}
+    <Card className="overflow-hidden">
+      <CardContent className="p-4">
+        <div>
+          <div className="flex items-center gap-2 flex-wrap mb-1">
+            <h3 className="font-medium text-base">{title}</h3>
+            
+            {impact_level && (
+              <Badge className={getImpactColor(impact_level)}>
+                {impact_level.charAt(0).toUpperCase() + impact_level.slice(1)} impact
               </Badge>
-            ))}
-            {regulation.tags.length > maxTagsToShow && (
-              <Badge variant="outline" className="text-xs">
-                +{regulation.tags.length - maxTagsToShow}
+            )}
+            
+            {showCategory && category && (
+              <Badge className={getCategoryColor(category)}>
+                {category.replace('_', ' ')}
               </Badge>
             )}
           </div>
-        )}
-      </div>
-    </div>
+          
+          <p className="text-sm text-muted-foreground mb-3">{content}</p>
+          
+          <div className="flex flex-wrap gap-2 mb-3">
+            {tags && Array.isArray(tags) && tags.map((tag, index) => (
+              <Badge 
+                key={index} 
+                variant="outline" 
+                className={cn(
+                  "cursor-pointer hover:bg-secondary",
+                  onTagClick && "hover:bg-secondary/80"
+                )}
+                onClick={() => onTagClick && onTagClick(tag)}
+              >
+                <Tag className="h-3 w-3 mr-1" />
+                {tag}
+              </Badge>
+            ))}
+          </div>
+          
+          <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <span>Source: {source}</span>
+              {published_date && <span>• {formatDate(published_date)}</span>}
+            </div>
+            
+            {url && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 gap-1 px-2"
+                asChild
+              >
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-3 w-3" />
+                  <span>View Source</span>
+                </a>
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
