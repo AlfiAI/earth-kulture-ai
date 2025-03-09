@@ -5,8 +5,16 @@ import { MessageProps } from '@/components/ai/Message';
 import { deepseekR1Service } from '@/services/ai/deepseekR1Service';
 import { enhancedAIContext, ENHANCED_SYSTEM_PROMPT } from '@/components/ai/constants/enhancedAIContext';
 import { walyAIService } from '@/services/ai/walyAIService';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { esgDataService } from '@/services/esgDataService';
+
+// Define the PageContext interface to fix TypeScript errors
+interface PageContext {
+  path: string;
+  pageType?: string;
+  carbonFootprint?: number;
+  [key: string]: any; // Allow for additional properties
+}
 
 export const useEnhancedChat = (initialMessages: MessageProps[] = []) => {
   const [messages, setMessages] = useState<MessageProps[]>(
@@ -19,16 +27,17 @@ export const useEnhancedChat = (initialMessages: MessageProps[] = []) => {
   const [conversationContext, setConversationContext] = useState({
     recentTopics: [] as string[],
     userPreferences: {} as Record<string, any>,
-    pageContext: {} as Record<string, any>,
+    pageContext: {} as PageContext,
   });
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Update page context when route changes
   useEffect(() => {
     const updatePageContext = async () => {
       try {
         const currentPath = location.pathname;
-        let pageData = { path: currentPath };
+        let pageData: PageContext = { path: currentPath };
         
         // Load relevant data for the current page
         if (currentPath.includes('analytics')) {
@@ -47,6 +56,21 @@ export const useEnhancedChat = (initialMessages: MessageProps[] = []) => {
           pageData = {
             ...pageData,
             pageType: 'compliance'
+          };
+        } else if (currentPath.includes('about')) {
+          pageData = {
+            ...pageData,
+            pageType: 'about'
+          };
+        } else if (currentPath === '/') {
+          pageData = {
+            ...pageData,
+            pageType: 'home'
+          };
+        } else if (currentPath.includes('auth')) {
+          pageData = {
+            ...pageData,
+            pageType: 'auth'
           };
         }
         
@@ -106,34 +130,144 @@ export const useEnhancedChat = (initialMessages: MessageProps[] = []) => {
     });
   };
 
-  // Function to check if the query contains navigation intent
-  const checkForNavigationIntent = (query: string): string | null => {
-    const navigationKeywords = {
-      'dashboard': '/',
-      'analytics': '/analytics',
-      'compliance': '/compliance',
-      'benchmark': '/benchmark',
-      'benchmarking': '/benchmark',
-      'data': '/data',
-      'reports': '/reports',
-      'goals': '/goals',
-      'settings': '/settings',
-      'insights': '/insights',
-    };
-    
+  // Enhanced function to check navigation intent and action commands
+  const analyzeUserIntent = (query: string): {
+    navigateTo?: string;
+    performAction?: string;
+    actionParams?: Record<string, any>;
+  } => {
     const lowercaseQuery = query.toLowerCase();
     
-    // Check for explicit navigation requests
+    // Check for navigation intent
     if (lowercaseQuery.includes('go to') || lowercaseQuery.includes('take me to') || 
         lowercaseQuery.includes('navigate to') || lowercaseQuery.includes('show me the')) {
-      for (const [keyword, path] of Object.entries(navigationKeywords)) {
+      
+      const navigationMapping: Record<string, string> = {
+        'dashboard': '/',
+        'home': '/',
+        'analytics': '/analytics',
+        'compliance': '/compliance',
+        'benchmark': '/benchmark',
+        'benchmarking': '/benchmark',
+        'data': '/data',
+        'reports': '/reports',
+        'goals': '/goals',
+        'settings': '/settings',
+        'insights': '/insights',
+        'sign up': '/signup',
+        'sign in': '/auth',
+        'login': '/auth',
+        'register': '/signup',
+        'about': '/about'
+      };
+      
+      for (const [keyword, path] of Object.entries(navigationMapping)) {
         if (lowercaseQuery.includes(keyword)) {
-          return path;
+          return { navigateTo: path };
         }
       }
     }
     
-    return null;
+    // Check for authentication actions
+    if (lowercaseQuery.includes('sign me up') || lowercaseQuery.includes('create account') || 
+        lowercaseQuery.includes('register me')) {
+      return { 
+        navigateTo: '/auth',
+        performAction: 'signup'
+      };
+    }
+    
+    if (lowercaseQuery.includes('log me in') || lowercaseQuery.includes('sign me in')) {
+      return { 
+        navigateTo: '/auth',
+        performAction: 'login'
+      };
+    }
+    
+    // Check for specific actions based on current page
+    if (conversationContext.pageContext.pageType === 'analytics' && 
+        (lowercaseQuery.includes('show chart') || lowercaseQuery.includes('view emissions'))) {
+      return { performAction: 'showChart', actionParams: { type: 'emissions' } };
+    }
+    
+    if (conversationContext.pageContext.pageType === 'benchmark' && 
+        lowercaseQuery.includes('compare with competitors')) {
+      return { performAction: 'runBenchmark' };
+    }
+    
+    if (lowercaseQuery.includes('fill form') || lowercaseQuery.includes('fill out form')) {
+      // Extract form data from the query (simplified implementation)
+      const actionParams: Record<string, any> = {};
+      
+      if (lowercaseQuery.includes('email')) {
+        const emailRegex = /[\w.-]+@[\w.-]+\.\w+/;
+        const emailMatch = query.match(emailRegex);
+        if (emailMatch) {
+          actionParams.email = emailMatch[0];
+        }
+      }
+      
+      if (lowercaseQuery.includes('name')) {
+        const nameRegex = /name[:\s]+([a-zA-Z\s]+)/i;
+        const nameMatch = query.match(nameRegex);
+        if (nameMatch && nameMatch[1]) {
+          actionParams.name = nameMatch[1].trim();
+        }
+      }
+      
+      if (lowercaseQuery.includes('password')) {
+        actionParams.needsPassword = true;
+      }
+      
+      return { performAction: 'fillForm', actionParams };
+    }
+    
+    return {};
+  };
+
+  // Function to execute actions based on intent
+  const executeUserIntent = async (intent: ReturnType<typeof analyzeUserIntent>) => {
+    if (intent.navigateTo) {
+      // Add a small delay before navigation to allow the AI response to be displayed
+      setTimeout(() => {
+        navigate(intent.navigateTo!);
+        toast.info(`Navigating to ${intent.navigateTo}`);
+      }, 1000);
+    }
+    
+    if (intent.performAction) {
+      switch (intent.performAction) {
+        case 'login':
+        case 'signup':
+          // Will be handled by UI after navigation
+          // We'll use an event to communicate this to the auth form
+          const authEvent = new CustomEvent('waly-auth-action', { 
+            detail: { action: intent.performAction, params: intent.actionParams } 
+          });
+          window.dispatchEvent(authEvent);
+          break;
+          
+        case 'fillForm':
+          // Dispatch an event that components can listen for
+          const formEvent = new CustomEvent('waly-fill-form', { 
+            detail: { fields: intent.actionParams } 
+          });
+          window.dispatchEvent(formEvent);
+          break;
+          
+        case 'showChart':
+        case 'runBenchmark':
+          // Dispatch events for these actions
+          const actionEvent = new CustomEvent('waly-action', { 
+            detail: { action: intent.performAction, params: intent.actionParams } 
+          });
+          window.dispatchEvent(actionEvent);
+          break;
+          
+        default:
+          console.log('Unknown action:', intent.performAction);
+      }
+    }
   };
 
   const handleSend = async () => {
@@ -146,8 +280,8 @@ export const useEnhancedChat = (initialMessages: MessageProps[] = []) => {
       timestamp: new Date(),
     };
     
-    // Check for navigation intents
-    const navigationPath = checkForNavigationIntent(inputValue);
+    // Analyze user intent from the message
+    const userIntent = analyzeUserIntent(inputValue);
     
     // Update conversation context based on user message
     updateConversationContext(inputValue);
@@ -170,7 +304,7 @@ You have the ability to help users navigate through the application by including
 For example: "Let me show you the dashboard [NAVIGATE:dashboard]" or "I'll take you to the analytics page [NAVIGATE:analytics]"
 
 Only use this when the user specifically asks to be taken to a different page, not for every response.
-Available routes: dashboard, analytics, compliance, benchmark, data, reports, goals, settings, insights
+Available routes: dashboard, analytics, compliance, benchmark, data, reports, goals, settings, insights, auth, signup, about
 `;
       
       // Process the user query with DeepSeek R1 service
@@ -181,10 +315,9 @@ Available routes: dashboard, analytics, compliance, benchmark, data, reports, go
       );
       
       // If navigation intent was detected, add the navigation command to the response
-      if (navigationPath) {
-        if (!aiResponse.includes('[NAVIGATE:')) {
-          aiResponse += ` [NAVIGATE:${navigationPath.replace('/', '')}]`;
-        }
+      if (userIntent.navigateTo && !aiResponse.includes('[NAVIGATE:')) {
+        const routeName = userIntent.navigateTo.replace('/', '');
+        aiResponse += ` [NAVIGATE:${routeName || 'dashboard'}]`;
       }
       
       const aiMessage: MessageProps = {
@@ -195,6 +328,10 @@ Available routes: dashboard, analytics, compliance, benchmark, data, reports, go
       };
       
       setMessages(prev => [...prev, aiMessage]);
+      
+      // Execute the user intent after the AI has responded
+      await executeUserIntent(userIntent);
+      
     } catch (error) {
       console.error('Error processing query:', error);
       toast.error('Sorry, I encountered an error processing your request.');

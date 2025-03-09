@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -74,6 +74,22 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
       company: "",
     },
   });
+
+  // Listen for Waly auth events
+  useEffect(() => {
+    const handleWalyAuthAction = (event: CustomEvent) => {
+      const { action } = event.detail;
+      if (action === 'login' || action === 'signup') {
+        setActiveTab(action as "login" | "signup");
+      }
+    };
+    
+    window.addEventListener('waly-auth-action', handleWalyAuthAction as EventListener);
+    
+    return () => {
+      window.removeEventListener('waly-auth-action', handleWalyAuthAction as EventListener);
+    };
+  }, []);
 
   // Handle login form submission
   const onLoginSubmit = async (values: LoginValues) => {
@@ -161,6 +177,7 @@ const AuthForm = ({ onSuccess }: AuthFormProps) => {
       
       <Tabs
         defaultValue={activeTab}
+        value={activeTab}
         onValueChange={(value) => setActiveTab(value as "login" | "signup")}
         className="w-full"
       >
