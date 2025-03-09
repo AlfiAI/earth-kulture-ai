@@ -9,10 +9,10 @@ interface MobileSidebarToggleProps {
 const MobileSidebarToggle = ({ onToggle }: MobileSidebarToggleProps) => {
   return (
     <Button
-      variant="ghost"
+      variant="default"
       size="icon"
       onClick={onToggle}
-      className="fixed z-50 bottom-4 left-4 rounded-full shadow-lg bg-card"
+      className="fixed z-50 bottom-4 left-4 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
     >
       <Menu className="h-5 w-5" />
     </Button>
