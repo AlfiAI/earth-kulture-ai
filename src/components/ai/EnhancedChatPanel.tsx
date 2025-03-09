@@ -8,7 +8,7 @@ import ChatInput from './ChatInput';
 import EnhancedChatBanner from './EnhancedChatBanner';
 import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
 import ConversationStarters from './ConversationStarters';
-import { TrendingUp, Zap, Lightbulb } from 'lucide-react';
+import { TrendingUp, Zap, Lightbulb, BarChart } from 'lucide-react';
 
 interface EnhancedChatPanelProps {
   isOpen: boolean;
@@ -16,23 +16,23 @@ interface EnhancedChatPanelProps {
   position: { bottom: number; right: number };
 }
 
-// Conversation starter questions
+// Enhanced conversation starter questions with modern styling
 const starters = [
   {
-    text: "Compare my ESG performance with industry peers",
-    icon: <TrendingUp className="h-4 w-4 text-primary" />
+    text: "Analyze my sustainability progress trends",
+    icon: <TrendingUp className="h-4 w-4 text-sky-500" />
   },
   {
-    text: "Predict carbon emissions for next quarter",
-    icon: <Zap className="h-4 w-4 text-orange-500" />
+    text: "Generate ESG performance forecast",
+    icon: <BarChart className="h-4 w-4 text-emerald-500" />
   },
   {
-    text: "What are the latest ESG regulations I should know?",
-    icon: <Lightbulb className="h-4 w-4 text-yellow-500" />
+    text: "Identify compliance risk areas",
+    icon: <Zap className="h-4 w-4 text-amber-500" />
   },
   {
-    text: "Suggest improvements for my sustainability goals",
-    icon: <Zap className="h-4 w-4 text-blue-500" />
+    text: "Suggest optimization strategies",
+    icon: <Lightbulb className="h-4 w-4 text-purple-500" />
   }
 ];
 
@@ -60,8 +60,8 @@ const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
       <Card
         ref={ref}
         className={cn(
-          "fixed shadow-lg border overflow-hidden transition-all duration-300 ease-in-out z-50",
-          isOpen ? "w-80 sm:w-96 h-[550px] opacity-100" : "w-0 h-0 opacity-0 pointer-events-none"
+          "fixed shadow-xl border-primary/10 overflow-hidden transition-all duration-300 ease-in-out z-50 bg-card/95 backdrop-blur-sm",
+          isOpen ? "w-80 sm:w-96 h-[600px] opacity-100 rounded-2xl" : "w-0 h-0 opacity-0 pointer-events-none"
         )}
         style={{ 
           bottom: `${position.bottom}rem`, 

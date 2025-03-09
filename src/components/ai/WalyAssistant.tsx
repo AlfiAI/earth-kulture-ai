@@ -36,7 +36,7 @@ const starters = [
 
 const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
-  const [position, setPosition] = useState({ bottom: 2, right: 2 });
+  const [position, setPosition] = useState({ bottom: 4, right: 4 });
   const [showNewChat, setShowNewChat] = useState(true);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
@@ -87,7 +87,7 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
         setPosition({ bottom: 20, right: 4 });
       } else {
         // Regular position
-        setPosition({ bottom: 2, right: 2 });
+        setPosition({ bottom: 4, right: 4 });
       }
     };
 
@@ -97,7 +97,7 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
       if (window.innerWidth < 640) { // Mobile view
         setPosition({ bottom: 2, right: 1 });
       } else {
-        setPosition({ bottom: 2, right: 2 });
+        setPosition({ bottom: 4, right: 4 });
       }
     };
 
@@ -140,12 +140,12 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
       {!isOpen && (
         <Button
           onClick={toggleOpen}
-          className="fixed rounded-full w-14 h-14 shadow-lg p-0 animate-in bg-primary text-white hover:bg-primary/90 flex items-center justify-center z-50 transition-all duration-300"
+          className="fixed rounded-full w-16 h-16 shadow-xl bg-gradient-to-r from-primary to-sky-500 text-white hover:bg-primary/90 flex items-center justify-center z-50 transition-all duration-300 animate-pulse-gentle"
           style={{ bottom: `${position.bottom}rem`, right: `${position.right}rem` }}
         >
           <div className="relative">
-            <MessageSquarePlus className="h-6 w-6" />
-            <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-yellow-300" />
+            <MessageSquarePlus className="h-7 w-7" />
+            <Sparkles className="h-4 w-4 absolute -top-1 -right-1 text-yellow-300 animate-float" />
           </div>
         </Button>
       )}
@@ -153,8 +153,8 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
       <Card
         ref={chatRef}
         className={cn(
-          "fixed shadow-lg border overflow-hidden transition-all duration-300 ease-in-out z-50",
-          isOpen ? "w-80 sm:w-96 h-[550px] max-h-[80vh] opacity-100" : "w-0 h-0 opacity-0 pointer-events-none"
+          "fixed shadow-xl border-primary/10 overflow-hidden transition-all duration-300 ease-in-out z-50 bg-card/95 backdrop-blur-sm",
+          isOpen ? "w-80 sm:w-96 h-[600px] max-h-[80vh] opacity-100 rounded-2xl" : "w-0 h-0 opacity-0 pointer-events-none"
         )}
         style={{ 
           bottom: `${position.bottom}rem`, 

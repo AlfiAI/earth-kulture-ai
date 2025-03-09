@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageCirclePlus, Sparkles } from 'lucide-react';
+import { Sparkles, MessageCirclePlus } from 'lucide-react';
 import EnhancedChatPanel from './EnhancedChatPanel';
 import { cn } from "@/lib/utils";
 
@@ -33,7 +33,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
         setPosition({ bottom: 20, right: 4 });
       } else {
         // Regular position
-        setPosition({ bottom: 2, right: 2 });
+        setPosition({ bottom: 4, right: 4 });
       }
     };
 
@@ -43,7 +43,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       if (window.innerWidth < 640) { // Mobile view
         setPosition({ bottom: 2, right: 1 });
       } else {
-        setPosition({ bottom: 2, right: 2 });
+        setPosition({ bottom: 4, right: 4 });
       }
     };
 
@@ -86,12 +86,12 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       {!isOpen && (
         <Button
           onClick={toggleOpen}
-          className="fixed rounded-full w-14 h-14 shadow-lg p-0 animate-in bg-primary text-white hover:bg-primary/90 flex items-center justify-center z-50 transition-all duration-300"
+          className="fixed rounded-full w-16 h-16 shadow-xl bg-gradient-to-r from-primary to-sky-500 text-white hover:bg-primary/90 flex items-center justify-center z-50 transition-all duration-300 animate-pulse-gentle"
           style={{ bottom: `${position.bottom}rem`, right: `${position.right}rem` }}
         >
           <div className="relative">
-            <MessageCirclePlus className="h-6 w-6" />
-            <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-yellow-300" />
+            <MessageCirclePlus className="h-7 w-7" />
+            <Sparkles className="h-4 w-4 absolute -top-1 -right-1 text-yellow-300 animate-float" />
           </div>
         </Button>
       )}
