@@ -9,7 +9,7 @@ interface EnhancedWalyAssistantProps {
 
 const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantProps) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
-  const [position, setPosition] = useState({ bottom: 4, right: 4 });
+  const [position, setPosition] = useState({ bottom: 2, right: 2 });
   const chatRef = useRef<HTMLDivElement>(null);
   
   const toggleOpen = () => {
@@ -34,14 +34,16 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       const scrollY = window.scrollY;
       const viewportHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
+      const scrollBottom = scrollY + viewportHeight;
+      const threshold = documentHeight - 200;
       
       // Adjust position based on scroll
-      if (scrollY + viewportHeight >= documentHeight - 100) {
+      if (scrollBottom >= threshold) {
         // Near bottom of page, move up a bit
-        setPosition({ bottom: 16, right: 4 });
+        setPosition({ bottom: 20, right: 4 });
       } else {
-        // Reset to default position
-        setPosition({ bottom: 4, right: 4 });
+        // Regular position
+        setPosition({ bottom: 2, right: 2 });
       }
     };
 
@@ -49,9 +51,9 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     const handleResize = () => {
       // Adjust position if needed based on window size
       if (window.innerWidth < 640) { // Mobile view
-        setPosition({ bottom: 4, right: 2 });
+        setPosition({ bottom: 2, right: 1 });
       } else {
-        setPosition({ bottom: 4, right: 4 });
+        setPosition({ bottom: 2, right: 2 });
       }
     };
 
@@ -60,6 +62,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     
     // Initial position check
     handleResize();
+    handleScroll();
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
