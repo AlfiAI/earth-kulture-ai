@@ -90,7 +90,10 @@ enable_confirmations = false
 # Server port configuration must be outside any section
 port = 54335
 
-# Configure Supabase Functions to use a specific Deno version
+# Configure Supabase Functions
 [functions]
+# Specify whether node_modules directory is included
 node_modules = false
+
+# Specify the import map location
 import_map = "./import_map.json"
