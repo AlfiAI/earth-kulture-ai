@@ -15,7 +15,9 @@ interface WalyAssistantProps {
 
 const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
+  const [position, setPosition] = useState({ bottom: 4, right: 4 });
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
   
   const {
     messages,
@@ -34,12 +36,34 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
     }
   };
 
+  // Handle scrolling by adjusting the assistant's position
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Adjust position based on scroll
+      if (scrollY + viewportHeight >= documentHeight - 100) {
+        // Near bottom of page, move up a bit
+        setPosition({ bottom: 16, right: 4 });
+      } else {
+        // Reset to default position
+        setPosition({ bottom: 4, right: 4 });
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <>
       {!isOpen && (
         <Button
           onClick={toggleOpen}
-          className="fixed right-4 bottom-4 rounded-full w-14 h-14 shadow-lg p-0 animate-in bg-primary text-white hover:bg-primary/90 flex items-center justify-center"
+          className="fixed rounded-full w-14 h-14 shadow-lg p-0 animate-in bg-primary text-white hover:bg-primary/90 flex items-center justify-center z-50 transition-all duration-300"
+          style={{ bottom: `${position.bottom}rem`, right: `${position.right}rem` }}
         >
           <div className="relative">
             <Bot className="h-6 w-6" />
@@ -51,10 +75,16 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
       )}
       
       <Card
+        ref={chatRef}
         className={cn(
-          "fixed right-4 bottom-4 w-80 sm:w-96 shadow-lg border overflow-hidden transition-all duration-300 ease-in-out z-50",
-          isOpen ? "h-[550px] max-h-[80vh] opacity-100" : "h-0 opacity-0 pointer-events-none"
+          "fixed shadow-lg border overflow-hidden transition-all duration-300 ease-in-out z-50",
+          isOpen ? "w-80 sm:w-96 h-[550px] max-h-[80vh] opacity-100" : "w-0 h-0 opacity-0 pointer-events-none"
         )}
+        style={{ 
+          bottom: `${position.bottom}rem`, 
+          right: `${position.right}rem`,
+          maxHeight: isOpen ? 'calc(100vh - 100px)' : '0'
+        }}
       >
         <ChatHeader 
           onClose={toggleOpen} 
