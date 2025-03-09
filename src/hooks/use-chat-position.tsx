@@ -7,8 +7,8 @@ export const useChatPosition = () => {
   const [position, setPosition] = useState(() => {
     // Default positions (in rem)
     const defaultPosition = {
-      bottom: isMobile ? 4 : 4, // 1rem = 16px, increased slightly for better visibility
-      right: isMobile ? 2 : 4,  // More space from the edge on desktop
+      bottom: isMobile ? 2 : 2, // 1rem = 16px, positioned closer to the bottom
+      right: isMobile ? 2 : 2,  // More space from the edge on desktop
     };
     
     return defaultPosition;
@@ -19,12 +19,12 @@ export const useChatPosition = () => {
     const updatePosition = () => {
       // Check if mobile and update position accordingly
       const newPosition = {
-        bottom: isMobile ? 4 : 4, // Same for both for consistency
-        right: isMobile ? 2 : 4,  // More space from the edge on desktop
+        bottom: isMobile ? 2 : 2, // Same for both for consistency
+        right: isMobile ? 2 : 2,  // More space from the edge on desktop
       };
       
       // Debug position updates
-      console.log("Chat position:", newPosition);
+      console.log("Chat position updated:", newPosition);
       
       setPosition(newPosition);
     };

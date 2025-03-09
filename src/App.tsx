@@ -13,6 +13,7 @@ function App() {
   // Debug logging
   useEffect(() => {
     console.log('App rendered, current route:', location.pathname);
+    console.log('EnhancedWalyAssistant should be visible on all pages');
   }, [location.pathname]);
 
   return (
@@ -37,8 +38,10 @@ function App() {
             })}
         </Routes>
         
-        {/* Always render the EnhancedWalyAssistant */}
-        <EnhancedWalyAssistant initialOpen={false} />
+        {/* Always render the EnhancedWalyAssistant with higher z-index */}
+        <div className="fixed bottom-0 right-0 z-[9999]">
+          <EnhancedWalyAssistant initialOpen={false} />
+        </div>
         
         <Toaster />
         <SonnerToaster position="top-center" />

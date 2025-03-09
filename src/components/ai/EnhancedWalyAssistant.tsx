@@ -19,7 +19,8 @@ interface EnhancedWalyAssistantProps {
 const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantProps) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [showNewChat, setShowNewChat] = useState(true);
-  const [isInitialized, setIsInitialized] = useState(true); // Set to true by default
+  // Always initialized and visible by default
+  const [isInitialized, setIsInitialized] = useState(true);
   const chatPanelRef = useRef<HTMLDivElement>(null);
   const position = useChatPosition();
   const location = useLocation();
@@ -36,7 +37,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       initialized: isInitialized
     });
     
-    // Show we're ready
+    // Force visibility
     console.log("Waly assistant initialized and ready to display");
   }, []);
   
@@ -61,9 +62,9 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     window.location.reload();
   };
 
-  // Always render, removing the conditional
+  // Always render the button, removing all conditional rendering
   return (
-    <div className="waly-assistant-container fixed z-[9999]">
+    <>
       {!isOpen && (
         <WalyChatButton 
           onClick={toggleOpen} 
@@ -97,7 +98,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
           onNewChat={handleNewChat}
         />
       )}
-    </div>
+    </>
   );
 };
 

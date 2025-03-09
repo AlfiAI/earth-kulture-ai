@@ -27,12 +27,13 @@ const WalyChatButton = ({
   const [showStarters, setShowStarters] = useState(false);
   const isMobile = useIsMobile();
   const isOverlapping = useOverlapDetection('chat-button');
-  const [isVisible, setIsVisible] = useState(true); // Set to true by default
+  const [isVisible, setIsVisible] = useState(true);
   
   // Debug logging and ensure the component is visible immediately
   useEffect(() => {
     console.log("WalyChatButton rendering with position:", position);
     console.log("Avatar path:", walyAvatarPath);
+    setIsVisible(true);
     
     // Force browser to load the image into cache
     const preloadImage = new Image();
@@ -84,13 +85,14 @@ const WalyChatButton = ({
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
       className={cn(
-        "fixed z-[9999]", // Ensure very high z-index
+        "fixed z-[99999]", // Ensure very high z-index
         isOverlapping && "opacity-80 hover:opacity-100"
       )}
       style={{ 
         bottom: `${bottomPx}px`, 
         right: `${rightPx}px`,
-        transition: 'bottom 0.3s ease, right 0.3s ease'
+        transition: 'bottom 0.3s ease, right 0.3s ease',
+        visibility: 'visible'
       }}
       whileHover={{ scale: 1.05, rotate: 3 }}
       onMouseEnter={handleMouseEnter}
@@ -101,7 +103,8 @@ const WalyChatButton = ({
         className={cn(
           "relative flex items-center justify-center p-0 w-16 h-16 rounded-full shadow-xl",
           "bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700",
-          "hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300"
+          "hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300",
+          "border-2 border-primary/20" // Added border for visibility
         )}
         aria-label="Chat with Waly AI"
       >

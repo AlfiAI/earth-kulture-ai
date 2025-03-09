@@ -13,6 +13,7 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
   // Reset error state when avatar path changes
   useEffect(() => {
     setImageError(false);
+    setIsLoaded(false);
     
     // Preload the image
     const img = new Image();
@@ -25,6 +26,16 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
       console.error("Failed to preload avatar image:", avatarPath);
       setImageError(true);
     };
+    
+    // Set a fallback timeout to ensure we show something even if loading stalls
+    const fallbackTimer = setTimeout(() => {
+      if (!isLoaded) {
+        console.log("Using fallback timeout to display avatar");
+        setIsLoaded(true);
+      }
+    }, 1000);
+    
+    return () => clearTimeout(fallbackTimer);
   }, [avatarPath]);
   
   const handleImageError = () => {
@@ -32,7 +43,7 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
     setImageError(true);
   };
   
-  // Render a fallback regardless of image loading state to ensure something always appears
+  // Always render a visible element, fallback early if needed
   return (
     <div className="w-full h-full flex items-center justify-center">
       {!imageError ? (
