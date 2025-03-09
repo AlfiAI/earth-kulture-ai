@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Sparkles, MessageSquare } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -36,8 +35,13 @@ const WalyChatButton = ({
   ];
   
   useEffect(() => {
-    console.log("WalyChatButton mounted with position:", position);
-  }, [position]);
+    console.log("WalyChatButton mounted with position:", position, "avatar path:", walyAvatarPath);
+    // Verify the avatar image can be loaded
+    const img = new Image();
+    img.onload = () => console.log("Waly avatar image loaded successfully");
+    img.onerror = () => console.error("Failed to load Waly avatar image");
+    img.src = walyAvatarPath;
+  }, [position, walyAvatarPath]);
   
   const handleMouseEnter = () => {
     setShowStarters(true);
@@ -138,14 +142,12 @@ const WalyChatButton = ({
           <AvatarImage 
             src={walyAvatarPath} 
             alt="Waly Bot"
-            className="object-contain p-2.5" // Increased padding
+            className="object-contain p-1.5" 
           />
           <AvatarFallback className="bg-white dark:bg-gray-800">
-            <img 
-              src={walyAvatarPath} 
-              alt="Waly Bot" 
-              className="h-full w-full object-contain p-2.5" // Increased padding
-            />
+            <div className="h-full w-full flex items-center justify-center text-primary">
+              <Sparkles className="h-6 w-6" />
+            </div>
           </AvatarFallback>
         </Avatar>
         <motion.div

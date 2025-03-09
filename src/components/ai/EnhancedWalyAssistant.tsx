@@ -35,6 +35,16 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     });
   }, [isOpen, showNewChat, position, location.pathname]);
   
+  // Force initialization on mount
+  useEffect(() => {
+    console.log("Forcing initialization check for Waly visibility");
+    // This will trigger a re-render/check of component visibility
+    const timer = setTimeout(() => {
+      setIsOpen(isOpen);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+  
   const toggleOpen = () => {
     console.log("Toggle chat open state from:", isOpen, "to:", !isOpen);
     setIsOpen(!isOpen);

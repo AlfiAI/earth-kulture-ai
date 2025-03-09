@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useIsMobile } from './use-mobile';
 
@@ -13,7 +12,7 @@ export const useChatPosition = (initialPosition: Position = { bottom: 20, right:
   
   // Handle scrolling and resizing
   useEffect(() => {
-    console.log("useChatPosition hook initialized");
+    console.log("useChatPosition hook initialized with default position:", initialPosition);
     
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -52,28 +51,24 @@ export const useChatPosition = (initialPosition: Position = { bottom: 20, right:
       // Determine right offset (avoid horizontal scrollbar)
       const rightOffset = isMobile ? 20 : 20;
       
+      // Add a minimum offset to ensure visibility
+      bottomOffset = Math.max(bottomOffset, 20);
+      
       const newPosition = { bottom: bottomOffset, right: rightOffset };
+      console.log("Setting chat position to:", newPosition);
       setPosition(newPosition);
     };
 
     // Handle window resize
     const handleResize = () => {
-      // Adjust position if needed based on window size
+      // Adjust position based on window size
       if (isMobile) {
+        console.log("Setting mobile chat position");
         setPosition({ bottom: 20, right: 20 });
       } else {
-        // Check for elements that might be in the way on desktop
-        const handleLayout = () => {
-          const sidebar = document.querySelector('[data-component="sidebar"]');
-          if (sidebar instanceof HTMLElement) {
-            const rect = sidebar.getBoundingClientRect();
-            setPosition({ bottom: 20, right: Math.max(20, rect.width / 16 + 20) });
-          } else {
-            setPosition({ bottom: 20, right: 20 });
-          }
-        };
-        
-        handleLayout();
+        console.log("Setting desktop chat position");
+        // Always ensure the button is visible with a minimum offset
+        setPosition({ bottom: 20, right: 20 });
       }
     };
 
@@ -84,6 +79,12 @@ export const useChatPosition = (initialPosition: Position = { bottom: 20, right:
     // Add event listeners
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleResize);
+    
+    // Force a position update after a short delay to ensure UI has fully rendered
+    const forceUpdateTimer = setTimeout(() => {
+      handleResize();
+      handleScroll();
+    }, 1000);
     
     // Use a mutation observer to detect DOM changes that might affect positioning
     const observer = new MutationObserver(() => {
@@ -101,8 +102,9 @@ export const useChatPosition = (initialPosition: Position = { bottom: 20, right:
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
       observer.disconnect();
+      clearTimeout(forceUpdateTimer);
     };
-  }, [isMobile]);
+  }, [isMobile, initialPosition]);
 
   return position;
 };
