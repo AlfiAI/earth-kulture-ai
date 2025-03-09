@@ -13,7 +13,7 @@ export const useAIAssistant = () => {
     if (!query.trim()) return;
     
     // Add user message
-    const userMessage = { sender: "user", content: query };
+    const userMessage: MessageProps = { sender: "user", content: query };
     setMessages(prev => [...prev, userMessage]);
     
     // Simulate AI response
@@ -27,7 +27,8 @@ export const useAIAssistant = () => {
       ];
       
       const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-      setMessages(prev => [...prev, { sender: "ai", content: randomResponse }]);
+      const aiMessage: MessageProps = { sender: "ai", content: randomResponse };
+      setMessages(prev => [...prev, aiMessage]);
     }, 1000);
     
     setQuery("");
