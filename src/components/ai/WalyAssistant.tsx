@@ -57,7 +57,9 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   
   const handleStarterClick = (text: string) => {
     setInputValue(text);
-    // Automatically send the message
+    // Open the chat when starter is clicked
+    setIsOpen(true);
+    // Automatically send the message after a small delay
     setTimeout(() => {
       handleSend();
       setShowNewChat(false);
@@ -73,7 +75,11 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
     <>
       {/* Chat Button */}
       {!isOpen && (
-        <WalyChatButton onClick={toggleOpen} position={position} />
+        <WalyChatButton 
+          onClick={toggleOpen} 
+          position={position} 
+          onStarterClick={handleStarterClick}
+        />
       )}
       
       {/* Outside Click Handler */}

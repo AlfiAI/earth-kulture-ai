@@ -1,18 +1,46 @@
 
-import { Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, MessageSquare } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
 
 interface WalyChatButtonProps {
   onClick: () => void;
   position: { bottom: number; right: number };
+  onStarterClick?: (text: string) => void;
 }
 
-const WalyChatButton = ({ onClick, position }: WalyChatButtonProps) => {
+const WalyChatButton = ({ onClick, position, onStarterClick }: WalyChatButtonProps) => {
   // Use the same avatar path as in MessageAvatar for consistency
   const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
+  const [showStarters, setShowStarters] = useState(false);
+  
+  // Conversation starter questions
+  const starters = [
+    "How can I improve my ESG score?",
+    "Explain carbon footprint tracking",
+    "What ESG metrics should I monitor?",
+    "How to start sustainability reporting?"
+  ];
+  
+  const handleMouseEnter = () => {
+    setShowStarters(true);
+  };
+  
+  const handleMouseLeave = () => {
+    setShowStarters(false);
+  };
+  
+  const handleStarterClick = (text: string) => {
+    if (onStarterClick) {
+      onStarterClick(text);
+    } else {
+      onClick();
+    }
+  };
   
   return (
     <motion.div
@@ -22,6 +50,8 @@ const WalyChatButton = ({ onClick, position }: WalyChatButtonProps) => {
       className="fixed z-50"
       style={{ bottom: `${position.bottom}rem`, right: `${position.right}rem` }}
       whileHover={{ scale: 1.05, rotate: 3 }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <Button
         onClick={onClick}
@@ -61,6 +91,36 @@ const WalyChatButton = ({ onClick, position }: WalyChatButtonProps) => {
           <Sparkles className="h-4 w-4 text-yellow-300" />
         </motion.div>
       </Button>
+      
+      {/* Conversation starters dropdown */}
+      {showStarters && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+          className="absolute bottom-[4.5rem] right-0 mb-2"
+        >
+          <Card className="p-1.5 bg-white/95 backdrop-blur-sm border border-primary/10 shadow-lg rounded-xl w-[220px]">
+            <div className="text-xs font-medium text-muted-foreground px-2 py-1.5">
+              Quick prompts:
+            </div>
+            <div className="space-y-1">
+              {starters.map((starter, index) => (
+                <Button
+                  key={index}
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start text-xs rounded-lg p-2 h-auto"
+                  onClick={() => handleStarterClick(starter)}
+                >
+                  <MessageSquare className="h-3 w-3 mr-2 text-primary" />
+                  <span className="truncate">{starter}</span>
+                </Button>
+              ))}
+            </div>
+          </Card>
+        </motion.div>
+      )}
     </motion.div>
   );
 };
