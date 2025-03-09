@@ -11,13 +11,14 @@ import ESGRegulationsList from "@/components/external/ESGRegulationsList";
 import ESGRegulationsFilters from "@/components/external/ESGRegulationsFilters";
 import ESGBenchmarkCard from "@/components/external/ESGBenchmarkCard";
 import ESGPagination from "@/components/external/ESGPagination";
+import { RegulationFilters } from "@/components/external/ESGRegulationsFilters";
 
 const ExternalData = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState({
-    region: "all",
-    category: "all",
-    status: "all"
+  // Updated to match the RegulationFilters type expected by ESGRegulationsFilters
+  const [activeFilters, setActiveFilters] = useState<RegulationFilters>({
+    tags: [],
+    impactLevel: undefined
   });
 
   const handleSearch = (e: React.FormEvent) => {
@@ -26,11 +27,9 @@ const ExternalData = () => {
     console.log("Searching for:", searchTerm);
   };
 
-  const handleFilterChange = (filterType: string, value: string) => {
-    setActiveFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
+  // Updated to match the expected function signature
+  const handleFilterChange = (filters: RegulationFilters) => {
+    setActiveFilters(filters);
   };
 
   return (
@@ -103,8 +102,10 @@ const ExternalData = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="md:col-span-1">
                 <ESGRegulationsFilters 
-                  activeFilters={activeFilters}
+                  filters={activeFilters}
                   onFilterChange={handleFilterChange}
+                  availableTags={[]}
+                  onClearFilters={() => setActiveFilters({ tags: [], impactLevel: undefined })}
                 />
               </div>
               <div className="md:col-span-3">
@@ -114,11 +115,13 @@ const ExternalData = () => {
                     <CardDescription>Latest regulatory updates and compliance frameworks</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ESGRegulationsList filters={activeFilters} search={searchTerm} />
+                    {/* ESGRegulationsList doesn't need filters or search passed directly */}
+                    <ESGRegulationsList />
                   </CardContent>
                   <CardFooter className="flex justify-between border-t pt-4">
                     <div className="text-sm text-muted-foreground">Showing 1-10 of 42 regulations</div>
-                    <ESGPagination totalPages={5} currentPage={1} />
+                    {/* Updated to match the props expected by ESGPagination */}
+                    <ESGPagination totalPages={5} page={1} onPageChange={() => {}} />
                   </CardFooter>
                 </Card>
               </div>
@@ -189,7 +192,8 @@ const ExternalData = () => {
                   updated: "2025-02-05"
                 }
               ].map((benchmark, index) => (
-                <ESGBenchmarkCard key={index} benchmark={benchmark} />
+                // ESGBenchmarkCard doesn't need a benchmark prop
+                <ESGBenchmarkCard key={index} />
               ))}
             </div>
           </TabsContent>
