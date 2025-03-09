@@ -23,7 +23,7 @@ const InsightsLayout = ({ children }: InsightsLayoutProps) => {
       )}>
         <Header />
         
-        <main className="container max-w-7xl mx-auto p-4 lg:p-6 pb-24">
+        <main className="container max-w-7xl mx-auto p-4 lg:p-6 pb-24 mt-16">
           {children}
         </main>
       </div>
