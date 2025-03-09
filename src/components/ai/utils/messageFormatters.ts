@@ -12,12 +12,26 @@ export const formatRelativeTime = (date: Date) => {
  * Formats content as a document with sections for AI messages
  */
 export const formatDocumentContent = (content: string) => {
-  // Split content by headers (denoted by # or ## style markdown)
-  const sections = content.split(/(?=#{1,3}\s)/);
+  // Clean up markdown artifacts before processing
+  let cleanedContent = content
+    .replace(/---/g, '<hr>') // Replace markdown dividers with HTML ones
+    .replace(/^#\s*#\s*/gm, '') // Remove ## at beginning of lines
+    .replace(/^\*\*(.*?)\*\*$/gm, '<strong>$1</strong>') // Handle bold items
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Handle bold text
+  
+  // Split content by headers (denoted by # style markdown)
+  const sections = cleanedContent.split(/(?=^#\s)/m);
   
   if (sections.length <= 1) {
     // If no headers found, just return the content with proper paragraph formatting
-    return content.split('\n').map((line, idx) => {
+    return cleanedContent.split('\n').map((line, idx) => {
+      if (line.includes('<hr>')) {
+        return {
+          type: 'divider' as const,
+          key: idx,
+        };
+      }
+      
       const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('* ');
       
       if (isBullet) {
@@ -25,6 +39,7 @@ export const formatDocumentContent = (content: string) => {
           type: 'bullet' as const,
           content: line.replace(/^[*-]\s/, ''),
           key: idx,
+          isHTML: line.includes('<strong>'),
         };
       }
       
@@ -32,23 +47,26 @@ export const formatDocumentContent = (content: string) => {
         type: 'paragraph' as const,
         content: line,
         key: idx,
+        isHTML: line.includes('<strong>'),
       };
     });
   }
   
   // Process content with sections
   return sections.map((section, idx) => {
-    const isHeader = /^#{1,3}\s/.test(section);
-    const headerMatch = section.match(/^(#{1,3})\s(.*?)(?:\n|$)/);
+    const headerMatch = section.match(/^#\s+(.*?)(?:\n|$)/);
     
     if (headerMatch) {
-      const headerLevel = headerMatch[1].length;
-      const headerText = headerMatch[2];
-      const sectionContent = section.replace(/^#{1,3}\s.*?(?:\n|$)/, '').trim();
+      const headerText = headerMatch[1].trim();
+      const sectionContent = section.replace(/^#\s+.*?(?:\n|$)/, '').trim();
       
       const lines = sectionContent.split('\n').map((line, lineIdx) => {
-        // Handle bold text (**text**)
-        line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        if (line.includes('<hr>')) {
+          return {
+            type: 'divider' as const,
+            key: `${idx}-${lineIdx}`,
+          };
+        }
         
         const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('* ');
         
@@ -57,14 +75,7 @@ export const formatDocumentContent = (content: string) => {
             type: 'bullet' as const,
             content: line.replace(/^[*-]\s/, ''),
             key: `${idx}-${lineIdx}`,
-            isHTML: true,
-          };
-        }
-        
-        if (line.trim() === '---') {
-          return {
-            type: 'divider' as const,
-            key: `${idx}-${lineIdx}`,
+            isHTML: line.includes('<strong>'),
           };
         }
         
@@ -72,13 +83,13 @@ export const formatDocumentContent = (content: string) => {
           type: 'paragraph' as const,
           content: line,
           key: `${idx}-${lineIdx}`,
-          isHTML: true,
+          isHTML: line.includes('<strong>'),
         };
       });
       
       return {
         type: 'section' as const,
-        headerLevel,
+        headerLevel: 1,
         headerText,
         lines,
         key: idx,

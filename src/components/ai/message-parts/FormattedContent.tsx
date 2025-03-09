@@ -63,7 +63,7 @@ const FormattedContent = ({ content, sender }: FormattedContentProps) => {
 
     if (item.type === 'section') {
       return (
-        <div key={item.key} className="document-section">
+        <div key={item.key} className="document-section mb-6">
           {item.headerLevel === 1 && (
             <div className="bg-blue-50/80 dark:bg-blue-900/20 rounded-lg p-3 mb-4">
               <h1 className="text-lg font-bold text-blue-800 dark:text-blue-300">

@@ -53,7 +53,8 @@ const WalyChatPanel = ({
           className="fixed inset-x-0 z-50 flex justify-center px-0"
           style={{ 
             bottom: 0,
-            height: "calc(100vh - 60px)"
+            height: "calc(100vh - 60px)",
+            width: "100%"
           }}
         >
           <Card
