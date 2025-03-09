@@ -3,8 +3,9 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "../utils.ts";
 import { corsHeaders } from './config.ts';
-import { validatePrompt, calculateComplexity } from './validation.ts';
-import { selectModel } from './model-selection.ts';
+import { validatePrompt } from './validation.ts';
+import { selectModel, trackAPIFailure } from './model-selection.ts';
+import { processLocalAI } from './local-ai-processor.ts';
 import { 
   getOrCreateSessionContext, 
   updateSessionContext, 
@@ -91,7 +92,6 @@ serve(async (req) => {
           from_cache: true,
           cache_key: generateCacheKey(prompt, sessionId),
           selection_reason: cachedResponse.reason,
-          complexity_score: calculateComplexity(prompt),
           context_size: sessionContext.messages.length
         }
       });
@@ -115,7 +115,7 @@ serve(async (req) => {
     // Determine which model to use
     // In a real app, you'd get the user's role from Supabase auth
     const userRole = "standard"; // Placeholder, would get from auth
-    const modelSelection = selectModel(prompt, userRole, modelRequested, Boolean(manualOverride), sessionContext);
+    const modelSelection = await selectModel(prompt, userRole, modelRequested, Boolean(manualOverride), sessionContext);
     
     // Add the new user message to context
     updateSessionContext(sessionContext, 'user', prompt);
@@ -127,42 +127,78 @@ serve(async (req) => {
     // Log the request to Supabase
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     
-    // For this example, we'll just log the request without actually calling an AI API
-    // In a real implementation, you would now call the selected AI model's API
-    // and include the contextSummary in the prompt
+    // Process the request with the appropriate model
+    let aiResponse;
+    let apiError = false;
     
-    const processingTime = Date.now() - startTime;
+    if (modelSelection.useLocalAI) {
+      // Process with local AI model
+      console.log("Processing with local AI model");
+      
+      // Create a system prompt that includes context
+      const systemPrompt = `You are Waly, an ESG & Carbon Intelligence Assistant specialized in sustainability. ${
+        contextSummary ? `This is a continuing conversation. Context: ${contextSummary}` : ""
+      }`;
+      
+      const localResponse = await processLocalAI(prompt, systemPrompt);
+      
+      if (localResponse.error) {
+        console.error("Local AI processing error:", localResponse.error);
+        // Fall back to cloud API
+        apiError = true;
+      } else {
+        aiResponse = {
+          text: localResponse.text,
+          model: "local:" + modelSelection.model,
+          reason: modelSelection.reason,
+          tokens: Math.floor(localResponse.text.length / 4), // Just a rough estimate
+        };
+      }
+    }
     
-    // Mock response data (would come from the AI model in a real implementation)
-    const mockResponse = {
-      text: `Your request was processed by ${modelSelection.model}. ${contextSummary ? "I've taken our conversation history into account." : ""}`,
-      model: modelSelection.model,
-      reason: modelSelection.reason,
-      tokens: Math.floor((prompt.length + (contextSummary ? contextSummary.length : 0)) / 4), // Just a mock calculation
-    };
+    if (!modelSelection.useLocalAI || apiError) {
+      // Log errors but continue with mock response for now
+      // In a real implementation, you would call the selected AI model's API
+      // and include the contextSummary in the prompt
+      
+      const processingTime = Date.now() - startTime;
+      
+      // Mock response data (would come from the AI model in a real implementation)
+      aiResponse = {
+        text: `Your request was processed by ${modelSelection.model}. ${contextSummary ? "I've taken our conversation history into account." : ""}`,
+        model: modelSelection.model,
+        reason: modelSelection.reason,
+        tokens: Math.floor((prompt.length + (contextSummary ? contextSummary.length : 0)) / 4), // Just a mock calculation
+      };
+      
+      // Track API success
+      trackAPIFailure(false);
+    }
     
     // Add the AI response to context
-    updateSessionContext(sessionContext, 'assistant', mockResponse.text);
+    updateSessionContext(sessionContext, 'assistant', aiResponse.text);
     
     // Cache the response for future similar requests
-    cacheResponse(prompt, sessionId, mockResponse);
+    cacheResponse(prompt, sessionId, aiResponse);
+    
+    const processingTime = Date.now() - startTime;
     
     // Log the successful request
     await supabase.from('ai_requests').insert({
       user_id: userId,
       prompt: prompt,
       model_requested: modelRequested,
-      model_used: modelSelection.model,
+      model_used: aiResponse.model,
       manual_override: Boolean(manualOverride),
       status: "completed",
       processing_time_ms: processingTime,
-      tokens_used: mockResponse.tokens,
+      tokens_used: aiResponse.tokens,
       metadata: { 
-        selection_reason: modelSelection.reason,
-        complexity_score: calculateComplexity(prompt),
+        selection_reason: aiResponse.reason,
         context_size: sessionContext.messages.length,
         topics: sessionContext.topics,
-        session_id: sessionId
+        session_id: sessionId,
+        used_local_ai: modelSelection.useLocalAI
       }
     });
     
@@ -170,11 +206,12 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        result: mockResponse.text,
-        model: mockResponse.model,
-        reason: mockResponse.reason,
+        result: aiResponse.text,
+        model: aiResponse.model,
+        reason: aiResponse.reason,
         processingTime: processingTime,
-        tokens: mockResponse.tokens,
+        tokens: aiResponse.tokens,
+        usedLocalAI: modelSelection.useLocalAI,
         context: {
           messageCount: sessionContext.messages.length,
           topics: sessionContext.topics
@@ -187,6 +224,9 @@ serve(async (req) => {
     
   } catch (error) {
     console.error("Error processing request:", error);
+    
+    // Track API failure
+    trackAPIFailure(true);
     
     return new Response(
       JSON.stringify({ 
