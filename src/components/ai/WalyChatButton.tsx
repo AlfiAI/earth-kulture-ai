@@ -34,13 +34,13 @@ const WalyChatButton = ({ onClick, position }: WalyChatButtonProps) => {
           <AvatarImage 
             src={walyAvatarPath} 
             alt="Waly Bot"
-            className="object-contain p-0" 
+            className="object-contain p-1.5" // Added small padding
           />
           <AvatarFallback className="bg-white">
             <img 
               src={walyAvatarPath} 
               alt="Waly Bot" 
-              className="h-full w-full object-contain" 
+              className="h-full w-full object-contain p-1.5" // Added small padding
             />
           </AvatarFallback>
         </Avatar>

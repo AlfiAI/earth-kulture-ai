@@ -23,13 +23,13 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
           <AvatarImage 
             src={walyAvatarPath}
             alt="Waly AI" 
-            className="p-0"
+            className="p-1.5" // Added small padding
           />
           <AvatarFallback className="bg-white">
             <img 
               src={walyAvatarPath} 
               alt="Waly AI" 
-              className="h-full w-full object-contain"
+              className="h-full w-full object-contain p-1.5" // Added small padding
             />
           </AvatarFallback>
         </Avatar>
