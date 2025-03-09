@@ -16,6 +16,3 @@ verify_jwt = false
 [functions]
 node_modules = false
 import_map = "./import_map.json"
-
-# Server configuration must be outside any section
-port = 54335

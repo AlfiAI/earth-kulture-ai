@@ -92,8 +92,5 @@ port = 54335
 
 # Configure Supabase Functions
 [functions]
-# Specify whether node_modules directory is included
 node_modules = false
-
-# Specify the import map location
 import_map = "./import_map.json"
