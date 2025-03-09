@@ -33,29 +33,31 @@ const WalyChatButton = ({
   useEffect(() => {
     console.log("WalyChatButton rendering with position:", position);
     
-    // Force button to be visible immediately
-    if (buttonRef.current) {
-      buttonRef.current.style.visibility = 'visible';
-      buttonRef.current.style.opacity = '1';
-      buttonRef.current.style.display = 'block';
-      console.log("Set visibility directly on button element");
-    }
-    
-    // Force visibility of chat button by ID as well
-    const forceChatButtonVisibility = () => {
+    // Force the button to be visible through both inline styles and DOM manipulation
+    const forceVisibility = () => {
+      // Apply directly to the ref
+      if (buttonRef.current) {
+        buttonRef.current.style.visibility = 'visible';
+        buttonRef.current.style.opacity = '1';
+        buttonRef.current.style.display = 'block';
+        buttonRef.current.style.zIndex = '999999';
+      }
+      
+      // Also force by ID
       const chatButton = document.getElementById('chat-button');
       if (chatButton) {
         chatButton.style.visibility = 'visible';
         chatButton.style.opacity = '1';
         chatButton.style.display = 'block';
-        console.log("Forced chat button visibility");
+        chatButton.style.zIndex = '999999';
+        console.log("Forced chat button visibility directly");
       }
     };
     
-    // Call immediately and after short delays to ensure visibility
-    forceChatButtonVisibility();
-    const timeouts = [100, 300, 500, 1000].map(delay => 
-      setTimeout(forceChatButtonVisibility, delay)
+    // Call immediately and repeatedly
+    forceVisibility();
+    const timeouts = [50, 100, 200, 300, 500, 1000, 2000, 3000].map(delay => 
+      setTimeout(forceVisibility, delay)
     );
     
     return () => timeouts.forEach(clearTimeout);
@@ -97,9 +99,8 @@ const WalyChatButton = ({
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
       className={cn(
-        "fixed z-[999999]", // Ensure very high z-index
-        isOverlapping && "opacity-80 hover:opacity-100",
-        "visible" // Always visible
+        "fixed z-[999999]", // Ensure maximum z-index
+        isOverlapping && "opacity-80 hover:opacity-100"
       )}
       style={{ 
         bottom: `${bottomPx}px`, 
@@ -107,7 +108,8 @@ const WalyChatButton = ({
         transition: 'bottom 0.3s ease, right 0.3s ease',
         visibility: 'visible', // Explicitly set visibility
         opacity: 1, // Explicitly set opacity
-        display: 'block' // Explicitly set display
+        display: 'block', // Explicitly set display
+        zIndex: 999999 // Maximum z-index
       }}
       whileHover={{ scale: 1.05, rotate: 3 }}
       onMouseEnter={handleMouseEnter}
@@ -119,7 +121,7 @@ const WalyChatButton = ({
           "relative flex items-center justify-center p-0 w-16 h-16 rounded-full shadow-xl",
           "bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700",
           "hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300",
-          "border-2 border-primary/40" // Enhanced border for visibility
+          "border-2 border-primary" // Enhanced border for visibility
         )}
         aria-label="Chat with Waly AI"
       >

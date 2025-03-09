@@ -21,15 +21,26 @@ function App() {
         chatButton.style.visibility = 'visible';
         chatButton.style.opacity = '1';
         chatButton.style.display = 'block';
+        chatButton.style.zIndex = '999999';
         console.log("Forced chat button visibility from App component");
+      }
+      
+      // Also ensure the container is visible
+      const walyContainer = document.getElementById('waly-container');
+      if (walyContainer) {
+        walyContainer.style.visibility = 'visible';
+        walyContainer.style.opacity = '1';
+        walyContainer.style.display = 'block';
+        walyContainer.style.zIndex = '999999';
+        console.log("Forced waly container visibility from App component");
       }
     };
     
-    // Call immediately and also after a short delay to handle any race conditions
+    // Call immediately and also after delays to handle any race conditions
     showChatButton();
     
-    // Try again several times to ensure visibility
-    const intervals = [100, 500, 1000, 2000].map(delay => 
+    // Try multiple times to ensure visibility
+    const intervals = [100, 300, 500, 1000, 2000, 3000, 5000].map(delay => 
       setTimeout(showChatButton, delay)
     );
     
@@ -58,14 +69,15 @@ function App() {
             })}
         </Routes>
         
-        {/* Always render the EnhancedWalyAssistant with fixed positioning and maximum z-index */}
+        {/* Always render the EnhancedWalyAssistant with maximum z-index and forced visibility */}
         <div 
           id="waly-container"
-          className="fixed bottom-0 right-0 z-[999999] visible pointer-events-auto" 
+          className="fixed bottom-0 right-0 z-[999999]" 
           style={{ 
             opacity: 1, 
             visibility: 'visible', 
-            display: 'block' 
+            display: 'block',
+            zIndex: 999999
           }}
         >
           <EnhancedWalyAssistant initialOpen={false} />

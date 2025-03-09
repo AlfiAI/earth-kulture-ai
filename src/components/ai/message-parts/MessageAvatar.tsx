@@ -3,17 +3,32 @@ import { User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { useUserAvatar } from "@/hooks/use-user-avatar";
+import { useEffect, useState } from 'react';
 
 interface MessageAvatarProps {
   sender: 'user' | 'ai';
 }
 
 const MessageAvatar = ({ sender }: MessageAvatarProps) => {
-  // Use the newly uploaded robot avatar image for AI
+  // Use the robot avatar image for AI
   const walyAvatarPath = "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png";
+  
+  // State to track image loading
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
   // Get user's avatar if available
   const { avatarUrl, initials } = useUserAvatar();
+  
+  // Preload AI avatar
+  useEffect(() => {
+    if (sender === 'ai') {
+      const img = new Image();
+      img.src = walyAvatarPath;
+      img.onload = () => setImageLoaded(true);
+      img.onerror = () => setImageError(true);
+    }
+  }, [sender]);
   
   return (
     <motion.div
@@ -28,9 +43,10 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
             src={walyAvatarPath}
             alt="Waly AI" 
             className="p-1.5"
+            onError={() => setImageError(true)}
           />
-          <AvatarFallback className="bg-white">
-            <div className="h-full w-full flex items-center justify-center text-primary">
+          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
+            <div className="h-full w-full flex items-center justify-center">
               <User className="h-6 w-6" />
             </div>
           </AvatarFallback>

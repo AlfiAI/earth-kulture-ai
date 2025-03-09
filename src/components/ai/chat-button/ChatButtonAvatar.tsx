@@ -16,6 +16,8 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
     setImageError(false);
     setIsLoaded(false);
     
+    console.log("Loading avatar image:", avatarPath);
+    
     // Preload the image and handle fallback cases
     const img = new Image();
     img.src = avatarPath;
