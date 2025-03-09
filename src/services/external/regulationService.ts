@@ -1,10 +1,6 @@
-import { supabase } from "@/integrations/supabase/client";
-import { ESGRegulation, handleServiceError } from "./types/externalTypes";
 
-interface PaginatedResponse<T> {
-  data: T[];
-  count: number;
-}
+import { supabase } from "@/integrations/supabase/client";
+import { ESGRegulation, handleServiceError, PaginatedResponse } from "./types/externalTypes";
 
 class RegulationService {
   // Get ESG regulations with improved error handling and filtering options

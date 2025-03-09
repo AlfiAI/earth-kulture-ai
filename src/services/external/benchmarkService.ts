@@ -1,7 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { ESGBenchmark } from "./types/externalTypes";
-import { handleServiceError } from "./types/serviceUtils";
+import { ESGBenchmark, handleServiceError } from "./types/externalTypes";
 
 class BenchmarkService {
   // Get industry benchmarks with improved error handling and validation

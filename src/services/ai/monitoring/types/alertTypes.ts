@@ -12,7 +12,8 @@ export interface ESGAlert {
   timestamp: string;
   isRead: boolean;
   metadata?: Record<string, any>;
-  message?: string; // Add this optional field
+  message?: string;
+  
   // Additional fields needed by alertService
   userId?: string;
   description?: string;
@@ -23,7 +24,7 @@ export interface ESGAlert {
   createdAt?: Date;
 }
 
-// Add the database representation type
+// Database representation of the alert
 export interface ESGAlertDB {
   id: string;
   user_id: string;

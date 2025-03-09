@@ -55,14 +55,17 @@ class RegulationsService {
       
       return { 
         data: data as ESGRegulation[], 
-        count: count || 0 
+        count: count || 0,
+        page: page,
+        pageSize: pageSize,
+        hasMore: (count || 0) > (page * pageSize)
       };
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulatory updates", {
         operation: 'getESGRegulations',
         params: { page, pageSize, category, impactLevel, tags }
       });
-      return { data: [], count: 0 };
+      return { data: [], count: 0, page: 1, pageSize: 10, hasMore: false };
     }
   }
 

@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { alertService } from './alerts/alertService';
 import { complianceMonitor } from './compliance/complianceMonitor';
@@ -184,7 +185,7 @@ class ESGMonitoringService {
   markAlertAsRead = alertService.markAlertAsRead.bind(alertService);
 }
 
-// Re-export ESGAlert and related types
-export { ESGAlert, AlertSeverity, AlertType };
+// Re-export ESGAlert and related types with the proper 'type' keyword for isolatedModules
+export type { ESGAlert, AlertSeverity, AlertType };
 
 export const esgMonitoringService = new ESGMonitoringService();
