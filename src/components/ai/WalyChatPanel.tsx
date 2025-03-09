@@ -50,15 +50,15 @@ const WalyChatPanel = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 100 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="fixed inset-x-0 z-50 flex justify-center px-4 sm:px-6"
+          className="fixed inset-x-0 z-50 flex justify-center px-0 sm:px-4"
           style={{ bottom: `${position.bottom}rem` }}
         >
           <Card
             ref={chatRef}
             className={cn(
-              "w-full max-w-5xl h-[80vh] max-h-[700px] shadow-2xl overflow-hidden",
+              "w-full max-w-full sm:max-w-5xl h-[85vh] max-h-[800px] shadow-2xl overflow-hidden",
               "bg-white/95 backdrop-blur-md dark:bg-gray-900/90",
-              "border-none ring-1 ring-black/5 dark:ring-white/10 rounded-2xl"
+              "border-none ring-1 ring-black/5 dark:ring-white/10 rounded-none sm:rounded-2xl"
             )}
           >
             <ChatHeader 

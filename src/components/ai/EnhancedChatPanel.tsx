@@ -62,13 +62,14 @@ const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
         className={cn(
           "fixed shadow-xl border-primary/10 overflow-hidden transition-all duration-300 ease-in-out z-50 bg-card/95 backdrop-blur-sm",
           isOpen 
-            ? "w-96 sm:w-[450px] md:w-[500px] h-[calc(100vh-120px)] max-h-[700px] opacity-100 rounded-2xl" 
+            ? "w-full h-[calc(100vh-60px)] max-h-[800px] opacity-100 rounded-none sm:rounded-2xl sm:w-[550px] md:w-[600px]" 
             : "w-0 h-0 opacity-0 pointer-events-none"
         )}
         style={{ 
-          bottom: `${position.bottom}rem`, 
-          right: `${position.right}rem`,
-          maxHeight: isOpen ? 'calc(100vh - 120px)' : '0'
+          bottom: isOpen ? 0 : `${position.bottom}rem`, 
+          right: isOpen ? 0 : `${position.right}rem`,
+          left: isOpen ? 0 : 'auto',
+          maxHeight: isOpen ? 'calc(100vh - 60px)' : '0'
         }}
       >
         <ChatHeader onClose={onClose} title="Waly Pro" subtitle="Advanced ESG Intelligence" />

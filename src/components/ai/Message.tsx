@@ -1,9 +1,10 @@
 
-import { User } from 'lucide-react';
+import { User, Download } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from 'date-fns';
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 export interface MessageProps {
   id: string;
@@ -113,7 +114,7 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        "flex gap-3 items-start p-3",
+        "flex gap-3 items-start p-4",
         sender === 'user' ? "justify-end" : "justify-start"
       )}
     >
@@ -125,7 +126,7 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
           whileHover={{ scale: 1.05 }}
         >
           <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-sm">
-            <AvatarImage src="/lovable-uploads/576b2f20-ecd7-4793-bc03-a40c9349e2a1.png" alt="Waly" className="p-1" />
+            <AvatarImage src="/lovable-uploads/f6c4395f-ff31-485c-b1bb-af97a26dd5e5.png" alt="Waly" className="p-1" />
             <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
               W
             </AvatarFallback>
@@ -135,10 +136,10 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
       
       <div
         className={cn(
-          "max-w-[75%] rounded-2xl p-5 text-sm shadow-lg",
+          "rounded-2xl p-5 text-sm shadow-lg",
           sender === 'user'
-            ? "bg-gradient-to-br from-primary to-sky-500 text-white"
-            : "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
+            ? "max-w-[75%] bg-gradient-to-br from-primary to-sky-500 text-white"
+            : "max-w-[85%] sm:max-w-[75%] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
         )}
       >
         <div className={cn(
@@ -149,15 +150,39 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
           {sender === 'ai' ? formatDocumentContent(content) : content}
         </div>
         
-        <div
-          className={cn(
-            "text-xs mt-3 opacity-70",
-            sender === 'user'
-              ? "text-white/80 text-right"
-              : "text-muted-foreground"
+        <div className="flex justify-between items-center mt-4">
+          <div
+            className={cn(
+              "text-xs opacity-70",
+              sender === 'user'
+                ? "text-white/80"
+                : "text-muted-foreground"
+            )}
+          >
+            {formatTime(timestamp)}
+          </div>
+          
+          {sender === 'ai' && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 px-2 text-xs text-primary hover:text-primary/80 hover:bg-primary/5"
+              onClick={() => {
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `waly-response-${new Date().toISOString().slice(0, 10)}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              }}
+            >
+              <Download className="h-3.5 w-3.5 mr-1" />
+              Save
+            </Button>
           )}
-        >
-          {formatTime(timestamp)}
         </div>
       </div>
       
