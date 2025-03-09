@@ -1,31 +1,35 @@
 
-import { useState } from "react";
+import { useEffect } from "react";
 import ESGRegulationsFilters from "@/components/external/ESGRegulationsFilters";
 import RegulationsList from "@/components/external/RegulationsList";
-import { RegulationFilters } from "@/components/external/ESGRegulationsFilters";
+import { useExternalData } from "@/hooks/use-external-data";
 
 const RegulationsTab = () => {
-  const [activeFilters, setActiveFilters] = useState<RegulationFilters>({
-    tags: [],
-    impactLevel: undefined
-  });
+  const { 
+    filters, 
+    handleFilterChange, 
+    clearFilters,
+    isLoading,
+    fetchData
+  } = useExternalData();
 
-  const handleFilterChange = (filters: RegulationFilters) => {
-    setActiveFilters(filters);
-  };
+  // Fetch regulations data on component mount
+  useEffect(() => {
+    fetchData('regulations');
+  }, [fetchData]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div className="md:col-span-1">
         <ESGRegulationsFilters
-          filters={activeFilters}
+          filters={filters}
           onFilterChange={handleFilterChange}
           availableTags={[]}
-          onClearFilters={() => setActiveFilters({ tags: [], impactLevel: undefined })}
+          onClearFilters={clearFilters}
         />
       </div>
       <div className="md:col-span-3">
-        <RegulationsList />
+        <RegulationsList isLoading={isLoading} />
       </div>
     </div>
   );

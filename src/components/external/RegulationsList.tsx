@@ -1,10 +1,13 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import ESGRegulationsList from "@/components/external/ESGRegulationsList";
 import ESGPagination from "@/components/external/ESGPagination";
 
-const RegulationsList = () => {
+interface RegulationsListProps {
+  isLoading?: boolean;
+}
+
+const RegulationsList = ({ isLoading = false }: RegulationsListProps) => {
   return (
     <Card>
       <CardHeader>

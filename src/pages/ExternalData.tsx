@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Database, Globe } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -10,16 +9,11 @@ import BenchmarksTab from "@/components/external/tabs/BenchmarksTab";
 import DatasetsTab from "@/components/external/tabs/DatasetsTab";
 
 const ExternalData = () => {
-  const handleSearch = (term: string) => {
-    console.log("Searching for:", term);
-    // In a real app, this would trigger a search across all tabs
-  };
-
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
         <ExternalDataHeader />
-        <ExternalDataSearch onSearch={handleSearch} />
+        <ExternalDataSearch />
 
         <Tabs defaultValue="regulations">
           <TabsList className="mb-4">
