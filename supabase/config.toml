@@ -87,8 +87,10 @@ enable_signup = true
 # If enabled, users need to confirm their phone number before signing in.
 enable_confirmations = false
 
+# Server port configuration must be outside any section
+port = 54335
+
 # Configure Supabase Functions to use a specific Deno version
 [functions]
-port = 54335
-[functions.imported_paths]
-supabase = "https://esm.sh/@supabase/supabase-js@2"
+node_modules = false
+import_map = "./import_map.json"
