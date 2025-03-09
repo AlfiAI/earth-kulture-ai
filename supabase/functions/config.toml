@@ -11,8 +11,3 @@ verify_jwt = false
 
 [functions.setup-esg-cron]
 verify_jwt = false
-
-# Configure Deno for edge functions
-[functions]
-node_modules = false
-import_map = "./import_map.json"
