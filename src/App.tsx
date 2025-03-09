@@ -1,7 +1,7 @@
 
 import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import routes from './routes/routes';
+import * as routes from './routes/routes';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from 'sonner';
 import EnhancedWalyAssistant from '@/components/ai/EnhancedWalyAssistant';
@@ -12,7 +12,7 @@ function App() {
     <WalyActionHandler>
       <div className="min-h-screen flex flex-col">
         <Routes>
-          {routes.map((route) => (
+          {routes.default.map((route) => (
             <Route
               key={route.path}
               path={route.path}

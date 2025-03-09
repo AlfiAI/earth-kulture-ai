@@ -109,12 +109,15 @@ const WalyActionHandler = ({ children }: WalyActionHandlerProps) => {
           // Find and click the benchmark button
           setTimeout(() => {
             const benchmarkButtons = Array.from(document.querySelectorAll('button')).filter(
-              button => button.textContent?.toLowerCase().includes('benchmark') ||
-                      button.textContent?.toLowerCase().includes('compare')
+              button => {
+                const buttonElement = button as HTMLButtonElement;
+                return buttonElement.textContent?.toLowerCase().includes('benchmark') ||
+                      buttonElement.textContent?.toLowerCase().includes('compare');
+              }
             );
             
             if (benchmarkButtons.length > 0) {
-              benchmarkButtons[0].click();
+              (benchmarkButtons[0] as HTMLButtonElement).click();
               toast.info('Running benchmark comparison');
             }
           }, 500);
@@ -140,7 +143,7 @@ const WalyActionHandler = ({ children }: WalyActionHandlerProps) => {
         
         if (submitButtons.length > 0) {
           // Click the first enabled submit button
-          submitButtons[0].click();
+          (submitButtons[0] as HTMLButtonElement).click();
           toast.success('Form submitted by Waly');
         }
       }, 2000); // Delay to allow form validation
