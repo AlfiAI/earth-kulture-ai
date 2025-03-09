@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -19,13 +20,9 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
-interface HeaderProps {
-  toggleSidebar: () => void;
-  sidebarOpen: boolean;
-}
-
-const Header = ({ toggleSidebar, sidebarOpen }: HeaderProps) => {
+const Header = () => {
   const [notifications, setNotifications] = useState(3);
   const location = useLocation();
   
@@ -52,29 +49,11 @@ const Header = ({ toggleSidebar, sidebarOpen }: HeaderProps) => {
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
       <div className="flex items-center gap-2 lg:gap-3">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={toggleSidebar}
-          className="lg:hidden"
-        >
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle menu</span>
-        </Button>
-
-        {!sidebarOpen && (
-          <Link to="/" className="hidden lg:flex items-center gap-2 transition-opacity duration-200">
-            <Globe className="h-6 w-6 text-primary animate-pulse-gentle" />
-            <span className="font-semibold text-xl tracking-tight">Earth Kulture</span>
-          </Link>
-        )}
+        <SidebarTrigger className="lg:hidden" />
 
         <div className="hidden md:flex h-10 w-px bg-border mx-1" />
 
-        <h1 className={cn(
-          "text-xl font-medium transition-all duration-200",
-          sidebarOpen ? "lg:ml-0" : "lg:ml-2"
-        )}>
+        <h1 className="text-xl font-medium transition-all duration-200">
           {getPageTitle()}
         </h1>
       </div>

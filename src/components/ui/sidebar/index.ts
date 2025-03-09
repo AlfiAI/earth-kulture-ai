@@ -23,5 +23,5 @@ export * from './SidebarMenuSkeleton';
 export * from './SidebarMenuSub';
 export * from './SidebarMenuSubItem';
 export * from './SidebarMenuSubButton';
-export * from './types';
+export { type SidebarContext } from './types';
 export * from './useSidebar';
