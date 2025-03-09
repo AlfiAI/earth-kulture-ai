@@ -10,10 +10,15 @@ class ExternalDataService {
   async fetchRegulations(): Promise<ESGRegulation[]> {
     try {
       // In a real app, this would call an API
-      const regulations = await import('./regulationService').then(
-        module => module.getESGRegulations()
-      );
-      return regulations.data;
+      const { regulationsService } = await import('./regulationService');
+      const response = await regulationsService.triggerESGScraper();
+      
+      // If the scraper was triggered successfully, fetch the regulations
+      if (response) {
+        const { data } = await regulationsService.getESGRegulations();
+        return data;
+      }
+      return [];
     } catch (error) {
       console.error('Error fetching regulations:', error);
       toast.error('Failed to load regulatory data');
@@ -26,9 +31,8 @@ class ExternalDataService {
    */
   async fetchBenchmarks(industry?: string): Promise<ESGBenchmark[]> {
     try {
-      const benchmarks = await import('./benchmarkService').then(
-        module => module.getESGBenchmarks(industry)
-      );
+      const { benchmarkService } = await import('./benchmarkService');
+      const benchmarks = await benchmarkService.getESGBenchmarks(industry);
       return benchmarks;
     } catch (error) {
       console.error('Error fetching benchmarks:', error);
@@ -42,9 +46,8 @@ class ExternalDataService {
    */
   async fetchCompetitorData(): Promise<ESGCompetitor[]> {
     try {
-      const competitors = await import('./competitorService').then(
-        module => module.getESGCompetitors()
-      );
+      const { competitorService } = await import('./competitorService');
+      const competitors = await competitorService.getESGCompetitors();
       return competitors;
     } catch (error) {
       console.error('Error fetching competitor data:', error);
