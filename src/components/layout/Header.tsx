@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -20,11 +19,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useSidebar } from "@/components/ui/sidebar/useSidebar";
+import { useAuth } from "@/contexts/auth";
+import { useUserAvatar } from "@/hooks/use-user-avatar";
 
 const Header = () => {
   const [notifications, setNotifications] = useState(3);
   const location = useLocation();
   const { toggleSidebar } = useSidebar();
+  const { userProfile, signOut } = useAuth();
+  const { avatarUrl, initials } = useUserAvatar();
   
   const getPageTitle = () => {
     const path = location.pathname;
@@ -37,17 +40,22 @@ const Header = () => {
     if (path === '/data') return 'Data Center';
     if (path === '/settings') return 'Settings';
     
-    // Return empty string for pages that shouldn't display a title
     return '';
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    toast.success('You have been logged out');
-    window.location.href = '/auth';
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast.success('You have been logged out');
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Error logging out');
+    }
   };
 
   const pageTitle = getPageTitle();
+  const displayName = userProfile?.full_name || 'User';
+  const userEmail = userProfile?.email || 'user@example.com';
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex h-16 w-full items-center justify-between border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
@@ -84,16 +92,18 @@ const Header = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full">
               <Avatar className="h-9 w-9">
-                <AvatarImage src="/placeholder.svg" alt="User avatar" />
-                <AvatarFallback className="bg-primary/10 text-primary">EK</AvatarFallback>
+                <AvatarImage src={avatarUrl} alt="User avatar" className="p-1.5" />
+                <AvatarFallback className="bg-primary/10 text-primary">
+                  {initials}
+                </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 animate-in slide-in-right">
             <DropdownMenuLabel>
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">Admin User</p>
-                <p className="text-xs leading-none text-muted-foreground">admin@earthkulture.ai</p>
+                <p className="text-sm font-medium leading-none">{displayName}</p>
+                <p className="text-xs leading-none text-muted-foreground">{userEmail}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

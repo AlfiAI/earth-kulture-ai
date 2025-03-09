@@ -2,14 +2,18 @@
 import { User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
+import { useUserAvatar } from "@/hooks/use-user-avatar";
 
 interface MessageAvatarProps {
   sender: 'user' | 'ai';
 }
 
 const MessageAvatar = ({ sender }: MessageAvatarProps) => {
-  // Use the newly uploaded robot avatar image
+  // Use the newly uploaded robot avatar image for AI
   const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
+  
+  // Get user's avatar if available
+  const { avatarUrl, initials } = useUserAvatar();
   
   return (
     <motion.div
@@ -35,8 +39,9 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
         </Avatar>
       ) : (
         <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-sm">
+          <AvatarImage src={avatarUrl} alt="User" className="p-1.5" />
           <AvatarFallback className="bg-gradient-to-br from-sky-500 to-primary text-white">
-            <User className="h-5 w-5" />
+            {initials}
           </AvatarFallback>
         </Avatar>
       )}
