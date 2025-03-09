@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { ESGBenchmark, benchmarkService } from "@/services/external/externalDataService";
 import { getDemoBenchmarks, prepareChartDataFromDemoData } from "./benchmarkUtils";
+import { useAuth } from "@/contexts/auth";
+import { IndustryType } from "@/services/ai/orchestration/types/agentTypes";
 
 export function useBenchmarkData() {
   const [benchmarks, setBenchmarks] = useState<ESGBenchmark[]>([]);
@@ -10,6 +12,7 @@ export function useBenchmarkData() {
   const [industry, setIndustry] = useState("all");
   const [chartData, setChartData] = useState<any[]>([]);
   const [selectedMetric, setSelectedMetric] = useState("carbon_intensity");
+  const { userProfile } = useAuth();
   
   const metrics = [
     { id: "carbon_intensity", name: "Carbon Intensity", unit: "tCO2e/$M" },
@@ -26,6 +29,17 @@ export function useBenchmarkData() {
     { id: "energy", name: "Energy" },
     { id: "retail", name: "Retail" }
   ];
+  
+  // Set initial industry based on user profile
+  useEffect(() => {
+    if (userProfile?.industry) {
+      const userIndustry = userProfile.industry as IndustryType;
+      // Map user industry type to benchmark industry if a direct match exists
+      if (industries.some(ind => ind.id === userIndustry)) {
+        setIndustry(userIndustry);
+      }
+    }
+  }, [userProfile]);
   
   useEffect(() => {
     fetchBenchmarks();
@@ -102,6 +116,7 @@ export function useBenchmarkData() {
     setSelectedMetric,
     metrics,
     industries,
-    refreshData: fetchBenchmarks
+    refreshData: fetchBenchmarks,
+    userIndustry: userProfile?.industry as IndustryType
   };
 }

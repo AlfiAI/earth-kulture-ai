@@ -27,13 +27,17 @@ import { profileService } from '@/services/profiles/profileService';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, ArrowRight, CheckCircle, User } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, User, Building, BarChart } from 'lucide-react';
+import { IndustryType, UserRoleType } from '@/services/ai/orchestration/types/agentTypes';
 
 const onboardingSchema = z.object({
   full_name: z.string().min(2, 'Full name must be at least 2 characters'),
   company: z.string().optional(),
   role: z.string().optional(),
   industry: z.string().optional(),
+  dashboard_preference: z.enum(['individual', 'business', 'enterprise']).optional(),
+  data_visualization_preference: z.enum(['detailed', 'summary', 'visual']).optional(),
+  report_frequency: z.enum(['daily', 'weekly', 'monthly', 'quarterly']).optional(),
 });
 
 type OnboardingFormValues = z.infer<typeof onboardingSchema>;
@@ -48,9 +52,12 @@ const OnboardingPage = () => {
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       full_name: userProfile?.full_name || '',
-      company: '',
-      role: '',
-      industry: '',
+      company: userProfile?.company || '',
+      role: userProfile?.role || '',
+      industry: userProfile?.industry || '',
+      dashboard_preference: userProfile?.dashboard_preference || 'business',
+      data_visualization_preference: userProfile?.data_visualization_preference || 'visual',
+      report_frequency: userProfile?.report_frequency || 'weekly',
     },
   });
 
@@ -67,8 +74,11 @@ const OnboardingPage = () => {
         id: user.id,
         full_name: values.full_name,
         company: values.company,
-        role: values.role,
-        industry: values.industry,
+        role: values.role as UserRoleType,
+        industry: values.industry as IndustryType,
+        dashboard_preference: values.dashboard_preference,
+        data_visualization_preference: values.data_visualization_preference,
+        report_frequency: values.report_frequency,
       });
       
       toast.success('Profile updated successfully!');
@@ -82,7 +92,7 @@ const OnboardingPage = () => {
   };
 
   const nextStep = () => {
-    if (step < 3) {
+    if (step < 4) {
       setStep(step + 1);
     }
   };
@@ -132,13 +142,13 @@ const OnboardingPage = () => {
             </div>
           </div>
           <h1 className="text-2xl font-bold mb-2">Welcome to Earth Kulture</h1>
-          <p className="text-muted-foreground">Let's set up your profile to get started</p>
+          <p className="text-muted-foreground">Let's customize your experience based on your needs</p>
         </motion.div>
 
         <motion.div variants={itemVariants}>
           <div className="mb-6">
             <div className="flex justify-between mb-2">
-              {[1, 2, 3].map((stepNumber) => (
+              {[1, 2, 3, 4].map((stepNumber) => (
                 <div 
                   key={stepNumber}
                   className={`flex items-center justify-center ${stepNumber <= step ? 'text-primary' : 'text-muted-foreground'}`}
@@ -154,7 +164,7 @@ const OnboardingPage = () => {
             <div className="relative h-1 bg-muted rounded-full overflow-hidden">
               <div 
                 className="absolute h-full bg-primary transition-all duration-300 ease-in-out" 
-                style={{ width: `${((step - 1) / 2) * 100}%` }}
+                style={{ width: `${((step - 1) / 3) * 100}%` }}
               />
             </div>
           </div>
@@ -165,8 +175,9 @@ const OnboardingPage = () => {
             <CardHeader>
               <CardTitle>
                 {step === 1 ? 'Personal Information' : 
-                 step === 2 ? 'Company Details' :
-                 'Preferences'}
+                 step === 2 ? 'Company & Role' :
+                 step === 3 ? 'Industry Selection' : 
+                 'Dashboard Preferences'}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -211,10 +222,10 @@ const OnboardingPage = () => {
                         name="company"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Company Name</FormLabel>
+                            <FormLabel>Organization Name</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="Enter your company name" 
+                                placeholder="Enter your organization name" 
                                 {...field} 
                               />
                             </FormControl>
@@ -236,13 +247,11 @@ const OnboardingPage = () => {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="sustainability_manager">Sustainability Manager</SelectItem>
-                                <SelectItem value="esg_director">ESG Director</SelectItem>
-                                <SelectItem value="operations_manager">Operations Manager</SelectItem>
-                                <SelectItem value="consultant">Sustainability Consultant</SelectItem>
-                                <SelectItem value="researcher">Environmental Researcher</SelectItem>
-                                <SelectItem value="student">Student</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
+                                <SelectItem value="admin">Administrator</SelectItem>
+                                <SelectItem value="manager">Sustainability Manager</SelectItem>
+                                <SelectItem value="analyst">ESG Analyst</SelectItem>
+                                <SelectItem value="viewer">Report Viewer</SelectItem>
+                                <SelectItem value="individual">Individual User</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -274,14 +283,111 @@ const OnboardingPage = () => {
                               <SelectContent>
                                 <SelectItem value="technology">Technology</SelectItem>
                                 <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                                <SelectItem value="finance">Finance</SelectItem>
-                                <SelectItem value="healthcare">Healthcare</SelectItem>
-                                <SelectItem value="retail">Retail</SelectItem>
+                                <SelectItem value="financial">Financial Services</SelectItem>
                                 <SelectItem value="energy">Energy</SelectItem>
+                                <SelectItem value="retail">Retail</SelectItem>
+                                <SelectItem value="healthcare">Healthcare</SelectItem>
                                 <SelectItem value="education">Education</SelectItem>
                                 <SelectItem value="government">Government</SelectItem>
-                                <SelectItem value="nonprofit">Non-Profit</SelectItem>
+                                <SelectItem value="corporate">Large Enterprise</SelectItem>
+                                <SelectItem value="sme">Small/Medium Business</SelectItem>
+                                <SelectItem value="individual">Personal Use</SelectItem>
                                 <SelectItem value="other">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="mt-4 p-3 bg-muted rounded-md text-sm">
+                        <p>Your industry selection helps us tailor AI insights, recommended frameworks, and benchmarking comparisons specifically to your sector.</p>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {step === 4 && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className="space-y-4"
+                    >
+                      <FormField
+                        control={form.control}
+                        name="dashboard_preference"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Dashboard Type</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select dashboard type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="individual">
+                                  Individual (Personal sustainability tracking)
+                                </SelectItem>
+                                <SelectItem value="business">
+                                  Business (Department-level insights)
+                                </SelectItem>
+                                <SelectItem value="enterprise">
+                                  Enterprise (Organization-wide compliance & analysis)
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="data_visualization_preference"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Data Visualization Style</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select visualization preference" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="detailed">
+                                  Detailed (In-depth tables and specific numbers)
+                                </SelectItem>
+                                <SelectItem value="summary">
+                                  Summary (Key metrics and highlights)
+                                </SelectItem>
+                                <SelectItem value="visual">
+                                  Visual (Graphs and visual representations)
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="report_frequency"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Report Frequency</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select report frequency" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="daily">Daily</SelectItem>
+                                <SelectItem value="weekly">Weekly</SelectItem>
+                                <SelectItem value="monthly">Monthly</SelectItem>
+                                <SelectItem value="quarterly">Quarterly</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -313,7 +419,7 @@ const OnboardingPage = () => {
                       </Button>
                     )}
                     
-                    {step < 3 ? (
+                    {step < 4 ? (
                       <Button 
                         type="button" 
                         onClick={nextStep}

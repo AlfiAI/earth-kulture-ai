@@ -1,7 +1,10 @@
 
+import { useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/auth";
+import { IndustryType } from "@/services/ai/orchestration/types/agentTypes";
 
 interface BenchmarkFiltersProps {
   industries?: { id: string; name: string }[];
@@ -27,6 +30,20 @@ const BenchmarkFilters = ({
 }: BenchmarkFiltersProps) => {
   // Use either new or legacy props
   const currentIndustry = selectedIndustry || industry || 'all';
+  const { userProfile } = useAuth();
+  
+  // Auto-select user's industry if available
+  useEffect(() => {
+    if (userProfile?.industry && !selectedIndustry && !industry) {
+      const userIndustry = userProfile.industry as IndustryType;
+      const mappedIndustry = userIndustry === 'corporate' || userIndustry === 'sme' ? 'all' : userIndustry;
+      
+      // Check if the user's industry exists in the available industries
+      if (industries.some(ind => ind.id === mappedIndustry)) {
+        setIndustry(mappedIndustry);
+      }
+    }
+  }, [userProfile, industries, setIndustry, selectedIndustry, industry]);
   
   return (
     <div>
@@ -45,6 +62,9 @@ const BenchmarkFilters = ({
                 onClick={() => setIndustry(ind.id)}
               >
                 {ind.name}
+                {userProfile?.industry === ind.id && (
+                  <span className="ml-2 text-xs text-muted-foreground">(Your industry)</span>
+                )}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
