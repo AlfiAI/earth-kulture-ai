@@ -49,12 +49,13 @@ const WalyChatPanel = ({
         "bg-white/95 backdrop-blur-md dark:bg-gray-900/90",
         "border-none ring-1 ring-black/5 dark:ring-white/10",
         isOpen 
-          ? "w-[350px] sm:w-[400px] h-[600px] max-h-[90vh] opacity-100 rounded-2xl transform-gpu" 
+          ? "w-full sm:w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] xl:w-3/4 h-[600px] max-h-[90vh] opacity-100 rounded-2xl transform-gpu" 
           : "w-0 h-0 opacity-0 pointer-events-none"
       )}
       style={{ 
         bottom: `${position.bottom}rem`, 
-        right: `${position.right}rem`,
+        left: '50%',
+        transform: isOpen ? 'translateX(-50%)' : 'translateX(-50%) scale(0.95)',
         maxHeight: isOpen ? 'calc(100vh - 100px)' : '0',
         boxShadow: isOpen ? '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' : 'none'
       }}
