@@ -2,29 +2,46 @@
 import { supabase } from "@/integrations/supabase/client";
 import { ESGRegulation, handleServiceError } from "./types/externalTypes";
 
+interface PaginatedResponse<T> {
+  data: T[];
+  count: number;
+}
+
 class RegulationService {
   // Get ESG regulations with improved error handling and filtering options
   async getESGRegulations(
-    region?: string,
-    status?: 'upcoming' | 'active' | 'superseded'
-  ): Promise<ESGRegulation[]> {
+    page?: number,
+    pageSize?: number,
+    category?: string,
+    impactLevel?: string,
+    tags?: string[]
+  ): Promise<PaginatedResponse<ESGRegulation>> {
     try {
       // Build query
       let query = supabase
         .from('esg_regulatory_updates')
-        .select('*');
+        .select('*', { count: 'exact' });
         
       // Apply filters if provided
-      if (region) {
-        query = query.eq('country', region);
+      if (category) {
+        query = query.eq('category', category);
       }
       
-      // Note: status field might need adjustment if the database uses a different field
-      if (status) {
-        query = query.eq('status', status);
+      if (impactLevel) {
+        query = query.eq('impact_level', impactLevel);
       }
       
-      const { data, error } = await query
+      if (tags && tags.length > 0) {
+        query = query.contains('tags', tags);
+      }
+      
+      // Add pagination if provided
+      if (page && pageSize) {
+        const start = (page - 1) * pageSize;
+        query = query.range(start, start + pageSize - 1);
+      }
+      
+      const { data, error, count } = await query
         .order('published_date', { ascending: false });
       
       if (error) throw error;
@@ -34,14 +51,17 @@ class RegulationService {
         throw new Error("Invalid response format from ESG regulations query");
       }
       
-      // Fix type assertion - use any as intermediate step to break potential recursion
-      return data as any;
+      // Break the type recursion by using a simpler type assertion
+      return {
+        data: data as unknown as ESGRegulation[],
+        count: count || 0
+      };
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulations", {
         operation: 'getESGRegulations',
-        params: { region, status }
+        params: { page, pageSize, category, impactLevel, tags }
       });
-      return [];
+      return { data: [], count: 0 };
     }
   }
 
@@ -60,8 +80,8 @@ class RegulationService {
       
       if (error) throw error;
       
-      // Fix type assertion - use any as intermediate step to break potential recursion
-      return data as any;
+      // Break the type recursion by using a simpler type assertion
+      return data as unknown as ESGRegulation;
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulation details", {
         operation: 'getESGRegulationById',
@@ -83,14 +103,26 @@ class RegulationService {
       
       if (error) throw error;
       
-      // Fix type assertion - use any as intermediate step to break potential recursion
-      return (data || []) as any;
+      // Break the type recursion by using a simpler type assertion
+      return (data || []) as unknown as ESGRegulation[];
     } catch (error) {
       handleServiceError(error, "Failed to load sector-specific regulations", {
         operation: 'getRegulationsBySector',
         params: { sector }
       });
       return [];
+    }
+  }
+
+  // Trigger ESG scraper to update regulations data
+  async triggerESGScraper(): Promise<void> {
+    try {
+      await supabase.functions.invoke('esg-scraper');
+      console.log('ESG scraper triggered successfully');
+    } catch (error) {
+      handleServiceError(error, "Failed to trigger ESG scraper", {
+        operation: 'triggerESGScraper'
+      });
     }
   }
 }

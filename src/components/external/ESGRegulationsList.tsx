@@ -1,9 +1,8 @@
-
 import { useEffect, useState, useMemo } from "react";
 import { RefreshCw } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ESGRegulation, regulationsService } from "@/services/external/externalDataService";
+import { ESGRegulation, regulationService } from "@/services/external/externalDataService";
 import ESGRegulationsTabs from "./ESGRegulationsTabs";
 import ESGPagination from "./ESGPagination";
 import ESGRegulationsFilters, { RegulationFilters } from "./ESGRegulationsFilters";
@@ -23,7 +22,6 @@ const ESGRegulationsList = () => {
   });
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   
-  // Collect all unique tags from regulations
   useEffect(() => {
     const uniqueTags = new Set<string>();
     regulations.forEach(regulation => {
@@ -38,7 +36,7 @@ const ESGRegulationsList = () => {
     setIsLoading(true);
     
     try {
-      const { data, count } = await regulationsService.getESGRegulations(
+      const { data, count } = await regulationService.getESGRegulations(
         pageNum, 
         pageSize,
         category !== "all" ? category : undefined,
@@ -60,8 +58,7 @@ const ESGRegulationsList = () => {
     setIsRefreshing(true);
     
     try {
-      await regulationsService.triggerESGScraper();
-      // Refetch the data after update
+      await regulationService.triggerESGScraper();
       await fetchRegulations(1, activeTab !== "all" ? activeTab : undefined);
     } finally {
       setIsRefreshing(false);
@@ -101,7 +98,6 @@ const ESGRegulationsList = () => {
     fetchRegulations();
   }, []);
 
-  // Calculate the total number of pages
   const totalPages = Math.ceil(count / pageSize);
   
   return (
