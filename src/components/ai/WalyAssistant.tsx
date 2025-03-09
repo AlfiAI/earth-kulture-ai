@@ -60,7 +60,7 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   
   const handleStarterClick = (text: string) => {
     setInputValue(text);
-    // Optional: automatically send the message
+    // Automatically send the message
     setTimeout(() => {
       handleSend();
       setShowNewChat(false);
@@ -113,6 +113,27 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  // Handle clicks outside to close
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        chatRef.current && 
+        !chatRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('button')
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
     <>

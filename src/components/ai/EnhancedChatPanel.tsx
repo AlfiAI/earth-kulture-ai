@@ -8,7 +8,7 @@ import ChatInput from './ChatInput';
 import EnhancedChatBanner from './EnhancedChatBanner';
 import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
 import ConversationStarters from './ConversationStarters';
-import { MessageCirclePlus, Zap, TrendingUp, Lightbulb } from 'lucide-react';
+import { TrendingUp, Zap, Lightbulb } from 'lucide-react';
 
 interface EnhancedChatPanelProps {
   isOpen: boolean;
@@ -44,7 +44,7 @@ const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
     
     const handleStarterClick = (text: string) => {
       setInputValue(text);
-      // Optional: automatically send the message
+      // Automatically send the message
       setTimeout(() => {
         handleSend();
         setShowNewChat(false);
@@ -74,16 +74,18 @@ const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
         <CardContent className="p-0 flex flex-col h-[calc(100%-56px)]">
           <EnhancedChatBanner />
           
-          <MessageList 
-            messages={messages} 
-            isTyping={isTyping} 
-          />
-          
           {messages.length === 0 && showNewChat && (
             <ConversationStarters 
               starters={starters} 
               onStarterClick={handleStarterClick}
               onNewChat={handleNewChat}
+            />
+          )}
+          
+          {(messages.length > 0 || !showNewChat) && (
+            <MessageList 
+              messages={messages} 
+              isTyping={isTyping} 
             />
           )}
           

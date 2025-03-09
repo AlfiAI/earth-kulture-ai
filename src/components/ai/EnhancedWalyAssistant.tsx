@@ -1,7 +1,9 @@
 
-import { useState, useEffect, useRef } from 'react';
-import EnhancedChatToggleButton from './EnhancedChatToggleButton';
+import { useState, useRef, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { MessageCirclePlus, Sparkles } from 'lucide-react';
 import EnhancedChatPanel from './EnhancedChatPanel';
+import { cn } from "@/lib/utils";
 
 interface EnhancedWalyAssistantProps {
   initialOpen?: boolean;
@@ -10,25 +12,13 @@ interface EnhancedWalyAssistantProps {
 const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantProps) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [position, setPosition] = useState({ bottom: 2, right: 2 });
-  const chatRef = useRef<HTMLDivElement>(null);
+  const chatPanelRef = useRef<HTMLDivElement>(null);
   
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
 
-  // Focus the input field when chat opens
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => {
-        const inputElement = document.querySelector('.chat-input textarea');
-        if (inputElement instanceof HTMLTextAreaElement) {
-          inputElement.focus();
-        }
-      }, 100);
-    }
-  }, [isOpen]);
-
-  // Handle scrolling and adjust position
+  // Handle scrolling by adjusting the assistant's position
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -70,19 +60,47 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     };
   }, []);
 
+  // Detect clicks outside the chat panel to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        chatPanelRef.current && 
+        !chatPanelRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('button')
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
     <>
       {!isOpen && (
-        <EnhancedChatToggleButton 
-          onClick={toggleOpen} 
-          position={position}
-        />
+        <Button
+          onClick={toggleOpen}
+          className="fixed rounded-full w-14 h-14 shadow-lg p-0 animate-in bg-primary text-white hover:bg-primary/90 flex items-center justify-center z-50 transition-all duration-300"
+          style={{ bottom: `${position.bottom}rem`, right: `${position.right}rem` }}
+        >
+          <div className="relative">
+            <MessageCirclePlus className="h-6 w-6" />
+            <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-yellow-300" />
+          </div>
+        </Button>
       )}
+      
       <EnhancedChatPanel 
-        isOpen={isOpen} 
-        onClose={toggleOpen} 
+        ref={chatPanelRef}
+        isOpen={isOpen}
+        onClose={toggleOpen}
         position={position}
-        ref={chatRef}
       />
     </>
   );
