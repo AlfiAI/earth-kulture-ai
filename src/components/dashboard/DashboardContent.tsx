@@ -15,20 +15,30 @@ const DashboardContent = () => {
       {dashboardType === 'individual' ? (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <CarbonFootprint />
-            <DashboardESGScore />
+            <div className="carbon-footprint">
+              <CarbonFootprint />
+            </div>
+            <div className="dashboard-esg-score">
+              <DashboardESGScore />
+            </div>
           </div>
-          <AIInsights />
+          <div className="ai-insights">
+            <AIInsights />
+          </div>
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            <DashboardESGScore />
-            <CarbonFootprint />
+            <div className="dashboard-esg-score">
+              <DashboardESGScore />
+            </div>
+            <div className="carbon-footprint">
+              <CarbonFootprint />
+            </div>
             <ComplianceStatus />
           </div>
           
-          <div className="mb-6">
+          <div className="mb-6 ai-insights">
             <AIInsights />
           </div>
           
