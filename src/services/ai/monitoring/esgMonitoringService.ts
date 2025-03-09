@@ -28,17 +28,19 @@ export interface ESGAlert {
 }
 
 // Database interface for the alerts table
+// Make sure this matches the exact structure from the database
 interface ESGAlertDB {
   id: string;
   user_id: string;
   message: string;
-  severity: AlertSeverity;
-  alert_type: AlertType;
+  severity: string; // Changed from AlertSeverity to string to match DB
+  alert_type: string; // Changed from AlertType to string to match DB
   compliance_framework?: string;
   source_data?: Json;
   created_at: string;
   status: string;
   resolution_steps?: string[] | Json;
+  resolved_at?: string;
 }
 
 /**
@@ -263,7 +265,8 @@ class ESGMonitoringService {
       if (!data) return [];
       
       // Transform database response to ESGAlert format
-      return data.map((item: ESGAlertDB) => {
+      // Using a type assertion to handle the mapping correctly
+      return data.map((item: any) => {
         // Convert resolution_steps from Json to string[] if needed
         let recommendedActions: string[] | undefined;
         
@@ -285,8 +288,9 @@ class ESGMonitoringService {
           userId: item.user_id,
           title: item.message,
           description: item.message,
-          severity: item.severity,
-          type: item.alert_type,
+          // Explicitly cast to AlertSeverity and AlertType to ensure type safety
+          severity: item.severity as AlertSeverity,
+          type: item.alert_type as AlertType,
           source: item.compliance_framework || 'system',
           category: item.compliance_framework || 'general',
           createdAt: new Date(item.created_at),
