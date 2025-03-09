@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { RefreshCw } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ESGRegulation, regulationService } from "@/services/external/externalDataService";
+import { ESGRegulation, regulationsService } from "@/services/external/externalDataService";
 import ESGRegulationsTabs from "./ESGRegulationsTabs";
 import ESGPagination from "./ESGPagination";
 import ESGRegulationsFilters, { RegulationFilters } from "./ESGRegulationsFilters";
@@ -36,7 +36,7 @@ const ESGRegulationsList = () => {
     setIsLoading(true);
     
     try {
-      const { data, count } = await regulationService.getESGRegulations(
+      const { data, count } = await regulationsService.getESGRegulations(
         pageNum, 
         pageSize,
         category !== "all" ? category : undefined,
@@ -58,7 +58,7 @@ const ESGRegulationsList = () => {
     setIsRefreshing(true);
     
     try {
-      await regulationService.triggerESGScraper();
+      await regulationsService.triggerESGScraper();
       await fetchRegulations(1, activeTab !== "all" ? activeTab : undefined);
     } finally {
       setIsRefreshing(false);
