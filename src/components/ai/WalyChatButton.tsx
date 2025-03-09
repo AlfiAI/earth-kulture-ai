@@ -28,7 +28,7 @@ const WalyChatButton = ({
   const isMobile = useIsMobile();
   const isOverlapping = useOverlapDetection('chat-button');
   
-  // Debug logging
+  // Debug logging and force visibility
   useEffect(() => {
     console.log("WalyChatButton rendering with position:", position);
     console.log("Avatar path:", walyAvatarPath);
@@ -45,6 +45,14 @@ const WalyChatButton = ({
     preloadImage.onload = () => {
       console.log("Successfully preloaded Waly avatar image");
     };
+    
+    // Force button to be visible
+    const chatButton = document.getElementById('chat-button');
+    if (chatButton) {
+      chatButton.style.visibility = 'visible';
+      chatButton.style.opacity = '1';
+      console.log("Forced chat button visibility from WalyChatButton");
+    }
   }, []);
   
   // Conversation starter questions, use context-aware ones if provided
@@ -75,7 +83,7 @@ const WalyChatButton = ({
   const bottomPx = position.bottom * 16; // Convert rem to px (1rem = 16px)
   const rightPx = position.right * 16; // Convert rem to px (1rem = 16px)
   
-  // Always render the button
+  // Always render the button with improved visibility
   return (
     <motion.div
       id="chat-button"
@@ -84,12 +92,16 @@ const WalyChatButton = ({
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
       className={cn(
         "fixed z-[99999]", // Ensure very high z-index
-        isOverlapping && "opacity-80 hover:opacity-100"
+        isOverlapping && "opacity-80 hover:opacity-100",
+        "visible" // Always visible
       )}
       style={{ 
         bottom: `${bottomPx}px`, 
         right: `${rightPx}px`,
-        transition: 'bottom 0.3s ease, right 0.3s ease'
+        transition: 'bottom 0.3s ease, right 0.3s ease',
+        visibility: 'visible', // Explicitly set visibility
+        opacity: 1, // Explicitly set opacity
+        display: 'block' // Explicitly set display
       }}
       whileHover={{ scale: 1.05, rotate: 3 }}
       onMouseEnter={handleMouseEnter}
