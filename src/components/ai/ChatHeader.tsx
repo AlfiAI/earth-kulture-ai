@@ -16,31 +16,30 @@ const ChatHeader = ({ onClose, title, subtitle }: ChatHeaderProps) => {
   const displayTitle = title || (isMobile ? "Waly" : "Waly Assistant");
 
   return (
-    <div className="bg-primary text-primary-foreground p-3 flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <Avatar className="h-8 w-8 bg-white/20 border-2 border-white/30">
+    <div className="bg-gradient-to-r from-primary to-sky-500 text-white p-4 flex items-center justify-between rounded-t-2xl">
+      <div className="flex items-center gap-3">
+        <Avatar className="h-10 w-10 bg-white/20 border-2 border-white/30 ring-2 ring-white/10 shadow-lg">
+          <AvatarImage src="/lovable-uploads/664bce6b-c58c-464b-b306-64594271cbdc.png" alt="Waly" className="p-1" />
           <AvatarFallback className="bg-gradient-to-br from-white/90 to-white/70 text-primary">
             <Sparkles className="h-4 w-4" />
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <h2 className="font-medium">{displayTitle}</h2>
-          {subtitle && <p className="text-xs text-primary-foreground/80">{subtitle}</p>}
+          <h2 className="font-medium text-lg">{displayTitle}</h2>
+          {subtitle && <p className="text-xs text-white/80">{subtitle}</p>}
         </div>
-        <Badge variant="outline" className="text-xs bg-white/20 text-white border-white/20">Beta</Badge>
+        <Badge variant="outline" className="text-xs bg-white/20 text-white border-white/20 shadow-sm">Beta</Badge>
       </div>
       
-      <div className="flex items-center">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10"
-          onClick={onClose}
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </Button>
-      </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-white hover:bg-white/10 rounded-full"
+        onClick={onClose}
+      >
+        <X className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </Button>
     </div>
   );
 };

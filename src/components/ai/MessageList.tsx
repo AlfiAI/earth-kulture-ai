@@ -1,8 +1,9 @@
 
 import { useRef, useEffect } from 'react';
-import { Loader2, Bot } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Message, { MessageProps } from './Message';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface MessageListProps {
   messages: MessageProps[];
@@ -17,7 +18,7 @@ const MessageList = ({ messages, isTyping }: MessageListProps) => {
   }, [messages, isTyping]);
 
   return (
-    <ScrollArea className="flex-1 p-4">
+    <ScrollArea className="flex-1 py-4 px-1 bg-gradient-to-b from-gray-50/50 to-white/80 dark:from-gray-900/50 dark:to-gray-800/80">
       <div className="space-y-4">
         {messages.map((message) => (
           <Message 
@@ -27,13 +28,23 @@ const MessageList = ({ messages, isTyping }: MessageListProps) => {
         ))}
         
         {isTyping && (
-          <div className="flex justify-start">
-            <div className="bg-muted max-w-[85%] rounded-lg p-3 flex items-center space-x-2 mr-4 relative">
-              <div className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white">
-                <Bot className="h-3 w-3" />
+          <div className="flex items-start gap-3 p-3">
+            <Avatar className="h-10 w-10 border-2 border-primary/20 bg-primary/10 shadow-sm">
+              <AvatarImage src="/lovable-uploads/664bce6b-c58c-464b-b306-64594271cbdc.png" alt="Waly" className="p-1" />
+              <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
+                W
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-100 dark:from-gray-800 dark:to-gray-900 dark:border-gray-700 rounded-2xl p-4 shadow-sm max-w-[85%]">
+              <div className="flex items-center space-x-2">
+                <div className="flex space-x-1.5">
+                  <span className="w-2 h-2 rounded-full bg-primary/60 animate-pulse"></span>
+                  <span className="w-2 h-2 rounded-full bg-primary/60 animate-pulse delay-150"></span>
+                  <span className="w-2 h-2 rounded-full bg-primary/60 animate-pulse delay-300"></span>
+                </div>
+                <span className="text-sm text-muted-foreground">Waly is thinking...</span>
               </div>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Waly is thinking...</span>
             </div>
           </div>
         )}

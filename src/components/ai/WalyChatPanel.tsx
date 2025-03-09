@@ -1,6 +1,6 @@
 
 import { RefObject } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
@@ -45,13 +45,18 @@ const WalyChatPanel = ({
     <Card
       ref={chatRef}
       className={cn(
-        "fixed shadow-xl border-primary/10 overflow-hidden transition-all duration-300 ease-in-out z-50 bg-card/95 backdrop-blur-sm",
-        isOpen ? "w-80 sm:w-96 h-[600px] max-h-[80vh] opacity-100 rounded-2xl" : "w-0 h-0 opacity-0 pointer-events-none"
+        "fixed shadow-2xl overflow-hidden transition-all duration-300 ease-in-out z-50",
+        "bg-white/95 backdrop-blur-md dark:bg-gray-900/90",
+        "border-none ring-1 ring-black/5 dark:ring-white/10",
+        isOpen 
+          ? "w-[350px] sm:w-[400px] h-[600px] max-h-[90vh] opacity-100 rounded-2xl transform-gpu" 
+          : "w-0 h-0 opacity-0 pointer-events-none"
       )}
       style={{ 
         bottom: `${position.bottom}rem`, 
         right: `${position.right}rem`,
-        maxHeight: isOpen ? 'calc(100vh - 100px)' : '0'
+        maxHeight: isOpen ? 'calc(100vh - 100px)' : '0',
+        boxShadow: isOpen ? '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' : 'none'
       }}
     >
       <ChatHeader 
@@ -60,7 +65,7 @@ const WalyChatPanel = ({
         subtitle="ESG & Carbon Intelligence" 
       />
       
-      <CardContent className="p-0 flex flex-col h-[calc(100%-56px)]">
+      <div className="flex flex-col h-[calc(100%-72px)]">
         {messages.length === 0 && showNewChat && (
           <ConversationStarters 
             starters={starters} 
@@ -83,7 +88,7 @@ const WalyChatPanel = ({
           inputRef={inputRef}
           placeholder="Ask about ESG performance, carbon tracking, or sustainability..."
         />
-      </CardContent>
+      </div>
     </Card>
   );
 };

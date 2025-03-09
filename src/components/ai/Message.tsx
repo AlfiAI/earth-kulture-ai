@@ -1,7 +1,8 @@
 
-import { Bot, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatDistanceToNow } from 'date-fns';
 
 export interface MessageProps {
   id: string;
@@ -12,39 +13,40 @@ export interface MessageProps {
 
 const Message = ({ content, sender, timestamp }: MessageProps) => {
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return formatDistanceToNow(date, { addSuffix: true });
   };
 
   return (
     <div
       className={cn(
-        "flex gap-3 items-start px-4 py-2",
+        "flex gap-3 items-start p-3 animate-fade-in",
         sender === 'user' ? "justify-end" : "justify-start"
       )}
     >
       {sender === 'ai' && (
-        <Avatar className="h-8 w-8 border-2 border-primary/20 bg-primary/10">
-          <AvatarFallback className="bg-gradient-to-br from-primary/80 to-sky-500/80 text-white">
-            <Bot className="h-4 w-4" />
+        <Avatar className="h-10 w-10 border-2 border-primary/20 bg-primary/10 shadow-sm">
+          <AvatarImage src="/lovable-uploads/664bce6b-c58c-464b-b306-64594271cbdc.png" alt="Waly" className="p-1" />
+          <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
+            W
           </AvatarFallback>
         </Avatar>
       )}
       
       <div
         className={cn(
-          "max-w-[85%] rounded-lg p-3 text-sm",
+          "max-w-[85%] rounded-2xl p-4 text-sm shadow-sm",
           sender === 'user'
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted"
+            ? "bg-gradient-to-br from-primary to-sky-500 text-white"
+            : "bg-gradient-to-br from-gray-50 to-white border border-gray-100 dark:from-gray-800 dark:to-gray-900 dark:border-gray-700"
         )}
       >
-        {content}
+        <div className="whitespace-pre-wrap">{content}</div>
         
         <div
           className={cn(
-            "text-xs mt-1",
+            "text-xs mt-2 opacity-70",
             sender === 'user'
-              ? "text-primary-foreground/70 text-right"
+              ? "text-white/80 text-right"
               : "text-muted-foreground"
           )}
         >
@@ -53,9 +55,9 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
       </div>
       
       {sender === 'user' && (
-        <Avatar className="h-8 w-8 border-2 border-primary/20 bg-primary/10">
-          <AvatarFallback className="bg-gradient-to-br from-sky-500/80 to-primary/80 text-white">
-            <User className="h-4 w-4" />
+        <Avatar className="h-10 w-10 border-2 border-primary/20 bg-primary/10 shadow-sm">
+          <AvatarFallback className="bg-gradient-to-br from-sky-500 to-primary text-white">
+            <User className="h-5 w-5" />
           </AvatarFallback>
         </Avatar>
       )}
