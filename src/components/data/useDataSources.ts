@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, handleQueryResult } from "@/integrations/supabase/client";
 import { DataSource } from './types';
 import { User } from '@supabase/supabase-js';
 
@@ -20,14 +21,14 @@ export const useDataSources = (isAuthenticated: boolean, user: User | null) => {
       const { data, error } = await supabase
         .from('data_sources')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', user.id as any) // Type assertion to handle mismatch
         .order('last_updated', { ascending: false });
         
       if (error) {
         throw error;
       }
       
-      if (data) {
+      if (data && data.length > 0) {
         const formattedData: DataSource[] = data.map(item => ({
           id: item.id,
           name: item.name,

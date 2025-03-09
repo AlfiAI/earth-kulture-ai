@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { redisCache } from '@/services/cache/redisCache';
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, handleQueryResult } from "@/integrations/supabase/client";
 import { Database, Zap, BarChart, Shield, Clock, ServerCrash } from 'lucide-react';
 
 const DatabaseOptimizationStatus = () => {
@@ -31,19 +31,23 @@ const DatabaseOptimizationStatus = () => {
     const fetchDbHealth = async () => {
       try {
         // Check for database indexes
-        const { data: indexData, error: indexError } = await supabase
+        const result = await supabase
           .from('reports')
           .select('*')
-          .eq('report_type', 'database_health')
+          .eq('report_type', 'database_health' as any) // Cast to any to avoid type error
           .order('created_at', { ascending: false })
-          .limit(1);
+          .limit(1)
+          .maybeSingle();
           
-        if (!indexError && indexData && indexData.length > 0) {
-          const healthData = JSON.parse(indexData[0].file_url || '{}');
+        const healthData = result.data?.file_url 
+          ? JSON.parse(result.data.file_url)
+          : null;
+          
+        if (healthData) {
           setDbHealth({
-            indexes: healthData.indexes || 12, // Fallback to our known value from SQL migration
-            partitions: healthData.partitions || 3, // Current year partitions
-            automations: healthData.automations || 2, // Data validation and insights generation
+            indexes: healthData.indexes || 12,
+            partitions: healthData.partitions || 3,
+            automations: healthData.automations || 2,
             lastValidation: healthData.lastValidation || new Date().toISOString()
           });
         } else {

@@ -18,8 +18,8 @@ const getSiteUrl = () => {
 };
 
 // Configure auth redirect URLs
-const redirectTo = `${getSiteUrl()}/auth`;
-console.log("Auth redirects configured to:", redirectTo);
+const redirectUrl = `${getSiteUrl()}/auth`;
+console.log("Auth redirects configured to:", redirectUrl);
 
 export const supabase = createClient<Database>(
   SUPABASE_URL, 
@@ -30,7 +30,6 @@ export const supabase = createClient<Database>(
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      redirectTo: redirectTo,
       storage: {
         getItem: (key: string) => {
           if (typeof window !== 'undefined') {
@@ -49,6 +48,33 @@ export const supabase = createClient<Database>(
           }
         }
       }
+    },
+    global: {
+      headers: {
+        'x-application-name': 'esg-carbon-tracker'
+      }
     }
   }
 );
+
+// Helper to safely handle potentially undefined data from Supabase queries
+export function handleQueryResult<T>(result: { data: T | null, error: Error | null }): T | null {
+  if (result.error) {
+    console.error("Supabase query error:", result.error);
+    return null;
+  }
+  return result.data;
+}
+
+// Type-safe filter helper - use this instead of direct string parameters
+export function createFilter<T extends keyof Database['public']['Tables']>(
+  table: T, 
+  column: keyof Database['public']['Tables'][T]['Row'],
+  value: any
+) {
+  return {
+    table,
+    column,
+    value
+  };
+}

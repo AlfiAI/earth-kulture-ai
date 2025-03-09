@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, handleQueryResult } from "@/integrations/supabase/client";
 import { DataSource } from '../types';
 import { User } from '@supabase/supabase-js';
 
@@ -37,7 +37,7 @@ export const useDataSourceOperations = (
           format: 'api',
           status: 'active',
           record_count: 0
-        } as any)
+        })
         .select()
         .single();
         
@@ -48,7 +48,7 @@ export const useDataSourceOperations = (
       if (data) {
         toast.success('Successfully connected new data source');
         
-        const newDataSource = {
+        const newDataSource: DataSource = {
           id: data.id,
           name: data.name,
           category: data.category,
@@ -81,8 +81,8 @@ export const useDataSourceOperations = (
         .update({
           last_updated: new Date().toISOString(),
           status: 'active'
-        } as any)
-        .eq('id', sourceId);
+        })
+        .eq('id', sourceId as any); // Use type assertion to fix the type error
         
       if (error) {
         throw error;
