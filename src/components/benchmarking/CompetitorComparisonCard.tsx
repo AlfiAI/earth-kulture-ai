@@ -28,11 +28,34 @@ const CompetitorComparisonCard: React.FC<CompetitorComparisonCardProps> = ({ ind
     try {
       const competitorData = await externalDataService.fetchCompetitorData();
       // Filter by industry if needed
-      const filteredData = industryContext === 'all' 
+      const filteredData = industryContext === 'all' as any 
         ? competitorData 
         : competitorData.filter(c => c.industry === industryContext);
       
-      setCompetitors(filteredData);
+      // Process the data for display
+      const processedData = filteredData.map(comp => {
+        return {
+          ...comp,
+          name: comp.company_name,
+          isLeader: comp.esg_score > 80,
+          scores: {
+            environmental: comp.environmental_score,
+            social: comp.social_score,
+            governance: comp.governance_score
+          },
+          trends: {
+            environmental: 'improving' as 'improving' | 'declining' | 'stable',
+            social: 'stable' as 'improving' | 'declining' | 'stable',
+            governance: 'improving' as 'improving' | 'declining' | 'stable'
+          },
+          carbonData: {
+            intensity: 35.2, // Example value
+            netZeroTarget: '2035' // Example value
+          }
+        };
+      });
+      
+      setCompetitors(processedData);
     } catch (error) {
       console.error('Error loading competitor data:', error);
       toast.error('Failed to load competitor data');

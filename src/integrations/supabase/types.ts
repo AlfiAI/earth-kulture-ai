@@ -531,6 +531,54 @@ export type Database = {
           },
         ]
       }
+      esg_intelligence_cache: {
+        Row: {
+          cached_at: string
+          category: string
+          expires_at: string
+          id: string
+          industries: string[]
+          publish_date: string
+          regions: string[]
+          relevance_score: number
+          source: string
+          source_url: string | null
+          summary: string
+          title: string
+          topics: string[]
+        }
+        Insert: {
+          cached_at?: string
+          category: string
+          expires_at?: string
+          id?: string
+          industries: string[]
+          publish_date: string
+          regions: string[]
+          relevance_score: number
+          source: string
+          source_url?: string | null
+          summary: string
+          title: string
+          topics: string[]
+        }
+        Update: {
+          cached_at?: string
+          category?: string
+          expires_at?: string
+          id?: string
+          industries?: string[]
+          publish_date?: string
+          regions?: string[]
+          relevance_score?: number
+          source?: string
+          source_url?: string | null
+          summary?: string
+          title?: string
+          topics?: string[]
+        }
+        Relationships: []
+      }
       esg_regulatory_updates: {
         Row: {
           category: string
@@ -802,6 +850,10 @@ export type Database = {
     }
     Functions: {
       create_compliance_partition_tables: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      prune_esg_intelligence_cache: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

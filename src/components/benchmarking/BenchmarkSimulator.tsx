@@ -33,11 +33,11 @@ const BenchmarkSimulator: React.FC<BenchmarkSimulatorProps> = ({ industryContext
       setBenchmarkData({
         industry: industryContext,
         metrics: {
-          carbonIntensity: benchmarks.find(b => b.metric === 'carbonIntensity')?.value || 0.45,
-          waterUsage: benchmarks.find(b => b.metric === 'waterUsage')?.value || 3.2,
-          wasteRecycling: benchmarks.find(b => b.metric === 'wasteRecycling')?.value || 68,
-          renewableEnergy: benchmarks.find(b => b.metric === 'renewableEnergy')?.value || 32,
-          employeeDiversity: benchmarks.find(b => b.metric === 'employeeDiversity')?.value || 70
+          carbonIntensity: benchmarks.find(b => b.benchmark_name === 'carbonIntensity')?.benchmark_value || 0.45,
+          waterUsage: benchmarks.find(b => b.benchmark_name === 'waterUsage')?.benchmark_value || 3.2,
+          wasteRecycling: benchmarks.find(b => b.benchmark_name === 'wasteRecycling')?.benchmark_value || 68,
+          renewableEnergy: benchmarks.find(b => b.benchmark_name === 'renewableEnergy')?.benchmark_value || 32,
+          employeeDiversity: benchmarks.find(b => b.benchmark_name === 'employeeDiversity')?.benchmark_value || 70
         },
         trends: {
           carbonIntensity: 'decreasing',

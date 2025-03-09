@@ -1,19 +1,22 @@
 
-import { toast } from "sonner";
-
+/**
+ * ESG Benchmark from external data sources
+ */
 export interface ESGBenchmark {
   id: string;
-  industry: string;
   benchmark_name: string;
   benchmark_value: number;
-  unit: string;
-  source: string;
-  year: number;
-  region: string;
+  industry: string;
   category: string;
-  created_at: string;
+  source: string;
+  region?: string;
+  unit?: string;
+  year?: number;
 }
 
+/**
+ * ESG Competitor information
+ */
 export interface ESGCompetitor {
   id: string;
   company_name: string;
@@ -22,54 +25,43 @@ export interface ESGCompetitor {
   environmental_score: number;
   social_score: number;
   governance_score: number;
-  report_year: number;
+  report_year?: number;
   report_url?: string;
   highlights?: string[];
-  created_at: string;
+  last_updated: string;
+  
+  // For UI display purposes
+  name?: string; // Alias for company_name
+  isLeader?: boolean; // Computed property
+  scores?: {
+    environmental: number;
+    social: number;
+    governance: number;
+  };
+  trends?: {
+    environmental: 'improving' | 'declining' | 'stable';
+    social: 'improving' | 'declining' | 'stable';
+    governance: 'improving' | 'declining' | 'stable';
+  };
+  carbonData?: {
+    intensity: number;
+    netZeroTarget: string;
+  };
 }
 
-// Updated to match the esg_regulatory_updates table structure
+/**
+ * ESG Regulation update
+ */
 export interface ESGRegulation {
   id: string;
   title: string;
   content: string;
-  source: string;
   url: string;
-  category?: string;
-  impact_level?: string;
-  published_date?: string;
-  tags?: string[];
-  country?: string;
-  scraped_at?: string;
-  relevance_score?: number;
-}
-
-export interface ExternalESGDataset {
-  id: string;
-  dataset_name: string;
-  dataset_description?: string;
-  category: string;
   source: string;
-  data: any;
-  metrics?: string[];
-  last_updated?: string;
-  next_update?: string;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  count: number;
-}
-
-// Error handling for external services
-export function handleServiceError(
-  error: any, 
-  message: string, 
-  metadata?: Record<string, any>
-): void {
-  console.error(message, error, metadata);
-  toast.error(message);
-  
-  // Add additional error tracking here in production
-  // e.g., Sentry.captureException(error, { extra: metadata });
+  category: string;
+  published_date: string;
+  country?: string;
+  impact_level?: string;
+  relevance_score?: number;
+  tags?: string[];
 }
