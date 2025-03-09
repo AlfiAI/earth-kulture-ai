@@ -12,6 +12,7 @@ function App() {
     <WalyActionHandler>
       <div className="min-h-screen flex flex-col">
         <Routes>
+          {/* Render all the routes defined in routes.tsx */}
           {routes.router.routes
             .filter(route => route.path !== undefined)
             .map((route) => {

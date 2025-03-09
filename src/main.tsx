@@ -1,10 +1,8 @@
 
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/contexts/auth";
 import { RouterProvider } from "react-router-dom";
 import { router } from "@/routes/routes";
-import App from './App.tsx'
 import './index.css'
 
 // Initialize error tracking

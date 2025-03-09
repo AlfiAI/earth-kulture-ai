@@ -31,7 +31,6 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 // Root component that wraps everything with AuthProvider and includes App for non-route components
 const Root = () => (
   <AuthProvider>
-    <App />
     <Outlet />
   </AuthProvider>
 );
