@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -116,9 +115,6 @@ export function AppSidebar() {
         <div className="flex items-center h-16 px-4 border-b">
           <Link to="/" className="flex items-center">
             <Globe className="h-6 w-6 text-primary" />
-            <span className="ml-2 text-xl font-bold">
-              Earth Kulture
-            </span>
           </Link>
         </div>
       </SidebarHeader>

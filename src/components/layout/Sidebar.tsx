@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from "@/lib/utils";
@@ -106,11 +105,6 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
       <div className="flex h-16 items-center border-b px-4">
         <Link to="/" className="flex items-center">
           <Globe className="h-6 w-6 text-primary" />
-          {!isCollapsed && (
-            <span className="ml-2 text-xl font-bold">
-              Earth Kulture
-            </span>
-          )}
         </Link>
       </div>
       
