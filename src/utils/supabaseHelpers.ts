@@ -11,6 +11,7 @@ export function extractData<T>(response: PostgrestSingleResponse<T> | PostgrestR
     return null;
   }
   
+  // Handle both single responses and array responses correctly
   return response.data;
 }
 
@@ -45,6 +46,7 @@ export function castParam<T>(value: any): T {
 export interface SupabaseSuccess<T> {
   success: true;
   data: T;
+  message?: string; // Make message optional in the success case
 }
 
 /**

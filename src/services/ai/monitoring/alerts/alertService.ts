@@ -31,7 +31,9 @@ class AlertService {
       });
       
       if (!result.success || !result.data) {
-        throw new Error(result.success ? 'No data returned' : result.message);
+        // Fixed error: Check if result is not successful or data is not available
+        const errorMessage = result.success ? 'No data returned' : (result.message || 'Unknown error');
+        throw new Error(errorMessage);
       }
       
       if (alert.severity === 'critical' || alert.severity === 'high') {
