@@ -7,7 +7,6 @@ import {
   FileText,
   Settings,
   Upload,
-  Users,
   MessageSquare,
   FileBarChart,
   BookOpen,
@@ -17,7 +16,8 @@ import {
   ListChecks,
   Scale,
   TrendingUp,
-  Building
+  Building,
+  LightbulbIcon
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -30,7 +30,6 @@ interface SidebarItem {
   title: string;
   icon: React.ReactNode;
   href: string;
-  submenu?: { title: string; href: string }[];
 }
 
 export function Sidebar({ isCollapsed }: SidebarProps) {
@@ -43,44 +42,54 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       href: "/dashboard",
     },
     {
-      title: "AI Benchmarking",
-      icon: <TrendingUp className="h-5 w-5" />,
-      href: "/benchmarking",
+      title: "Analytics",
+      icon: <BarChart className="h-5 w-5" />,
+      href: "/analytics",
     },
     {
-      title: "Industry Benchmark",
+      title: "Compliance",
+      icon: <ListChecks className="h-5 w-5" />,
+      href: "/compliance",
+    },
+    {
+      title: "AI Insights",
+      icon: <LightbulbIcon className="h-5 w-5" />,
+      href: "/ai-insights",
+    },
+    {
+      title: "Insights",
+      icon: <TrendingUp className="h-5 w-5" />,
+      href: "/insights",
+    },
+    {
+      title: "Industry Benchmarks",
       icon: <Building className="h-5 w-5" />,
-      href: "/benchmark-dashboard",
+      href: "/benchmark",
+    },
+    {
+      title: "External Data",
+      icon: <Globe className="h-5 w-5" />,
+      href: "/external-data",
     },
     {
       title: "Data Management",
       icon: <Upload className="h-5 w-5" />,
-      href: "/data-management",
+      href: "/data",
     },
     {
-      title: "ESG Reports",
+      title: "Sustainability Goals",
+      icon: <FileBarChart className="h-5 w-5" />,
+      href: "/goals",
+    },
+    {
+      title: "Reports",
       icon: <FileText className="h-5 w-5" />,
-      href: "/esg-reports",
+      href: "/reports",
     },
     {
       title: "AI Assistant",
       icon: <MessageSquare className="h-5 w-5" />,
       href: "/ai-assistant",
-    },
-    {
-      title: "Carbon Calculator",
-      icon: <BarChart className="h-5 w-5" />,
-      href: "/carbon-calculator",
-    },
-    {
-      title: "Compliance Frameworks",
-      icon: <ListChecks className="h-5 w-5" />,
-      href: "/compliance-frameworks",
-    },
-    {
-      title: "Regulatory Updates",
-      icon: <Scale className="h-5 w-5" />,
-      href: "/regulatory-updates",
     },
     {
       title: "Documentation",
@@ -93,16 +102,16 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
       href: "/support",
     },
     {
-      title: "User Settings",
+      title: "Settings",
       icon: <Settings className="h-5 w-5" />,
-      href: "/user-settings",
+      href: "/settings",
     },
   ];
 
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-20 flex h-full flex-col border-r bg-background transition-all duration-300 ease-in-out",
+        "fixed inset-y-0 left-0 z-20 flex h-full flex-col border-r bg-sidebar-background transition-all duration-300 ease-in-out",
         isCollapsed ? "w-[60px]" : "w-64"
       )}
     >

@@ -3,16 +3,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from '@/contexts/auth';
-import EnhancedWalyAssistant from "@/components/ai/EnhancedWalyAssistant";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import InsightsHeader from "@/components/insights/InsightsHeader";
 import InsightsBanner from "@/components/insights/InsightsBanner";
 import InsightsContent from "@/components/insights/InsightsContent";
-import InsightsLayout from "@/components/insights/InsightsLayout";
 
 const Insights = () => {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const { isAuthenticated, isLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
   
@@ -25,16 +22,10 @@ const Insights = () => {
     }
   }, [isAuthenticated, isLoading, navigate]);
   
-  // Update sidebar state when screen size changes
-  useEffect(() => {
-    setSidebarOpen(!isMobile);
-  }, [isMobile]);
-  
+  // For graceful loading
   if (!mounted || !isAuthenticated) {
     return null;
   }
-  
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   
   const handleRefresh = () => {
     // In the future, this could fetch new insights from the API
@@ -42,16 +33,13 @@ const Insights = () => {
   };
 
   return (
-    <InsightsLayout 
-      sidebarOpen={sidebarOpen}
-      isMobile={isMobile}
-      toggleSidebar={toggleSidebar}
-    >
-      <InsightsHeader onRefresh={handleRefresh} />
-      <InsightsBanner />
-      <InsightsContent />
-      <EnhancedWalyAssistant initialOpen={false} />
-    </InsightsLayout>
+    <DashboardLayout>
+      <div className="container max-w-7xl mx-auto p-4 lg:p-6 pb-24">
+        <InsightsHeader onRefresh={handleRefresh} />
+        <InsightsBanner />
+        <InsightsContent />
+      </div>
+    </DashboardLayout>
   );
 };
 

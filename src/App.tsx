@@ -20,7 +20,6 @@ import Insights from "@/pages/Insights";
 import Onboarding from "@/pages/Onboarding";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import AIInsights from "@/pages/AIInsights";
-import WalyAssistant from "@/components/ai/WalyAssistant";
 import EnhancedWalyAssistant from "@/components/ai/EnhancedWalyAssistant";
 
 import "@/App.css";
@@ -37,6 +36,7 @@ function App() {
         <Route path="/" element={<Landing />} />
         
         {/* Protected routes */}
+        <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
         <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
         <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
         <Route path="/compliance" element={<ProtectedRoute><Compliance /></ProtectedRoute>} />
