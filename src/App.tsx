@@ -9,6 +9,11 @@ import WalyActionHandler from '@/components/ai/WalyActionHandler';
 
 function App() {
   const location = useLocation();
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('App rendered, current route:', location.pathname);
+  }, [location.pathname]);
 
   return (
     <WalyActionHandler>

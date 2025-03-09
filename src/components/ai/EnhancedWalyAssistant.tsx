@@ -1,13 +1,13 @@
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useChatPosition } from '@/hooks/use-chat-position';
 import WalyChatButton from './WalyChatButton';
 import EnhancedChatPanel from './EnhancedChatPanel';
 import OutsideClickHandler from './chat-panel/OutsideClickHandler';
 import NavigationListener from './chat-panel/NavigationListener';
-import { useContextAwareStarters } from '@/hooks/use-context-aware-starters';
 import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
+import { useContextAwareStarters } from '@/hooks/use-context-aware-starters';
 
 interface EnhancedWalyAssistantProps {
   initialOpen?: boolean;
@@ -21,17 +21,15 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   const [showNewChat, setShowNewChat] = useState(true);
   const chatPanelRef = useRef<HTMLDivElement>(null);
   const position = useChatPosition();
-  const { inputValue, setInputValue, handleSend, messages } = useEnhancedChat();
   const location = useLocation();
   const { getContextAwareStarters } = useContextAwareStarters();
+  const { inputValue, setInputValue, handleSend, messages } = useEnhancedChat();
   
   // Force visibility check on route change
-  useEffect(() => {
-    // Ensure Waly is visible on all routes
-    console.log("Route changed, Waly should be visible:", location.pathname);
-  }, [location.pathname]);
+  console.log("EnhancedWalyAssistant rendered with position:", position, "on route:", location.pathname);
   
   const toggleOpen = () => {
+    console.log("Toggle chat open state from:", isOpen, "to:", !isOpen);
     setIsOpen(!isOpen);
   };
   
@@ -70,13 +68,22 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       
       <NavigationListener messages={messages} />
       
-      <EnhancedChatPanel 
-        ref={chatPanelRef}
-        isOpen={isOpen}
-        onClose={toggleOpen}
-        position={position}
-        currentPath={location.pathname}
-      />
+      {isOpen && (
+        <EnhancedChatPanel 
+          ref={chatPanelRef}
+          isOpen={isOpen}
+          onClose={toggleOpen}
+          position={position}
+          currentPath={location.pathname}
+          messages={messages}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          handleSend={handleSend}
+          showNewChat={showNewChat}
+          onStarterClick={handleStarterClick}
+          onNewChat={handleNewChat}
+        />
+      )}
     </>
   );
 };

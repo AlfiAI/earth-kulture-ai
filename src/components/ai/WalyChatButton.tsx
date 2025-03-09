@@ -35,6 +35,10 @@ const WalyChatButton = ({
     "How to start sustainability reporting?"
   ];
   
+  useEffect(() => {
+    console.log("WalyChatButton mounted with position:", position);
+  }, [position]);
+  
   const handleMouseEnter = () => {
     setShowStarters(true);
   };
@@ -99,6 +103,7 @@ const WalyChatButton = ({
     };
   }, []);
   
+  // Force z-index to be high to ensure visibility
   return (
     <motion.div
       id="chat-button"
@@ -112,7 +117,8 @@ const WalyChatButton = ({
       style={{ 
         bottom: `${position.bottom}rem`, 
         right: `${position.right}rem`,
-        transition: 'bottom 0.3s ease, right 0.3s ease'
+        transition: 'bottom 0.3s ease, right 0.3s ease',
+        zIndex: 9999 // Ensure it's on top of everything
       }}
       whileHover={{ scale: 1.05, rotate: 3 }}
       onMouseEnter={handleMouseEnter}
@@ -122,7 +128,7 @@ const WalyChatButton = ({
         onClick={onClick}
         className={cn(
           "relative flex items-center justify-center p-0 w-16 h-16 rounded-full shadow-xl",
-          "bg-white hover:bg-gray-50",
+          "bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700",
           "hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300"
         )}
       >
@@ -132,7 +138,7 @@ const WalyChatButton = ({
             alt="Waly Bot"
             className="object-contain p-2.5" // Increased padding
           />
-          <AvatarFallback className="bg-white">
+          <AvatarFallback className="bg-white dark:bg-gray-800">
             <img 
               src={walyAvatarPath} 
               alt="Waly Bot" 
@@ -164,7 +170,7 @@ const WalyChatButton = ({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
           className={cn(
-            "absolute mb-2",
+            "absolute mb-2 z-[9999]", // Ensure high z-index
             isMobile ? "bottom-[4.5rem] right-0" : "bottom-[4.5rem] right-0"
           )}
         >
@@ -178,7 +184,7 @@ const WalyChatButton = ({
                   key={index}
                   variant="ghost"
                   size="sm"
-                  className="w-full justify-start text-xs rounded-lg p-2 h-auto"
+                  className="w-full justify-start text-xs rounded-lg p-2 h-auto ai-starter"
                   onClick={() => handleStarterClick(starter)}
                 >
                   <MessageSquare className="h-3 w-3 mr-2 text-primary" />
