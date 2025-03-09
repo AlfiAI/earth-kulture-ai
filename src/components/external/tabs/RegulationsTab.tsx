@@ -1,9 +1,7 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import ESGRegulationsList from "@/components/external/ESGRegulationsList";
 import ESGRegulationsFilters from "@/components/external/ESGRegulationsFilters";
-import ESGPagination from "@/components/external/ESGPagination";
+import RegulationsList from "@/components/external/RegulationsList";
 import { RegulationFilters } from "@/components/external/ESGRegulationsFilters";
 
 const RegulationsTab = () => {
@@ -27,19 +25,7 @@ const RegulationsTab = () => {
         />
       </div>
       <div className="md:col-span-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>ESG Regulations & Frameworks</CardTitle>
-            <CardDescription>Latest regulatory updates and compliance frameworks</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ESGRegulationsList />
-          </CardContent>
-          <CardFooter className="flex justify-between border-t pt-4">
-            <div className="text-sm text-muted-foreground">Showing 1-10 of 42 regulations</div>
-            <ESGPagination totalPages={5} page={1} onPageChange={() => {}} />
-          </CardFooter>
-        </Card>
+        <RegulationsList />
       </div>
     </div>
   );
