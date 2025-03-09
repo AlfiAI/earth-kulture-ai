@@ -1,6 +1,8 @@
+
 import { MessageProps } from '@/components/ai/Message';
 import { deepseekAPIService } from './deepseek/services/deepseekAPIService';
 import { categorizeIntent } from './deepseek/utils/deepseekUtils';
+import { IntentCategory } from './deepseek/types/deepseekTypes';
 
 /**
  * DeepSeek R1 Service for AI-powered ESG insights with advanced caching and optimizations
@@ -118,16 +120,16 @@ class DeepseekR1Service {
     
     // Generate a generic response based on intent
     switch (intent) {
-      case 'regulation':
+      case 'compliance':
         return "I'm currently unable to access the latest regulatory information. Please try again later for up-to-date regulatory insights.";
       
       case 'reporting':
         return "I can help with ESG reporting, but can't generate detailed reports right now. Please try again later or provide specific reporting questions.";
       
-      case 'data_analysis':
+      case 'benchmarking':
         return "I'm unable to perform detailed data analysis at the moment. If you have specific questions about your data, please try again later.";
       
-      case 'recommendation':
+      case 'carbon':
         return "Based on general best practices, organizations should focus on measuring and reducing carbon emissions, improving energy efficiency, and enhancing transparency in ESG reporting.";
       
       default:
@@ -139,7 +141,7 @@ class DeepseekR1Service {
    * Categorize user intent based on query content
    * Exposed for use by other services
    */
-  categorizeIntent(query: string) {
+  categorizeIntent(query: string): IntentCategory {
     return categorizeIntent(query);
   }
 }

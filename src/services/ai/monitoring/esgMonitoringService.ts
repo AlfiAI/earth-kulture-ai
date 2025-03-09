@@ -26,6 +26,22 @@ export interface ESGAlert {
   recommendedActions?: string[];
 }
 
+// Database interface for the alerts table
+interface ESGAlertDB {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string;
+  severity: AlertSeverity;
+  type: AlertType;
+  source: string;
+  category: string;
+  created_at: string;
+  is_read: boolean;
+  related_data?: any;
+  recommended_actions?: string[];
+}
+
 /**
  * ESG Monitoring Service - Provides real-time monitoring and alerts
  */
@@ -185,7 +201,7 @@ class ESGMonitoringService {
   async createAlert(alert: Omit<ESGAlert, 'createdAt' | 'isRead'>): Promise<string | null> {
     try {
       const { data, error } = await supabase
-        .from('esg_alerts')
+        .from('esg_compliance_alerts')
         .insert({
           user_id: alert.userId,
           title: alert.title,
@@ -233,34 +249,36 @@ class ESGMonitoringService {
   async getAlerts(userId: string, limit: number = 20, onlyUnread: boolean = false): Promise<ESGAlert[]> {
     try {
       let query = supabase
-        .from('esg_alerts')
+        .from('esg_compliance_alerts')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(limit);
       
       if (onlyUnread) {
-        query = query.eq('is_read', false);
+        query = query.eq('status', 'active');
       }
       
       const { data, error } = await query;
       
       if (error) throw error;
       
+      if (!data) return [];
+      
       // Transform database response to ESGAlert format
-      return (data || []).map(item => ({
+      return data.map(item => ({
         id: item.id,
         userId: item.user_id,
-        title: item.title,
-        description: item.description,
-        severity: item.severity,
-        type: item.type,
-        source: item.source,
-        category: item.category,
+        title: item.message, // Map message to title
+        description: item.message, // Use message for description too
+        severity: item.severity as AlertSeverity,
+        type: item.alert_type as AlertType,
+        source: item.compliance_framework || 'system',
+        category: item.compliance_framework || 'general',
         createdAt: new Date(item.created_at),
-        isRead: item.is_read,
-        relatedData: item.related_data,
-        recommendedActions: item.recommended_actions
+        isRead: item.status === 'resolved',
+        relatedData: item.source_data,
+        recommendedActions: item.resolution_steps
       }));
     } catch (error) {
       console.error('Error getting ESG alerts:', error);
@@ -274,8 +292,8 @@ class ESGMonitoringService {
   async markAlertAsRead(alertId: string): Promise<boolean> {
     try {
       const { error } = await supabase
-        .from('esg_alerts')
-        .update({ is_read: true })
+        .from('esg_compliance_alerts')
+        .update({ status: 'resolved' })
         .eq('id', alertId);
       
       if (error) throw error;
