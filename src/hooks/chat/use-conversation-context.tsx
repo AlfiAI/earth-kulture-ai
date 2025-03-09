@@ -7,7 +7,12 @@ import { esgDataService } from '@/services/esgDataService';
 interface PageContext {
   path: string;
   pageType?: string;
-  carbonFootprint?: number;
+  carbonFootprint?: {
+    scope1: number;
+    scope2: number;
+    scope3: number;
+    total: number;
+  };
   [key: string]: any; // Allow for additional properties
 }
 

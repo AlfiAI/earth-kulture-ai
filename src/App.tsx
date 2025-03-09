@@ -12,13 +12,16 @@ function App() {
     <WalyActionHandler>
       <div className="min-h-screen flex flex-col">
         <Routes>
-          {routes.default.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={route.element}
-            />
-          ))}
+          {routes.router.children
+            .filter(route => route.path !== undefined)
+            .map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={route.element}
+              />
+            ))
+          }
         </Routes>
         <EnhancedWalyAssistant />
         <Toaster />
