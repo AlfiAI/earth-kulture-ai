@@ -22,7 +22,7 @@ const WalyChatButton = ({
   onStarterClick,
   contextAwareStarters
 }: WalyChatButtonProps) => {
-  // Use the same avatar path as in MessageAvatar for consistency
+  // Use a directly accessible path to ensure the image loads properly
   const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
   const [showStarters, setShowStarters] = useState(false);
   const isMobile = useIsMobile();
@@ -31,9 +31,12 @@ const WalyChatButton = ({
   // Log the button render for debugging
   useEffect(() => {
     console.log("WalyChatButton rendered with avatar path:", walyAvatarPath);
-    // Force a check to ensure the image is in the cache
-    const img = new Image();
-    img.src = walyAvatarPath;
+    
+    // Preload the image to ensure it's in the cache
+    const preloadImage = new Image();
+    preloadImage.src = walyAvatarPath;
+    
+    console.log("Image preloaded:", preloadImage.src);
   }, []);
   
   // Conversation starter questions, use context-aware ones if provided
