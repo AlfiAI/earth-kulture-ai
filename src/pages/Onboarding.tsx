@@ -44,7 +44,7 @@ type OnboardingFormValues = z.infer<typeof onboardingSchema>;
 
 const OnboardingPage = () => {
   const navigate = useNavigate();
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, updateUserProfile } = useAuth();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -70,8 +70,8 @@ const OnboardingPage = () => {
     setIsSubmitting(true);
     
     try {
-      await profileService.updateUserProfile(user.id, {
-        id: user.id,
+      await updateUserProfile({
+        id: user?.id,
         full_name: values.full_name,
         company: values.company,
         role: values.role as UserRoleType,

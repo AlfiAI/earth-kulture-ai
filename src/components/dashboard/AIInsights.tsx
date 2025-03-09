@@ -385,7 +385,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
 };
 
 // Sample insights as fallback
-const sampleInsights = [
+const sampleInsights: Insight[] = [
   {
     type: 'trend',
     title: 'Carbon intensity decreasing',
@@ -447,10 +447,10 @@ const AIInsights = () => {
         {insights.slice(0, 4).map((insight, index) => (
           <InsightCard
             key={index}
-            type={insight.type as any}
+            type={insight.type}
             title={insight.title}
             description={insight.description}
-            indicator={insight.indicator as any}
+            indicator={insight.indicator}
             percentageChange={insight.percentageChange}
             date={insight.date}
             onClick={() => navigate('/insights')}

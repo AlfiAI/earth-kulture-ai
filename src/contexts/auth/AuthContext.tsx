@@ -1,6 +1,6 @@
 
 import { createContext, useContext, ReactNode } from "react";
-import { AuthContextType } from "./types";
+import { AuthContextType, UserContext } from "./types";
 import { useAuthProvider } from "./useAuthProvider";
 
 // Create the auth context with a default value of null
