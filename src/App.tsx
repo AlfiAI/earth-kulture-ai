@@ -14,13 +14,18 @@ function App() {
         <Routes>
           {routes.router.routes
             .filter(route => route.path !== undefined)
-            .map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={route.element as React.ReactNode}
-              />
-            ))
+            .map((route) => {
+              // Ensure we're handling the route element correctly
+              const routeElement = route.element ? route.element : null;
+              
+              return (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={routeElement}
+                />
+              );
+            })
           }
         </Routes>
         <EnhancedWalyAssistant />
