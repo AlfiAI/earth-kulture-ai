@@ -14,10 +14,20 @@ export const formatRelativeTime = (date: Date) => {
 export const formatDocumentContent = (content: string) => {
   // Clean up markdown artifacts before processing
   let cleanedContent = content
-    .replace(/---/g, '<hr>') // Replace markdown dividers with HTML ones
-    .replace(/^#\s*#\s*/gm, '') // Remove ## at beginning of lines
-    .replace(/^\*\*(.*?)\*\*$/gm, '<strong>$1</strong>') // Handle bold items
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Handle bold text
+    // Remove markdown dividers with HTML ones
+    .replace(/---/g, '<hr>')
+    // Remove # at beginning of lines (headers)
+    .replace(/^#\s+/gm, '')
+    // Remove ## (sub-headers)
+    .replace(/^##\s+/gm, '')
+    // Remove ### (sub-sub-headers)
+    .replace(/^###\s+/gm, '')
+    // Handle double hash notation (common artifacts)
+    .replace(/^#\s*#\s*/gm, '')
+    // Handle bold items
+    .replace(/^\*\*(.*?)\*\*$/gm, '<strong>$1</strong>')
+    // Handle bold text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   
   // Split content by headers (denoted by # style markdown)
   const sections = cleanedContent.split(/(?=^#\s)/m);
