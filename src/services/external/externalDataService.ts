@@ -10,7 +10,7 @@ class ExternalDataService {
   async fetchRegulations(): Promise<ESGRegulation[]> {
     try {
       // In a real app, this would call an API
-      const { regulationsService } = await import('./regulationService');
+      const { regulationsService } = await import('./regulationsService');
       const response = await regulationsService.triggerESGScraper();
       
       // If the scraper was triggered successfully, fetch the regulations
@@ -63,4 +63,4 @@ export const externalDataService = new ExternalDataService();
 export type { ESGBenchmark, ESGCompetitor, ESGRegulation } from './types/externalTypes';
 export * from './benchmarkService';
 export * from './competitorService';
-export * from './regulationService';
+export * from './regulationsService';
