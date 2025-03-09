@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -22,38 +22,44 @@ const WalyChatButton = ({
   onStarterClick,
   contextAwareStarters
 }: WalyChatButtonProps) => {
-  // Use a public URL path that is definitely accessible
-  const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
+  // Updated to use the provided image
+  const walyAvatarPath = "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png";
   const [showStarters, setShowStarters] = useState(false);
   const isMobile = useIsMobile();
   const isOverlapping = useOverlapDetection('chat-button');
+  const buttonRef = useRef<HTMLDivElement>(null);
   
-  // Debug logging and force visibility
+  // Ensure visibility on mount and after route changes
   useEffect(() => {
     console.log("WalyChatButton rendering with position:", position);
-    console.log("Avatar path:", walyAvatarPath);
     
-    // Force browser to load the image into cache
-    const preloadImage = new Image();
-    preloadImage.src = walyAvatarPath;
-    
-    // Add error handling for image loading
-    preloadImage.onerror = () => {
-      console.error("Failed to load Waly avatar image:", walyAvatarPath);
-    };
-    
-    preloadImage.onload = () => {
-      console.log("Successfully preloaded Waly avatar image");
-    };
-    
-    // Force button to be visible
-    const chatButton = document.getElementById('chat-button');
-    if (chatButton) {
-      chatButton.style.visibility = 'visible';
-      chatButton.style.opacity = '1';
-      console.log("Forced chat button visibility from WalyChatButton");
+    // Force button to be visible immediately
+    if (buttonRef.current) {
+      buttonRef.current.style.visibility = 'visible';
+      buttonRef.current.style.opacity = '1';
+      buttonRef.current.style.display = 'block';
+      console.log("Set visibility directly on button element");
     }
-  }, []);
+    
+    // Force visibility of chat button by ID as well
+    const forceChatButtonVisibility = () => {
+      const chatButton = document.getElementById('chat-button');
+      if (chatButton) {
+        chatButton.style.visibility = 'visible';
+        chatButton.style.opacity = '1';
+        chatButton.style.display = 'block';
+        console.log("Forced chat button visibility");
+      }
+    };
+    
+    // Call immediately and after short delays to ensure visibility
+    forceChatButtonVisibility();
+    const timeouts = [100, 300, 500, 1000].map(delay => 
+      setTimeout(forceChatButtonVisibility, delay)
+    );
+    
+    return () => timeouts.forEach(clearTimeout);
+  }, [position]);
   
   // Conversation starter questions, use context-aware ones if provided
   const starters = contextAwareStarters || [
@@ -83,15 +89,15 @@ const WalyChatButton = ({
   const bottomPx = position.bottom * 16; // Convert rem to px (1rem = 16px)
   const rightPx = position.right * 16; // Convert rem to px (1rem = 16px)
   
-  // Always render the button with improved visibility
   return (
     <motion.div
       id="chat-button"
+      ref={buttonRef}
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+      transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
       className={cn(
-        "fixed z-[99999]", // Ensure very high z-index
+        "fixed z-[999999]", // Ensure very high z-index
         isOverlapping && "opacity-80 hover:opacity-100",
         "visible" // Always visible
       )}
@@ -113,7 +119,7 @@ const WalyChatButton = ({
           "relative flex items-center justify-center p-0 w-16 h-16 rounded-full shadow-xl",
           "bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700",
           "hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300",
-          "border-2 border-primary/20" // Added border for visibility
+          "border-2 border-primary/40" // Enhanced border for visibility
         )}
         aria-label="Chat with Waly AI"
       >

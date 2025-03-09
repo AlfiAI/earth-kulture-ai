@@ -25,7 +25,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   const { getContextAwareStarters } = useContextAwareStarters();
   const { inputValue, setInputValue, handleSend, messages, isTyping } = useEnhancedChat();
   
-  // Debug logging to track component state and force visibility
+  // Debug logging and force visibility on all route changes
   useEffect(() => {
     console.log("EnhancedWalyAssistant mounted with state:", {
       isOpen,
@@ -34,26 +34,35 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       route: location.pathname
     });
     
-    // Immediately force visibility without delay
-    const chatButton = document.getElementById('chat-button');
-    if (chatButton) {
-      chatButton.style.visibility = 'visible';
-      chatButton.style.opacity = '1';
-      console.log("Immediately forced chat button visibility in EnhancedWalyAssistant");
-    }
-    
-    // Add a fallback force visibility after a short delay to ensure DOM is ready
-    const forceVisibilityTimer = setTimeout(() => {
-      const chatButtonAgain = document.getElementById('chat-button');
-      if (chatButtonAgain) {
-        chatButtonAgain.style.visibility = 'visible';
-        chatButtonAgain.style.opacity = '1';
-        console.log("Forced chat button visibility with delay");
+    // Check for visibility issues immediately after component mounts
+    const checkVisibility = () => {
+      const chatButton = document.getElementById('chat-button');
+      if (!chatButton || 
+          chatButton.style.visibility === 'hidden' || 
+          chatButton.style.display === 'none' ||
+          chatButton.style.opacity === '0') {
+        
+        console.log("Chat button not visible, forcing visibility");
+        
+        if (chatButton) {
+          chatButton.style.visibility = 'visible';
+          chatButton.style.opacity = '1';
+          chatButton.style.display = 'block';
+          console.log("Fixed chat button visibility");
+        }
+      } else {
+        console.log("Chat button is already visible");
       }
-    }, 300);
+    };
     
-    return () => clearTimeout(forceVisibilityTimer);
-  }, [location.pathname]); // Run this effect when route changes
+    // Call immediately and set several delayed checks
+    checkVisibility();
+    const intervals = [100, 300, 500, 1000, 2000].map(delay => 
+      setTimeout(checkVisibility, delay)
+    );
+    
+    return () => intervals.forEach(clearTimeout);
+  }, [location.pathname, position, isOpen, showNewChat]);
   
   const toggleOpen = () => {
     console.log("Toggle chat open state from:", isOpen, "to:", !isOpen);
@@ -76,7 +85,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     window.location.reload();
   };
 
-  // Always render the components
+  // Always render both components conditionally to ensure the chat button is visible
   return (
     <>
       {!isOpen && (

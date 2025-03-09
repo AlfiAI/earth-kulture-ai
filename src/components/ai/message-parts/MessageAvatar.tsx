@@ -10,13 +10,10 @@ interface MessageAvatarProps {
 
 const MessageAvatar = ({ sender }: MessageAvatarProps) => {
   // Use the newly uploaded robot avatar image for AI
-  const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
+  const walyAvatarPath = "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png";
   
   // Get user's avatar if available
   const { avatarUrl, initials } = useUserAvatar();
-  
-  // Debug log to ensure avatar is properly loaded
-  console.log(`MessageAvatar rendered for ${sender} with path:`, sender === 'ai' ? walyAvatarPath : avatarUrl);
   
   return (
     <motion.div

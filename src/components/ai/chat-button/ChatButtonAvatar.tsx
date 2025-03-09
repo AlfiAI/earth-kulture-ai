@@ -16,30 +16,30 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
     setImageError(false);
     setIsLoaded(false);
     
-    // Preload the image
+    // Preload the image and handle fallback cases
     const img = new Image();
     img.src = avatarPath;
+    
+    // Set successful load handler
     img.onload = () => {
       console.log("Avatar image successfully preloaded:", avatarPath);
       setIsLoaded(true);
     };
+    
+    // Handle loading errors
     img.onerror = () => {
       console.error("Failed to preload avatar image:", avatarPath);
       setImageError(true);
       setIsLoaded(true); // Still mark as loaded so we show fallback
     };
     
-    // Set a fallback timeout to ensure we show something even if loading stalls
+    // Force complete load state after short timeout regardless of image status
     const fallbackTimer = setTimeout(() => {
-      if (!isLoaded) {
-        console.log("Using fallback timeout to display avatar");
-        setIsLoaded(true);
-        // If we still haven't loaded, assume there was an error
-        if (!img.complete) {
-          setImageError(true);
-        }
+      setIsLoaded(true);
+      if (!img.complete || img.naturalWidth === 0) {
+        setImageError(true);
       }
-    }, 300); // Shorter timeout to ensure faster display
+    }, 300);
     
     return () => clearTimeout(fallbackTimer);
   }, [avatarPath]);
@@ -68,7 +68,7 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
         <img 
           src={avatarPath} 
           alt="Waly AI" 
-          className="w-full h-full object-contain p-2.5"
+          className="w-full h-full object-cover p-2"
           onError={handleImageError}
         />
       ) : (

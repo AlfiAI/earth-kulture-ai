@@ -13,27 +13,27 @@ function App() {
   // Debug logging and force visibility
   useEffect(() => {
     console.log('App rendered, current route:', location.pathname);
-    console.log('EnhancedWalyAssistant should be visible on all pages');
     
-    // Force the chat button to be visible immediately
-    const chatButton = document.getElementById('chat-button');
-    if (chatButton) {
-      chatButton.style.visibility = 'visible';
-      chatButton.style.opacity = '1';
-      console.log("Forced chat button visibility from App component");
-    }
-    
-    // Recheck after a short delay to ensure visibility
-    const recheckTimer = setTimeout(() => {
-      const chatButtonAgain = document.getElementById('chat-button');
-      if (chatButtonAgain) {
-        chatButtonAgain.style.visibility = 'visible';
-        chatButtonAgain.style.opacity = '1';
-        console.log("Rechecked chat button visibility from App component");
+    // Force immediate chat button visibility
+    const showChatButton = () => {
+      const chatButton = document.getElementById('chat-button');
+      if (chatButton) {
+        chatButton.style.visibility = 'visible';
+        chatButton.style.opacity = '1';
+        chatButton.style.display = 'block';
+        console.log("Forced chat button visibility from App component");
       }
-    }, 500);
+    };
     
-    return () => clearTimeout(recheckTimer);
+    // Call immediately and also after a short delay to handle any race conditions
+    showChatButton();
+    
+    // Try again several times to ensure visibility
+    const intervals = [100, 500, 1000, 2000].map(delay => 
+      setTimeout(showChatButton, delay)
+    );
+    
+    return () => intervals.forEach(clearTimeout);
   }, [location.pathname]);
 
   return (
@@ -58,9 +58,10 @@ function App() {
             })}
         </Routes>
         
-        {/* Always render the EnhancedWalyAssistant with maximum z-index */}
+        {/* Always render the EnhancedWalyAssistant with fixed positioning and maximum z-index */}
         <div 
-          className="fixed bottom-0 right-0 z-[99999] visible pointer-events-auto" 
+          id="waly-container"
+          className="fixed bottom-0 right-0 z-[999999] visible pointer-events-auto" 
           style={{ 
             opacity: 1, 
             visibility: 'visible', 
