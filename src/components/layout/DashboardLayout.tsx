@@ -15,12 +15,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [mounted, setMounted] = useState(false);
   const [autoHide, setAutoHide] = useState(false);
 
-  // Track mouse position for auto-hide functionality
+  // Track mouse position for dock-like auto-hide functionality
   const handleMouseMove = (e: MouseEvent) => {
     if (isMobile) return;
     
     // Show sidebar when mouse is near the left edge of the screen
-    if (e.clientX <= 20 && !sidebarOpen) {
+    if (e.clientX <= 10 && !sidebarOpen) {
       setSidebarOpen(true);
       setAutoHide(true);
     } 
@@ -38,7 +38,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       setSidebarOpen(false);
     }
 
-    // Add mouse movement listener for auto-hide functionality
+    // Add mouse movement listener for dock-like functionality
     if (!isMobile) {
       window.addEventListener('mousemove', handleMouseMove);
     }
@@ -46,7 +46,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [isMobile, sidebarOpen, autoHide]);
+  }, [isMobile]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);

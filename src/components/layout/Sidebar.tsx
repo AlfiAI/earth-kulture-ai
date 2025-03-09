@@ -112,7 +112,9 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
     <aside
       className={cn(
         "fixed inset-y-0 left-0 z-20 flex h-full flex-col border-r bg-sidebar-background transition-all duration-300 ease-in-out",
-        isCollapsed ? "w-[60px] hover:w-64 group" : "w-64"
+        isCollapsed 
+          ? "w-16 hover:w-64 hover:shadow-lg group" 
+          : "w-64 shadow-md"
       )}
     >
       <div className="flex h-16 items-center justify-center border-b px-4">
@@ -136,14 +138,16 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
                     asChild
                     variant={pathname === item.href ? "secondary" : "ghost"}
                     className={cn(
-                      "justify-start transition-all duration-300",
-                      isCollapsed ? "justify-center group-hover:justify-start" : "justify-start"
+                      "justify-start transition-all duration-300 overflow-hidden",
+                      isCollapsed 
+                        ? "justify-center w-10 mx-auto group-hover:w-full group-hover:justify-start" 
+                        : "justify-start w-full"
                     )}
                   >
                     <Link to={item.href} className="flex items-center w-full">
                       {item.icon}
                       <span className={cn(
-                        "ml-2 truncate transition-opacity duration-300",
+                        "ml-2 truncate transition-opacity duration-200",
                         isCollapsed ? "opacity-0 group-hover:opacity-100" : "opacity-100"
                       )}>
                         {item.title}
