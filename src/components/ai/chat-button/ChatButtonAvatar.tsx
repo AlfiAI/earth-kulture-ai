@@ -19,6 +19,7 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
     
     // Explicitly set the default path if none provided
     const path = avatarPath || defaultAvatarPath;
+    console.log("ChatButtonAvatar: Loading image from path:", path);
     
     // Preload the image and handle fallback cases
     const img = new Image();

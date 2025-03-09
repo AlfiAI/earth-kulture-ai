@@ -28,26 +28,38 @@ const WalyChatButton = ({
   const isOverlapping = useOverlapDetection('chat-button');
   const buttonRef = useRef<HTMLDivElement>(null);
   
-  // Force visibility on mount and periodically
+  // Force visibility on mount and periodically with aggressive approach
   useEffect(() => {
     console.log("WalyChatButton: Component mounted");
     
-    // Function to ensure button visibility
+    // Function to ensure button visibility with !important styles
     const ensureButtonVisibility = () => {
       if (buttonRef.current) {
-        buttonRef.current.style.visibility = 'visible';
-        buttonRef.current.style.opacity = '1';
-        buttonRef.current.style.display = 'block';
-        buttonRef.current.style.zIndex = '999999';
+        buttonRef.current.setAttribute('style', `
+          visibility: visible !important;
+          opacity: 1 !important;
+          display: block !important;
+          z-index: 999999 !important;
+          position: fixed !important;
+          bottom: ${position.bottom}rem !important;
+          right: ${position.right}rem !important;
+          pointer-events: auto !important;
+        `);
       }
       
       // Also apply directly to DOM element by ID
       const button = document.getElementById('chat-button');
       if (button) {
-        button.style.visibility = 'visible';
-        button.style.opacity = '1';
-        button.style.display = 'block';
-        button.style.zIndex = '999999';
+        button.setAttribute('style', `
+          visibility: visible !important;
+          opacity: 1 !important;
+          display: block !important;
+          z-index: 999999 !important;
+          position: fixed !important;
+          bottom: ${position.bottom}rem !important;
+          right: ${position.right}rem !important;
+          pointer-events: auto !important;
+        `);
       }
     };
     
@@ -55,15 +67,30 @@ const WalyChatButton = ({
     ensureButtonVisibility();
     
     // Call multiple times with delays to handle potential race conditions
-    [100, 300, 500, 1000].forEach(delay => {
+    [50, 100, 200, 300, 500, 1000, 2000].forEach(delay => {
       setTimeout(ensureButtonVisibility, delay);
     });
     
     // Periodic check
-    const interval = setInterval(ensureButtonVisibility, 2000);
+    const interval = setInterval(ensureButtonVisibility, 1000);
     
-    return () => clearInterval(interval);
-  }, []);
+    // Use MutationObserver to detect DOM changes
+    const observer = new MutationObserver(() => {
+      ensureButtonVisibility();
+    });
+    
+    // Start observing the document body for all changes
+    observer.observe(document.body, { 
+      childList: true, 
+      subtree: true,
+      attributes: true
+    });
+    
+    return () => {
+      clearInterval(interval);
+      observer.disconnect();
+    };
+  }, [position]);
   
   // Conversation starter questions, use context-aware ones if provided
   const starters = contextAwareStarters || [

@@ -15,40 +15,49 @@ export const useChatPosition = () => {
     };
   });
   
-  // Make sure Waly is visible
+  // Make sure Waly is visible with extremely aggressive approach
   const forceVisibility = useCallback(() => {
-    // Handle index page specially
-    const isIndexPage = location.pathname === '/';
-    const isImportantPage = location.pathname === '/' || location.pathname === '/dashboard';
+    console.log("Force visibility called on path:", location.pathname);
     
-    // Apply visibility directly to DOM elements
+    // Apply visibility directly to DOM elements with !important styles
     const chatButton = document.getElementById('chat-button');
     if (chatButton) {
-      chatButton.style.visibility = 'visible';
-      chatButton.style.opacity = '1';
-      chatButton.style.display = 'block';
-      chatButton.style.zIndex = '999999';
-      chatButton.style.position = 'fixed';
-      
-      if (isImportantPage) {
-        // For important pages, ensure it's really visible
-        chatButton.style.pointerEvents = 'auto';
-      }
+      chatButton.setAttribute('style', `
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+        z-index: 999999 !important;
+        position: fixed !important;
+        pointer-events: auto !important;
+      `);
+    } else {
+      console.warn("Chat button element not found in DOM");
     }
     
     const walyContainer = document.getElementById('waly-container');
     if (walyContainer) {
-      walyContainer.style.visibility = 'visible';
-      walyContainer.style.opacity = '1';
-      walyContainer.style.display = 'block';
-      walyContainer.style.zIndex = '999999';
-      walyContainer.style.position = 'fixed';
-      
-      if (isImportantPage) {
-        // For important pages, ensure it's really visible
-        walyContainer.style.pointerEvents = 'auto';
-      }
+      walyContainer.setAttribute('style', `
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+        z-index: 999999 !important;
+        position: fixed !important;
+        pointer-events: auto !important;
+      `);
+    } else {
+      console.warn("Waly container element not found in DOM");
     }
+    
+    // Also try to find any potential parent elements that might be hiding Waly
+    document.querySelectorAll('[id*="waly"], [id*="chat"], [class*="waly"], [class*="chat"]')
+      .forEach(el => {
+        if (el instanceof HTMLElement) {
+          el.style.visibility = 'visible';
+          el.style.opacity = '1';
+          el.style.display = el.style.display === 'none' ? 'block' : el.style.display;
+          el.style.zIndex = '999999';
+        }
+      });
   }, [location.pathname]);
   
   // Update position when screen size changes
@@ -59,6 +68,9 @@ export const useChatPosition = () => {
         bottom: 2,
         right: 2,
       });
+      
+      // Also force visibility when position changes
+      forceVisibility();
     };
     
     updatePosition();
@@ -67,31 +79,39 @@ export const useChatPosition = () => {
     return () => {
       window.removeEventListener('resize', updatePosition);
     };
-  }, [isMobile]);
+  }, [isMobile, forceVisibility]);
   
-  // Always force the chat button to be visible
+  // Always force the chat button to be visible with multiple strategies
   useEffect(() => {
+    console.log("Setting up Waly visibility for path:", location.pathname);
+    
     // Immediate call
     forceVisibility();
     
     // Call multiple times with increasing delays to handle any race conditions
-    const timeouts = [100, 300, 500, 800, 1200, 2000, 5000].map(delay => 
+    const timeouts = [50, 100, 200, 300, 500, 800, 1200, 2000, 5000, 10000].map(delay => 
       setTimeout(forceVisibility, delay)
     );
     
-    // For important pages, use more aggressive approach
-    if (location.pathname === '/' || location.pathname === '/dashboard') {
-      console.log("Important page detected - using enhanced visibility measures");
-      const indexInterval = setInterval(forceVisibility, 1000);
-      
-      return () => {
-        timeouts.forEach(clearTimeout);
-        clearInterval(indexInterval);
-      };
-    }
+    // For any page, use aggressive approach
+    const visibilityInterval = setInterval(forceVisibility, 1000);
+    
+    // Use MutationObserver to detect DOM changes that might affect Waly visibility
+    const observer = new MutationObserver(() => {
+      forceVisibility();
+    });
+    
+    // Start observing the document body for all changes
+    observer.observe(document.body, { 
+      childList: true, 
+      subtree: true,
+      attributes: true
+    });
     
     return () => {
       timeouts.forEach(clearTimeout);
+      clearInterval(visibilityInterval);
+      observer.disconnect();
     };
   }, [forceVisibility, location.pathname]);
   

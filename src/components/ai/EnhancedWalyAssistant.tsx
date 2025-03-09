@@ -25,26 +25,34 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   const { getContextAwareStarters } = useContextAwareStarters();
   const { inputValue, setInputValue, handleSend, messages, isTyping } = useEnhancedChat();
   
-  // Force visibility on mount and route changes
+  // Force visibility whenever component mounts or route changes
   useEffect(() => {
     console.log("EnhancedWalyAssistant: Mounted on route:", location.pathname);
     
-    // Function to ensure chat button visibility
+    // Function to ensure chat button visibility with !important styles
     const forceWalyVisibility = () => {
       const chatButton = document.getElementById('chat-button');
       if (chatButton) {
-        chatButton.style.visibility = 'visible';
-        chatButton.style.opacity = '1';
-        chatButton.style.display = 'block';
-        chatButton.style.zIndex = '999999';
+        chatButton.setAttribute('style', `
+          visibility: visible !important;
+          opacity: 1 !important;
+          display: block !important;
+          z-index: 999999 !important;
+          position: fixed !important;
+          pointer-events: auto !important;
+        `);
       }
       
       const walyContainer = document.getElementById('waly-container');
       if (walyContainer) {
-        walyContainer.style.visibility = 'visible';
-        walyContainer.style.opacity = '1';
-        walyContainer.style.display = 'block';
-        walyContainer.style.zIndex = '999999';
+        walyContainer.setAttribute('style', `
+          visibility: visible !important;
+          opacity: 1 !important;
+          display: block !important;
+          z-index: 999999 !important;
+          position: fixed !important;
+          pointer-events: auto !important;
+        `);
       }
     };
     
@@ -52,14 +60,29 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     forceWalyVisibility();
     
     // Apply with multiple delays to catch rendering issues
-    [100, 300, 500, 1000, 2000].forEach(delay => {
+    [50, 100, 200, 300, 500, 1000, 2000, 5000].forEach(delay => {
       setTimeout(forceWalyVisibility, delay);
     });
     
     // Continue checking periodically
-    const interval = setInterval(forceWalyVisibility, 3000);
+    const interval = setInterval(forceWalyVisibility, 1000);
     
-    return () => clearInterval(interval);
+    // Use MutationObserver to detect DOM changes
+    const observer = new MutationObserver(() => {
+      forceWalyVisibility();
+    });
+    
+    // Start observing the document body for all changes
+    observer.observe(document.body, { 
+      childList: true, 
+      subtree: true,
+      attributes: true
+    });
+    
+    return () => {
+      clearInterval(interval);
+      observer.disconnect();
+    };
   }, [location.pathname]);
   
   const toggleOpen = () => {

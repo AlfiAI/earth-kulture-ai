@@ -10,32 +10,46 @@ import WalyActionHandler from '@/components/ai/WalyActionHandler';
 function App() {
   const location = useLocation();
   const walyVisibilityChecked = useRef(false);
+  const walyContainerRef = useRef<HTMLDivElement>(null);
   
-  // Make sure Waly is visible, especially on index page
+  // Make sure Waly is visible with extremely aggressive approach
   useEffect(() => {
     console.log('App: Current route is', location.pathname);
     walyVisibilityChecked.current = false;
     
-    // Force visibility of Waly components with aggressive approach
+    // Force visibility of Waly components with most aggressive approach
     const forceWalyVisibility = () => {
       // Target container and chat button
       ['waly-container', 'chat-button'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-          el.style.visibility = 'visible';
-          el.style.opacity = '1';
-          el.style.display = 'block';
-          el.style.zIndex = '999999';
+          el.setAttribute('style', `
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: block !important;
+            z-index: 999999 !important;
+            position: fixed !important;
+            pointer-events: auto !important;
+          `);
           walyVisibilityChecked.current = true;
         }
       });
+      
+      // Also ensure our ref is visible
+      if (walyContainerRef.current) {
+        walyContainerRef.current.setAttribute('style', `
+          visibility: visible !important;
+          opacity: 1 !important;
+          display: block !important;
+          z-index: 999999 !important;
+          position: fixed !important;
+          pointer-events: auto !important;
+        `);
+      }
     };
     
-    // Special handling for index page
-    const isIndexPage = location.pathname === '/';
-    if (isIndexPage) {
-      console.log('On index page - ensuring Waly is visible with extra measures');
-      
+    // Create a robust visibility observer
+    const createVisibilityObserver = () => {
       // Use MutationObserver to detect DOM changes that might affect Waly visibility
       const observer = new MutationObserver((mutations) => {
         forceWalyVisibility();
@@ -48,29 +62,26 @@ function App() {
         attributes: true
       });
       
-      // Call multiple times with different delays to ensure it works
-      [0, 100, 300, 500, 1000, 2000].forEach(delay => {
-        setTimeout(forceWalyVisibility, delay);
-      });
-      
-      return () => observer.disconnect();
-    }
+      return observer;
+    };
     
-    // Call immediately and also on a timer
-    forceWalyVisibility();
+    // Call multiple times with different delays to ensure it works
+    [0, 50, 100, 200, 300, 500, 1000, 2000, 5000].forEach(delay => {
+      setTimeout(forceWalyVisibility, delay);
+    });
+    
+    // Create the observer
+    const observer = createVisibilityObserver();
+    
+    // Also check periodically
     const interval = setInterval(() => {
-      // If visibility has been confirmed, we can reduce check frequency
-      if (walyVisibilityChecked.current) {
-        clearInterval(interval);
-        // Continue with less frequent checks
-        const backupInterval = setInterval(forceWalyVisibility, 5000);
-        setTimeout(() => clearInterval(backupInterval), 30000); // Stop after 30 seconds
-      } else {
-        forceWalyVisibility();
-      }
+      forceWalyVisibility();
     }, 1000);
     
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      observer.disconnect();
+    };
   }, [location.pathname]);
 
   return (
@@ -95,16 +106,20 @@ function App() {
             })}
         </Routes>
         
-        {/* Always render Waly with inline styles for guaranteed visibility */}
+        {/* Always render Waly with aggressive inline styles for guaranteed visibility */}
         <div 
           id="waly-container"
+          ref={walyContainerRef}
           className="fixed bottom-0 right-0 z-[999999]" 
           style={{ 
-            visibility: 'visible', 
-            display: 'block',
-            opacity: 1,
+            visibility: 'visible !important', 
+            display: 'block !important',
+            opacity: '1 !important',
             zIndex: 999999,
-            position: 'fixed'
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+            pointerEvents: 'auto'
           }}
         >
           <EnhancedWalyAssistant initialOpen={false} />
