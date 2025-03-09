@@ -12,17 +12,23 @@ interface WalyChatButtonProps {
   onClick: () => void;
   position: { bottom: number; right: number };
   onStarterClick?: (text: string) => void;
+  contextAwareStarters?: string[];
 }
 
-const WalyChatButton = ({ onClick, position, onStarterClick }: WalyChatButtonProps) => {
+const WalyChatButton = ({ 
+  onClick, 
+  position, 
+  onStarterClick,
+  contextAwareStarters
+}: WalyChatButtonProps) => {
   // Use the same avatar path as in MessageAvatar for consistency
   const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
   const [showStarters, setShowStarters] = useState(false);
   const [isOverlapping, setIsOverlapping] = useState(false);
   const isMobile = useIsMobile();
   
-  // Conversation starter questions
-  const starters = [
+  // Conversation starter questions, use context-aware ones if provided
+  const starters = contextAwareStarters || [
     "How can I improve my ESG score?",
     "Explain carbon footprint tracking",
     "What ESG metrics should I monitor?",
@@ -162,7 +168,7 @@ const WalyChatButton = ({ onClick, position, onStarterClick }: WalyChatButtonPro
             isMobile ? "bottom-[4.5rem] right-0" : "bottom-[4.5rem] right-0"
           )}
         >
-          <Card className="p-1.5 bg-white/95 backdrop-blur-sm border border-primary/10 shadow-lg rounded-xl w-[220px]">
+          <Card className="p-1.5 bg-white/95 backdrop-blur-sm border border-primary/10 shadow-lg rounded-xl w-[280px]">
             <div className="text-xs font-medium text-muted-foreground px-2 py-1.5">
               Quick prompts:
             </div>
