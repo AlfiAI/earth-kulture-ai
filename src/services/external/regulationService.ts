@@ -34,8 +34,8 @@ class RegulationService {
         throw new Error("Invalid response format from ESG regulations query");
       }
       
-      // Break the deep type instantiation by using a simpler type assertion
-      return data as any;
+      // Use simple type assertion without deep instantiation
+      return data as any as ESGRegulation[];
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulations", {
         operation: 'getESGRegulations',
@@ -60,8 +60,8 @@ class RegulationService {
       
       if (error) throw error;
       
-      // Use simple type assertion to avoid deep instantiation
-      return data as any;
+      // Use simple type assertion without deep instantiation
+      return data as any as ESGRegulation;
     } catch (error) {
       handleServiceError(error, "Failed to load ESG regulation details", {
         operation: 'getESGRegulationById',
@@ -83,8 +83,8 @@ class RegulationService {
       
       if (error) throw error;
       
-      // Use simple type assertion to avoid deep instantiation
-      return data as any;
+      // Use simple type assertion without deep instantiation
+      return data as any as ESGRegulation[];
     } catch (error) {
       handleServiceError(error, "Failed to load sector-specific regulations", {
         operation: 'getRegulationsBySector',
