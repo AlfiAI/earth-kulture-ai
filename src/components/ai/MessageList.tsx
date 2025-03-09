@@ -1,10 +1,9 @@
 
 import { useRef, useEffect } from 'react';
-import { Bot } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Message, { MessageProps } from './Message';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
+import MessageAvatar from './message-parts/MessageAvatar';
 
 interface MessageListProps {
   messages: MessageProps[];
@@ -35,12 +34,7 @@ const MessageList = ({ messages, isTyping }: MessageListProps) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-sm">
-              <AvatarImage src="/lovable-uploads/db6e9d05-9d19-408f-ac05-996d4d8006fb.png" alt="Waly" className="p-1" />
-              <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
-                W
-              </AvatarFallback>
-            </Avatar>
+            <MessageAvatar sender="ai" />
             
             <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5 shadow-lg w-[calc(100%-5rem)]">
               <motion.div 
