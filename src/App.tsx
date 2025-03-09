@@ -12,7 +12,7 @@ function App() {
     <WalyActionHandler>
       <div className="min-h-screen flex flex-col">
         <Routes>
-          {routes.router.children
+          {routes.router.routes
             .filter(route => route.path !== undefined)
             .map((route) => (
               <Route
