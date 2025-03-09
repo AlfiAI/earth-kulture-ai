@@ -21,6 +21,7 @@ const WalyChatButton = ({ onClick, position }: WalyChatButtonProps) => {
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
       className="fixed z-50"
       style={{ bottom: `${position.bottom}rem`, right: `${position.right}rem` }}
+      whileHover={{ scale: 1.05, rotate: 3 }}
     >
       <Button
         onClick={onClick}
@@ -34,20 +35,21 @@ const WalyChatButton = ({ onClick, position }: WalyChatButtonProps) => {
           <AvatarImage 
             src={walyAvatarPath} 
             alt="Waly Bot"
-            className="object-contain p-1.5" // Added small padding
+            className="object-contain p-2.5" // Increased padding
           />
           <AvatarFallback className="bg-white">
             <img 
               src={walyAvatarPath} 
               alt="Waly Bot" 
-              className="h-full w-full object-contain p-1.5" // Added small padding
+              className="h-full w-full object-contain p-2.5" // Increased padding
             />
           </AvatarFallback>
         </Avatar>
         <motion.div
           animate={{ 
             scale: [1, 1.2, 1],
-            opacity: [0.7, 1, 0.7]
+            opacity: [0.7, 1, 0.7],
+            rotate: [0, 5, 0]
           }}
           transition={{ 
             duration: 2, 

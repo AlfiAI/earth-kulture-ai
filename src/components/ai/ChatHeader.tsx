@@ -15,10 +15,11 @@ interface ChatHeaderProps {
 const ChatHeader = ({ onClose, title, subtitle }: ChatHeaderProps) => {
   const isMobile = useIsMobile();
   const displayTitle = title || (isMobile ? "Waly" : "Waly Assistant");
+  const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
 
   return (
     <motion.div 
-      className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-4 flex items-center justify-between rounded-t-2xl"
+      className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white p-4 flex items-center justify-between"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -28,16 +29,16 @@ const ChatHeader = ({ onClose, title, subtitle }: ChatHeaderProps) => {
           whileHover={{ scale: 1.1, rotate: 5 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
-          <Avatar className="h-12 w-12 bg-white/20 border-2 border-white/30 ring-2 ring-white/10 shadow-lg">
-            <AvatarImage src="/lovable-uploads/576b2f20-ecd7-4793-bc03-a40c9349e2a1.png" alt="Waly" className="p-1" />
+          <Avatar className="h-14 w-14 bg-white/20 border-2 border-white/30 ring-2 ring-white/10 shadow-lg">
+            <AvatarImage src={walyAvatarPath} alt="Waly" className="p-2.5" />
             <AvatarFallback className="bg-gradient-to-br from-white/90 to-white/70 text-primary">
-              <Sparkles className="h-4 w-4" />
+              <Sparkles className="h-5 w-5" />
             </AvatarFallback>
           </Avatar>
         </motion.div>
         <div className="flex flex-col">
           <motion.h2 
-            className="font-medium text-xl"
+            className="font-medium text-2xl"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
@@ -46,7 +47,7 @@ const ChatHeader = ({ onClose, title, subtitle }: ChatHeaderProps) => {
           </motion.h2>
           {subtitle && (
             <motion.p 
-              className="text-xs text-white/80"
+              className="text-sm text-white/80"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
@@ -60,7 +61,7 @@ const ChatHeader = ({ onClose, title, subtitle }: ChatHeaderProps) => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 500, damping: 30, delay: 0.3 }}
         >
-          <Badge variant="outline" className="text-xs bg-white/20 text-white border-white/20 shadow-sm animate-pulse-gentle">Beta</Badge>
+          <Badge variant="outline" className="text-xs bg-white/20 text-white border-white/20 shadow-sm ml-3">Beta</Badge>
         </motion.div>
       </div>
       

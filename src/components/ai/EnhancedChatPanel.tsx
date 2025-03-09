@@ -9,6 +9,7 @@ import EnhancedChatBanner from './EnhancedChatBanner';
 import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
 import ConversationStarters from './ConversationStarters';
 import { TrendingUp, Zap, Lightbulb, BarChart } from 'lucide-react';
+import { motion, AnimatePresence } from "framer-motion";
 
 interface EnhancedChatPanelProps {
   isOpen: boolean;
@@ -57,50 +58,79 @@ const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
     };
 
     return (
-      <Card
-        ref={ref}
-        className={cn(
-          "fixed shadow-xl border-primary/10 overflow-hidden transition-all duration-300 ease-in-out z-50 bg-card/95 backdrop-blur-sm",
-          isOpen 
-            ? "w-full h-[calc(100vh-60px)] max-h-[800px] opacity-100 rounded-none" 
-            : "w-0 h-0 opacity-0 pointer-events-none"
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: 300 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 300 }}
+            transition={{ 
+              type: "spring", 
+              damping: 25, 
+              stiffness: 300,
+              duration: 0.4
+            }}
+            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.98, opacity: 0.5 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="h-full w-full max-w-[1000px] mx-auto flex flex-col"
+            >
+              <Card
+                ref={ref}
+                className={cn(
+                  "h-full w-full overflow-hidden transition-all duration-300 ease-in-out",
+                  "bg-card/95 backdrop-blur-sm border-primary/10 shadow-xl"
+                )}
+              >
+                <ChatHeader onClose={onClose} title="Waly Pro" subtitle="Advanced ESG Intelligence" />
+                
+                <CardContent className="p-0 flex flex-col h-[calc(100%-56px)]">
+                  <EnhancedChatBanner />
+                  
+                  {messages.length === 0 && showNewChat && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2, duration: 0.4 }}
+                    >
+                      <ConversationStarters 
+                        starters={starters} 
+                        onStarterClick={handleStarterClick}
+                        onNewChat={handleNewChat}
+                      />
+                    </motion.div>
+                  )}
+                  
+                  {(messages.length > 0 || !showNewChat) && (
+                    <MessageList 
+                      messages={messages} 
+                      isTyping={isTyping} 
+                    />
+                  )}
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.4 }}
+                  >
+                    <ChatInput
+                      inputValue={inputValue}
+                      setInputValue={setInputValue}
+                      handleSend={handleSend}
+                      inputRef={inputRef}
+                      placeholder="Ask about benchmarking, predictions, goals..."
+                    />
+                  </motion.div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
         )}
-        style={{ 
-          bottom: isOpen ? 0 : `${position.bottom}rem`, 
-          right: isOpen ? 0 : `${position.right}rem`,
-          left: isOpen ? 0 : 'auto',
-          maxHeight: isOpen ? 'calc(100vh - 60px)' : '0'
-        }}
-      >
-        <ChatHeader onClose={onClose} title="Waly Pro" subtitle="Advanced ESG Intelligence" />
-        
-        <CardContent className="p-0 flex flex-col h-[calc(100%-56px)]">
-          <EnhancedChatBanner />
-          
-          {messages.length === 0 && showNewChat && (
-            <ConversationStarters 
-              starters={starters} 
-              onStarterClick={handleStarterClick}
-              onNewChat={handleNewChat}
-            />
-          )}
-          
-          {(messages.length > 0 || !showNewChat) && (
-            <MessageList 
-              messages={messages} 
-              isTyping={isTyping} 
-            />
-          )}
-          
-          <ChatInput
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            handleSend={handleSend}
-            inputRef={inputRef}
-            placeholder="Ask about benchmarking, predictions, goals..."
-          />
-        </CardContent>
-      </Card>
+      </AnimatePresence>
     );
   }
 );

@@ -17,29 +17,29 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
   
   return (
     <motion.div
-      initial={{ scale: 0.8 }}
-      animate={{ scale: 1 }}
-      transition={{ duration: 0.2 }}
-      whileHover={{ scale: 1.05 }}
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.3, type: "spring", stiffness: 260, damping: 20 }}
+      whileHover={{ scale: 1.05, rotate: 2 }}
     >
       {sender === 'ai' ? (
         <Avatar className="h-12 w-12 border-2 border-primary/20 bg-white shadow-sm">
           <AvatarImage 
             src={walyAvatarPath}
             alt="Waly AI" 
-            className="p-1.5" // Added small padding
+            className="p-2.5" // Increased padding
           />
           <AvatarFallback className="bg-white">
             <img 
               src={walyAvatarPath} 
               alt="Waly AI" 
-              className="h-full w-full object-contain p-1.5" // Added small padding
+              className="h-full w-full object-contain p-2.5" // Increased padding
             />
           </AvatarFallback>
         </Avatar>
       ) : (
         <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-sm">
-          <AvatarImage src={avatarUrl} alt="User" className="p-1.5" />
+          <AvatarImage src={avatarUrl} alt="User" className="p-2.5" />
           <AvatarFallback className="bg-gradient-to-br from-sky-500 to-primary text-white">
             {initials}
           </AvatarFallback>

@@ -101,13 +101,13 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
             <AvatarImage 
               src={walyAvatarPath} 
               alt="Waly" 
-              className="p-1.5" // Added small padding
+              className="p-2.5" // Increased padding
             />
             <AvatarFallback className="bg-white">
               <img 
                 src={walyAvatarPath} 
                 alt="Waly" 
-                className="h-full w-full object-contain p-1.5" // Added small padding
+                className="h-full w-full object-contain p-2.5" // Increased padding
               />
             </AvatarFallback>
           </Avatar>
