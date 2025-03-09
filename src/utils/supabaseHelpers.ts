@@ -5,7 +5,7 @@ import { Database } from '@/integrations/supabase/types';
 /**
  * Safely extracts data from a Supabase query response
  */
-export function extractData<T>(response: PostgrestSingleResponse<T> | PostgrestResponse<T>): T | null {
+export function extractData<T>(response: PostgrestSingleResponse<T> | PostgrestResponse<T>): T | T[] | null {
   if (response.error) {
     console.error('Supabase query error:', response.error);
     return null;
