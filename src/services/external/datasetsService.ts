@@ -60,6 +60,48 @@ class DatasetsService {
       return false;
     }
   }
+
+  // Format an ExternalESGDataset to a more UI-friendly format if needed
+  formatDatasetForDisplay(dataset: ExternalESGDataset): FormattedESGDataset {
+    const metadata = dataset.data?.metadata || {};
+    
+    return {
+      id: dataset.id,
+      name: dataset.dataset_name,
+      description: dataset.dataset_description || '',
+      provider: dataset.source,
+      dataType: dataset.category,
+      url: metadata.sourceUrl || '#',
+      lastUpdated: dataset.last_updated || new Date().toISOString(),
+      coverage: {
+        regions: metadata.regions || [],
+        industries: metadata.industries || [],
+        years: metadata.years || []
+      },
+      format: metadata.format || 'JSON',
+      accessType: metadata.accessType || 'public',
+      tags: dataset.metrics || []
+    };
+  }
 }
 
 export const datasetsService = new DatasetsService();
+
+// Added type definition for our formatter function
+interface FormattedESGDataset {
+  id: string;
+  name: string;
+  description: string;
+  provider: string;
+  dataType: string;
+  url: string;
+  lastUpdated: string;
+  coverage: {
+    regions: string[];
+    industries?: string[];
+    years?: number[];
+  };
+  format: string;
+  accessType: 'public' | 'subscription' | 'restricted';
+  tags: string[];
+}

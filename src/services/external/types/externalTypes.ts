@@ -34,9 +34,24 @@ export interface PaginatedResponse<T> {
 }
 
 /**
- * Interface for external ESG dataset
+ * Interface for external ESG dataset from database
  */
 export interface ExternalESGDataset {
+  id: string;
+  category: string;
+  data: any;
+  dataset_description?: string;
+  dataset_name: string;
+  source: string;
+  last_updated?: string;
+  metrics?: string[];
+  next_update?: string;
+}
+
+/**
+ * Interface for formatted external ESG dataset (for UI display)
+ */
+export interface FormattedESGDataset {
   id: string;
   name: string;
   description: string;
