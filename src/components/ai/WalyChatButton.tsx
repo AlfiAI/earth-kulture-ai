@@ -12,7 +12,7 @@ interface WalyChatButtonProps {
 
 const WalyChatButton = ({ onClick, position }: WalyChatButtonProps) => {
   // Use the same avatar path as in MessageAvatar for consistency
-  const walyAvatarPath = "/lovable-uploads/3b18ef6a-0e85-4835-b4fc-f047a22347e8.png";
+  const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
   
   return (
     <motion.div
@@ -26,17 +26,17 @@ const WalyChatButton = ({ onClick, position }: WalyChatButtonProps) => {
         onClick={onClick}
         className={cn(
           "relative flex items-center justify-center p-0 w-16 h-16 rounded-full shadow-xl",
-          "bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600",
-          "hover:shadow-emerald-500/20 hover:shadow-2xl transition-all duration-300"
+          "bg-white hover:bg-gray-50",
+          "hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300"
         )}
       >
-        <Avatar className="w-14 h-14 border-2 border-white/20 overflow-visible">
+        <Avatar className="w-14 h-14 border-2 border-primary/10 overflow-visible">
           <AvatarImage 
             src={walyAvatarPath} 
             alt="Waly Bot"
-            className="object-contain p-1" 
+            className="object-contain p-0" 
           />
-          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
+          <AvatarFallback className="bg-white">
             <img 
               src={walyAvatarPath} 
               alt="Waly Bot" 

@@ -8,8 +8,8 @@ interface MessageAvatarProps {
 }
 
 const MessageAvatar = ({ sender }: MessageAvatarProps) => {
-  // The Waly AI avatar image path - using the robot image
-  const walyAvatarPath = "/lovable-uploads/3b18ef6a-0e85-4835-b4fc-f047a22347e8.png";
+  // Use the newly uploaded robot avatar image
+  const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
   
   return (
     <motion.div
@@ -19,17 +19,17 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
       whileHover={{ scale: 1.05 }}
     >
       {sender === 'ai' ? (
-        <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-sm">
+        <Avatar className="h-12 w-12 border-2 border-primary/20 bg-white shadow-sm">
           <AvatarImage 
             src={walyAvatarPath}
             alt="Waly AI" 
-            className="p-0.5"
+            className="p-0"
           />
-          <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
+          <AvatarFallback className="bg-white">
             <img 
               src={walyAvatarPath} 
               alt="Waly AI" 
-              className="h-full w-full p-0.5 object-contain"
+              className="h-full w-full object-contain"
             />
           </AvatarFallback>
         </Avatar>

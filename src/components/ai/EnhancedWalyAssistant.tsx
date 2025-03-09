@@ -1,7 +1,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Sparkles, MessageCircle } from 'lucide-react';
 import EnhancedChatPanel from './EnhancedChatPanel';
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,7 +15,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   const chatPanelRef = useRef<HTMLDivElement>(null);
   
   // Use the same avatar path as in MessageAvatar for consistency
-  const walyAvatarPath = "/lovable-uploads/3b18ef6a-0e85-4835-b4fc-f047a22347e8.png";
+  const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
   
   const toggleOpen = () => {
     setIsOpen(!isOpen);
@@ -90,7 +89,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       {!isOpen && (
         <Button
           onClick={toggleOpen}
-          className="fixed rounded-full shadow-xl flex items-center justify-center z-50 p-0 hover:scale-105 transition-all duration-300 group"
+          className="fixed rounded-full shadow-xl flex items-center justify-center z-50 p-0 hover:scale-105 transition-all duration-300 group bg-white"
           style={{ 
             bottom: `${position.bottom}rem`, 
             right: `${position.right}rem`,
@@ -98,13 +97,13 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
             height: "64px"
           }}
         >
-          <Avatar className="w-full h-full border-2 border-white/20">
+          <Avatar className="w-full h-full border-2 border-primary/10">
             <AvatarImage 
               src={walyAvatarPath} 
               alt="Waly" 
-              className="p-1"
+              className="p-0"
             />
-            <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
+            <AvatarFallback className="bg-white">
               <img 
                 src={walyAvatarPath} 
                 alt="Waly" 
@@ -112,7 +111,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
               />
             </AvatarFallback>
           </Avatar>
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/40 to-sky-500/40 animate-pulse-gentle group-hover:opacity-0 transition-opacity"></div>
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 to-sky-500/10 animate-pulse-gentle group-hover:opacity-0 transition-opacity"></div>
         </Button>
       )}
       
