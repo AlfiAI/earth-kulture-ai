@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { aiAgentOrchestrator } from '../../orchestration/aiAgentOrchestrator';
+import { aiAgentOrchestrator } from '../../orchestration';
 
 /**
  * Service for monitoring compliance status
