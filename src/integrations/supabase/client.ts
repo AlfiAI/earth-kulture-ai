@@ -9,13 +9,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const getSiteUrl = () => {
   // In browser environment
   if (typeof window !== 'undefined') {
-    // First check if we're running in the preview environment
-    if (window.location.hostname.includes('preview--') || 
-        window.location.hostname.includes('lovable.app')) {
-      return window.location.origin;
-    }
-    
-    // For local development or other deployments
+    // Handle preview environments correctly
     const url = new URL(window.location.href);
     return `${url.protocol}//${url.host}`;
   }
@@ -36,6 +30,7 @@ export const supabase = createClient<Database>(
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
+      redirectTo: redirectTo,
       storage: {
         getItem: (key: string) => {
           if (typeof window !== 'undefined') {

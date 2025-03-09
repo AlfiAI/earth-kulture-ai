@@ -4,6 +4,7 @@ import { SendHorizonal, Sparkles } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface ChatInputProps {
   inputValue: string;
@@ -25,8 +26,13 @@ const ChatInput = ({ inputValue, setInputValue, handleSend, inputRef, placeholde
   };
 
   return (
-    <div className="p-6 border-t bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 rounded-b-2xl">
-      <div className="relative max-w-6xl mx-auto">
+    <motion.div 
+      className="p-4 sm:p-6 border-t bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 rounded-b-2xl"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: 0.2 }}
+    >
+      <div className="relative max-w-5xl mx-auto">
         <Textarea
           ref={textareaRef}
           value={inputValue}
@@ -42,27 +48,37 @@ const ChatInput = ({ inputValue, setInputValue, handleSend, inputRef, placeholde
           )}
           maxLength={500}
         />
-        <Button
-          onClick={handleSend}
-          disabled={inputValue.trim() === ''}
-          size="icon"
-          className={cn(
-            "absolute right-3 bottom-3 h-10 w-10 rounded-full",
-            "bg-gradient-to-r from-primary to-sky-500 hover:from-primary/90 hover:to-sky-500/90",
-            "transition-all duration-300 hover:shadow-md hover:scale-105",
-            "disabled:opacity-50 disabled:cursor-not-allowed"
-          )}
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <SendHorizonal className="h-5 w-5 text-white" />
-        </Button>
+          <Button
+            onClick={handleSend}
+            disabled={inputValue.trim() === ''}
+            size="icon"
+            className={cn(
+              "absolute right-3 bottom-3 h-10 w-10 rounded-full",
+              "bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600",
+              "transition-all duration-300 hover:shadow-md",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
+          >
+            <SendHorizonal className="h-5 w-5 text-white" />
+          </Button>
+        </motion.div>
       </div>
-      <div className="mt-3 text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+      <motion.div 
+        className="mt-3 text-xs text-muted-foreground text-center flex items-center justify-center gap-1"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
         <span>Powered by</span>
         <span className="font-medium text-primary flex items-center">
           EarthKulture AI <Sparkles className="h-3 w-3 ml-0.5 text-yellow-400 animate-float" />
         </span>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
