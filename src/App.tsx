@@ -37,7 +37,7 @@ function App() {
             })}
         </Routes>
         
-        {/* Place the EnhancedWalyAssistant as a direct child of the App */}
+        {/* Always render the EnhancedWalyAssistant */}
         <EnhancedWalyAssistant initialOpen={false} />
         
         <Toaster />

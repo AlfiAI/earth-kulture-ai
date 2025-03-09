@@ -13,7 +13,6 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
   // Reset error state when avatar path changes
   useEffect(() => {
     setImageError(false);
-    setIsLoaded(false);
     
     // Preload the image
     const img = new Image();
@@ -33,11 +32,7 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
     setImageError(true);
   };
   
-  const handleImageLoad = () => {
-    console.log("Avatar image loaded successfully in component");
-    setIsLoaded(true);
-  };
-  
+  // Render a fallback regardless of image loading state to ensure something always appears
   return (
     <div className="w-full h-full flex items-center justify-center">
       {!imageError ? (
@@ -46,11 +41,7 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
           alt="Waly AI" 
           className="w-full h-full object-contain p-2.5"
           onError={handleImageError}
-          onLoad={handleImageLoad}
-          style={{ 
-            opacity: isLoaded ? 1 : 0,
-            transition: 'opacity 0.3s ease-in-out'
-          }}
+          onLoad={() => setIsLoaded(true)}
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-cyan-500">
@@ -58,8 +49,8 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
         </div>
       )}
       
-      {/* Show loading state if neither loaded nor error */}
-      {!isLoaded && !imageError && (
+      {/* Always show fallback if not loaded yet */}
+      {!isLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-emerald-500/80 to-cyan-500/80">
           <Sparkles className="w-6 h-6 text-white animate-pulse" />
         </div>

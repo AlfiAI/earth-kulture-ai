@@ -27,9 +27,9 @@ const WalyChatButton = ({
   const [showStarters, setShowStarters] = useState(false);
   const isMobile = useIsMobile();
   const isOverlapping = useOverlapDetection('chat-button');
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // Set to true by default
   
-  // Debug logging and ensure the component is visible after a short delay
+  // Debug logging and ensure the component is visible immediately
   useEffect(() => {
     console.log("WalyChatButton rendering with position:", position);
     console.log("Avatar path:", walyAvatarPath);
@@ -46,13 +46,6 @@ const WalyChatButton = ({
     preloadImage.onload = () => {
       console.log("Successfully preloaded Waly avatar image");
     };
-    
-    // Ensure the button becomes visible after a short delay
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 500);
-    
-    return () => clearTimeout(timer);
   }, [position, walyAvatarPath]);
   
   // Conversation starter questions, use context-aware ones if provided
@@ -83,10 +76,7 @@ const WalyChatButton = ({
   const bottomPx = position.bottom * 16; // Convert rem to px (1rem = 16px)
   const rightPx = position.right * 16; // Convert rem to px (1rem = 16px)
   
-  if (!isVisible) {
-    return null; // Don't render until we're ready to show
-  }
-  
+  // Always render the button
   return (
     <motion.div
       id="chat-button"

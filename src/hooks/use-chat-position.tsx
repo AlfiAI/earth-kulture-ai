@@ -24,7 +24,7 @@ export const useChatPosition = () => {
       };
       
       // Debug position updates
-      console.log("Updating chat position:", newPosition);
+      console.log("Chat position:", newPosition);
       
       setPosition(newPosition);
     };
