@@ -23,7 +23,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   const position = useChatPosition();
   const location = useLocation();
   const { getContextAwareStarters } = useContextAwareStarters();
-  const { inputValue, setInputValue, handleSend, messages } = useEnhancedChat();
+  const { inputValue, setInputValue, handleSend, messages, isTyping } = useEnhancedChat();
   
   // Force visibility check on route change
   console.log("EnhancedWalyAssistant rendered with position:", position, "on route:", location.pathname);

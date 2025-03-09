@@ -6,18 +6,25 @@ import ChatPanelContent from './chat-panel/ChatPanelContent';
 import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
 import { usePageContextStarters, getContextPlaceholder } from './chat-panel/usePageContextStarters';
 import { usePageContext } from './chat-panel/usePageContext';
+import { MessageProps } from './Message';
 
 interface EnhancedChatPanelProps {
   isOpen: boolean;
   onClose: () => void;
   position: { bottom: number; right: number };
   currentPath?: string;
+  messages: MessageProps[];
+  inputValue: string;
+  setInputValue: (value: string) => void;
+  handleSend: () => void;
+  showNewChat: boolean;
+  onStarterClick: (text: string) => void;
+  onNewChat: () => void;
 }
 
 const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
-  ({ isOpen, onClose, position, currentPath = '/' }, ref) => {
-    const { messages, inputValue, setInputValue, isTyping, handleSend } = useEnhancedChat();
-    const [showNewChat, setShowNewChat] = useState(true);
+  ({ isOpen, onClose, position, currentPath = '/', messages, inputValue, setInputValue, handleSend, showNewChat, onStarterClick, onNewChat }, ref) => {
+    const { isTyping } = useEnhancedChat();
     
     // Get context-aware starters based on current path
     const starters = usePageContextStarters(currentPath);
@@ -25,20 +32,6 @@ const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
     // Load relevant page context data
     const pageContext = usePageContext(isOpen, currentPath);
     
-    const handleStarterClick = (text: string) => {
-      setInputValue(text);
-      // Automatically send the message
-      setTimeout(() => {
-        handleSend();
-        setShowNewChat(false);
-      }, 100);
-    };
-    
-    const handleNewChat = () => {
-      // Reset the chat
-      window.location.reload();
-    };
-
     // Get placeholder text based on current path
     const placeholderText = getContextPlaceholder(currentPath);
 
@@ -58,8 +51,8 @@ const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
           setInputValue={setInputValue}
           handleSend={handleSend}
           starters={starters}
-          onStarterClick={handleStarterClick}
-          onNewChat={handleNewChat}
+          onStarterClick={onStarterClick}
+          onNewChat={onNewChat}
           placeholder={placeholderText}
         />
       </ChatPanelContainer>
