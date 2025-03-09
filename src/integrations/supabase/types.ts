@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ai_requests: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          manual_override: boolean | null
+          metadata: Json | null
+          model_requested: string | null
+          model_used: string
+          processing_time_ms: number | null
+          prompt: string
+          status: string
+          tokens_used: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          manual_override?: boolean | null
+          metadata?: Json | null
+          model_requested?: string | null
+          model_used: string
+          processing_time_ms?: number | null
+          prompt: string
+          status: string
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          manual_override?: boolean | null
+          metadata?: Json | null
+          model_requested?: string | null
+          model_used?: string
+          processing_time_ms?: number | null
+          prompt?: string
+          status?: string
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       carbon_data: {
         Row: {
           emissions: number
