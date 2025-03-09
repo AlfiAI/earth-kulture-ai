@@ -19,8 +19,8 @@ const MessageList = ({ messages, isTyping }: MessageListProps) => {
   }, [messages, isTyping]);
 
   return (
-    <ScrollArea className="flex-1 py-4 px-2 sm:px-6 bg-gradient-to-b from-gray-50/50 to-white/80 dark:from-gray-900/50 dark:to-gray-800/80">
-      <div className="space-y-6 max-w-4xl mx-auto">
+    <ScrollArea className="flex-1 py-4 px-4 md:px-6 bg-gradient-to-b from-gray-50/50 to-white/80 dark:from-gray-900/50 dark:to-gray-800/80">
+      <div className="space-y-6 mx-auto">
         {messages.map((message) => (
           <Message 
             key={message.id} 
@@ -36,13 +36,13 @@ const MessageList = ({ messages, isTyping }: MessageListProps) => {
             transition={{ duration: 0.3 }}
           >
             <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-sm">
-              <AvatarImage src="/lovable-uploads/f6c4395f-ff31-485c-b1bb-af97a26dd5e5.png" alt="Waly" className="p-1" />
+              <AvatarImage src="/lovable-uploads/db6e9d05-9d19-408f-ac05-996d4d8006fb.png" alt="Waly" className="p-1" />
               <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
                 W
               </AvatarFallback>
             </Avatar>
             
-            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5 shadow-lg max-w-[85%] sm:max-w-[75%]">
+            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5 shadow-lg w-[calc(100%-5rem)]">
               <motion.div 
                 className="flex items-center space-x-3"
                 animate={{ 

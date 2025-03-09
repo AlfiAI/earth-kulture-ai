@@ -62,7 +62,7 @@ const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
         className={cn(
           "fixed shadow-xl border-primary/10 overflow-hidden transition-all duration-300 ease-in-out z-50 bg-card/95 backdrop-blur-sm",
           isOpen 
-            ? "w-full h-[calc(100vh-60px)] max-h-[800px] opacity-100 rounded-none sm:rounded-2xl sm:w-[550px] md:w-[600px]" 
+            ? "w-full h-[calc(100vh-60px)] max-h-[800px] opacity-100 rounded-none" 
             : "w-0 h-0 opacity-0 pointer-events-none"
         )}
         style={{ 

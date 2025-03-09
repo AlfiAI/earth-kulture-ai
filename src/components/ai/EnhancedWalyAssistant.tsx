@@ -97,7 +97,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
         >
           <Avatar className="w-full h-full border-2 border-white/20">
             <AvatarImage 
-              src="/lovable-uploads/f6c4395f-ff31-485c-b1bb-af97a26dd5e5.png" 
+              src="/lovable-uploads/db6e9d05-9d19-408f-ac05-996d4d8006fb.png" 
               alt="Waly" 
               className="p-1"
             />

@@ -28,27 +28,27 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
     if (sections.length <= 1) {
       // If no headers found, just return the content with proper paragraph formatting
       return (
-        <div className="whitespace-pre-wrap">
+        <div className="whitespace-pre-wrap leading-relaxed text-gray-800 dark:text-gray-200">
           {content.split('\n').map((line, idx) => {
             const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('* ');
             
             if (isBullet) {
               return (
-                <div key={idx} className="flex items-start gap-2 my-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5" />
+                <div key={idx} className="flex items-start gap-2 my-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
                   <p>{line.replace(/^[*-]\s/, '')}</p>
                 </div>
               );
             }
             
-            return <p key={idx} className={line.trim() ? "mb-2" : "mb-1"}>{line}</p>;
+            return <p key={idx} className={line.trim() ? "mb-2.5" : "mb-1"}>{line}</p>;
           })}
         </div>
       );
     }
     
     return (
-      <div className="space-y-4">
+      <div className="space-y-5 text-gray-800 dark:text-gray-200">
         {sections.map((section, idx) => {
           const isHeader = /^#{1,3}\s/.test(section);
           const headerMatch = section.match(/^(#{1,3})\s(.*?)(?:\n|$)/);
@@ -61,37 +61,45 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
             return (
               <div key={idx} className="document-section">
                 {headerLevel === 1 && (
-                  <div className="bg-blue-100/50 dark:bg-blue-900/20 rounded-lg p-2 mb-3">
-                    <h1 className="text-lg font-bold text-center">
+                  <div className="bg-blue-50/80 dark:bg-blue-900/20 rounded-lg p-3 mb-4">
+                    <h1 className="text-lg font-bold text-blue-800 dark:text-blue-300">
                       {headerText}
                     </h1>
                   </div>
                 )}
                 {headerLevel === 2 && (
-                  <h2 className="text-md font-semibold text-primary border-b border-primary/20 pb-1 mb-2">
+                  <h2 className="text-md font-semibold text-primary/90 border-b border-primary/20 pb-2 mb-3">
                     {headerText}
                   </h2>
                 )}
                 {headerLevel === 3 && (
-                  <h3 className="text-sm font-medium mb-1">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {headerText}
                   </h3>
                 )}
                 
-                <div className="mt-2 text-sm leading-relaxed">
+                <div className="mt-3 text-sm leading-relaxed">
                   {sectionContent.split('\n').map((line, lineIdx) => {
+                    // Handle bold text (**text**)
+                    line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    
                     const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('* ');
                     
                     if (isBullet) {
+                      const bulletContent = line.replace(/^[*-]\s/, '');
                       return (
-                        <div key={`${idx}-${lineIdx}`} className="flex items-start gap-2 my-1">
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5" />
-                          <p>{line.replace(/^[*-]\s/, '')}</p>
+                        <div key={`${idx}-${lineIdx}`} className="flex items-start gap-2 my-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                          <p dangerouslySetInnerHTML={{ __html: bulletContent }} />
                         </div>
                       );
                     }
                     
-                    return <p key={`${idx}-${lineIdx}`} className="mb-2">{line}</p>;
+                    if (line.trim() === '---') {
+                      return <hr key={`${idx}-${lineIdx}`} className="my-4 border-gray-200 dark:border-gray-700" />;
+                    }
+                    
+                    return <p key={`${idx}-${lineIdx}`} className="mb-2.5" dangerouslySetInnerHTML={{ __html: line }} />;
                   })}
                 </div>
               </div>
@@ -126,7 +134,7 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
           whileHover={{ scale: 1.05 }}
         >
           <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-sm">
-            <AvatarImage src="/lovable-uploads/f6c4395f-ff31-485c-b1bb-af97a26dd5e5.png" alt="Waly" className="p-1" />
+            <AvatarImage src="/lovable-uploads/db6e9d05-9d19-408f-ac05-996d4d8006fb.png" alt="Waly" className="p-1" />
             <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
               W
             </AvatarFallback>
@@ -139,7 +147,7 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
           "rounded-2xl p-5 text-sm shadow-lg",
           sender === 'user'
             ? "max-w-[75%] bg-gradient-to-br from-primary to-sky-500 text-white"
-            : "max-w-[85%] sm:max-w-[75%] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
+            : "max-w-full w-[calc(100%-5rem)] bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
         )}
       >
         <div className={cn(
