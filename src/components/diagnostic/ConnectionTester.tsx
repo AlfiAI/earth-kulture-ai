@@ -33,12 +33,28 @@ const ConnectionTester = () => {
       });
       
       // Test carbon service
-      const carbonResult = await carbonService.testConnection();
-      setCarbonStatus(carbonResult);
+      try {
+        const carbonResult = await carbonService.testConnection();
+        setCarbonStatus(carbonResult);
+      } catch (err) {
+        console.error("Carbon service test error:", err);
+        setCarbonStatus({
+          success: false,
+          message: `Failed to connect to Supabase: ${err instanceof Error ? err.message : String(err)}`
+        });
+      }
       
       // Test compliance service
-      const complianceResult = await complianceService.testConnection();
-      setComplianceStatus(complianceResult);
+      try {
+        const complianceResult = await complianceService.testConnection();
+        setComplianceStatus(complianceResult);
+      } catch (err) {
+        console.error("Compliance service test error:", err);
+        setComplianceStatus({
+          success: false,
+          message: `Failed to connect to Supabase: ${err instanceof Error ? err.message : String(err)}`
+        });
+      }
       
       // Log additional auth details for debugging
       if (user) {
