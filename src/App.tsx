@@ -36,8 +36,12 @@ function App() {
               ) : null;
             })}
         </Routes>
-        {/* Fix: Ensure EnhancedWalyAssistant is rendered properly with correct z-index and positioning */}
-        <EnhancedWalyAssistant initialOpen={false} />
+        
+        {/* Explicitly add EnhancedWalyAssistant with absolute positioning */}
+        <div className="fixed bottom-0 right-0 z-[9999]">
+          <EnhancedWalyAssistant initialOpen={false} />
+        </div>
+        
         <Toaster />
         <SonnerToaster position="top-center" />
       </div>

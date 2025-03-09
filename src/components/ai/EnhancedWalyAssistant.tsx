@@ -67,7 +67,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   };
 
   return (
-    <div className="waly-assistant-container" style={{ position: 'fixed', zIndex: 9999 }}>
+    <div className="waly-assistant-container fixed z-[9999]">
       {!isOpen && (
         <WalyChatButton 
           onClick={toggleOpen} 

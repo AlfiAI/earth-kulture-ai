@@ -28,14 +28,24 @@ const WalyChatButton = ({
   const isMobile = useIsMobile();
   const isOverlapping = useOverlapDetection('chat-button');
   
-  // Preload the image on component mount
+  // Debug logging and preload the image
   useEffect(() => {
-    console.log("WalyChatButton rendered, preloading avatar from:", walyAvatarPath);
+    console.log("WalyChatButton rendering with position:", position);
+    console.log("Avatar path:", walyAvatarPath);
     
     // Force browser to load the image into cache
     const preloadImage = new Image();
     preloadImage.src = walyAvatarPath;
-  }, []);
+    
+    // Add error handling for image loading
+    preloadImage.onerror = () => {
+      console.error("Failed to load Waly avatar image:", walyAvatarPath);
+    };
+    
+    preloadImage.onload = () => {
+      console.log("Successfully preloaded Waly avatar image");
+    };
+  }, [position, walyAvatarPath]);
   
   // Conversation starter questions, use context-aware ones if provided
   const starters = contextAwareStarters || [
@@ -61,7 +71,7 @@ const WalyChatButton = ({
     }
   };
   
-  // Fix: Convert rem values to px for consistent positioning
+  // Convert rem values to px for consistent positioning
   const bottomPx = position.bottom * 16; // Convert rem to px (1rem = 16px)
   const rightPx = position.right * 16; // Convert rem to px (1rem = 16px)
   
