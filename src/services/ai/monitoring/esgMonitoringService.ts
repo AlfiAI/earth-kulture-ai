@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { deepseekR1Service } from '../deepseekR1Service';
 import { aiAgentOrchestrator } from '../orchestration/aiAgentOrchestrator';
+import { Json } from "@/integrations/supabase/types";
 
 // Alert severity levels
 export type AlertSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info';
@@ -30,16 +31,14 @@ export interface ESGAlert {
 interface ESGAlertDB {
   id: string;
   user_id: string;
-  title: string;
-  description: string;
+  message: string;
   severity: AlertSeverity;
-  type: AlertType;
-  source: string;
-  category: string;
+  alert_type: AlertType;
+  compliance_framework?: string;
+  source_data?: Json;
   created_at: string;
-  is_read: boolean;
-  related_data?: any;
-  recommended_actions?: string[];
+  status: string;
+  resolution_steps?: string[] | Json;
 }
 
 /**
@@ -204,14 +203,12 @@ class ESGMonitoringService {
         .from('esg_compliance_alerts')
         .insert({
           user_id: alert.userId,
-          title: alert.title,
-          description: alert.description,
+          message: alert.title,
+          alert_type: alert.type,
           severity: alert.severity,
-          type: alert.type,
-          source: alert.source,
-          category: alert.category,
-          related_data: alert.relatedData,
-          recommended_actions: alert.recommendedActions
+          compliance_framework: alert.category,
+          source_data: alert.relatedData || null,
+          resolution_steps: alert.recommendedActions || null
         })
         .select('id')
         .single();
@@ -266,20 +263,38 @@ class ESGMonitoringService {
       if (!data) return [];
       
       // Transform database response to ESGAlert format
-      return data.map(item => ({
-        id: item.id,
-        userId: item.user_id,
-        title: item.message, // Map message to title
-        description: item.message, // Use message for description too
-        severity: item.severity as AlertSeverity,
-        type: item.alert_type as AlertType,
-        source: item.compliance_framework || 'system',
-        category: item.compliance_framework || 'general',
-        createdAt: new Date(item.created_at),
-        isRead: item.status === 'resolved',
-        relatedData: item.source_data,
-        recommendedActions: item.resolution_steps
-      }));
+      return data.map((item: ESGAlertDB) => {
+        // Convert resolution_steps from Json to string[] if needed
+        let recommendedActions: string[] | undefined;
+        
+        if (item.resolution_steps) {
+          if (Array.isArray(item.resolution_steps)) {
+            recommendedActions = item.resolution_steps as string[];
+          } else if (typeof item.resolution_steps === 'string') {
+            try {
+              const parsed = JSON.parse(item.resolution_steps);
+              recommendedActions = Array.isArray(parsed) ? parsed : [item.resolution_steps as string];
+            } catch {
+              recommendedActions = [item.resolution_steps as string];
+            }
+          }
+        }
+        
+        return {
+          id: item.id,
+          userId: item.user_id,
+          title: item.message,
+          description: item.message,
+          severity: item.severity,
+          type: item.alert_type,
+          source: item.compliance_framework || 'system',
+          category: item.compliance_framework || 'general',
+          createdAt: new Date(item.created_at),
+          isRead: item.status === 'resolved',
+          relatedData: item.source_data,
+          recommendedActions
+        };
+      });
     } catch (error) {
       console.error('Error getting ESG alerts:', error);
       return [];
