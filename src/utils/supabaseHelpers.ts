@@ -46,7 +46,7 @@ export function castParam<T>(value: any): T {
 export interface SupabaseSuccess<T> {
   success: true;
   data: T;
-  message?: string; // Make message optional in the success case
+  message?: string; // Optional message field
 }
 
 /**

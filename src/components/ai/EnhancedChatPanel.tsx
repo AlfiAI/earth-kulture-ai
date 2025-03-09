@@ -8,7 +8,7 @@ import ChatInput from './ChatInput';
 import EnhancedChatBanner from './EnhancedChatBanner';
 import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
 import ConversationStarters from './ConversationStarters';
-import { TrendingUp, Zap, Lightbulb, BarChart, Sparkles } from 'lucide-react';
+import { TrendingUp, Zap, Lightbulb, BarChart } from 'lucide-react';
 
 interface EnhancedChatPanelProps {
   isOpen: boolean;
@@ -61,12 +61,14 @@ const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
         ref={ref}
         className={cn(
           "fixed shadow-xl border-primary/10 overflow-hidden transition-all duration-300 ease-in-out z-50 bg-card/95 backdrop-blur-sm",
-          isOpen ? "w-80 sm:w-96 h-[600px] opacity-100 rounded-2xl" : "w-0 h-0 opacity-0 pointer-events-none"
+          isOpen 
+            ? "w-96 sm:w-[450px] md:w-[500px] h-[calc(100vh-120px)] max-h-[700px] opacity-100 rounded-2xl" 
+            : "w-0 h-0 opacity-0 pointer-events-none"
         )}
         style={{ 
           bottom: `${position.bottom}rem`, 
           right: `${position.right}rem`,
-          maxHeight: isOpen ? 'calc(100vh - 100px)' : '0'
+          maxHeight: isOpen ? 'calc(100vh - 120px)' : '0'
         }}
       >
         <ChatHeader onClose={onClose} title="Waly Pro" subtitle="Advanced ESG Intelligence" />

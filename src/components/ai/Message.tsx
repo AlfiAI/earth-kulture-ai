@@ -24,6 +24,28 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
     // Split content by headers (denoted by # or ## style markdown)
     const sections = content.split(/(?=#{1,3}\s)/);
     
+    if (sections.length <= 1) {
+      // If no headers found, just return the content with proper paragraph formatting
+      return (
+        <div className="whitespace-pre-wrap">
+          {content.split('\n').map((line, idx) => {
+            const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('* ');
+            
+            if (isBullet) {
+              return (
+                <div key={idx} className="flex items-start gap-2 my-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5" />
+                  <p>{line.replace(/^[*-]\s/, '')}</p>
+                </div>
+              );
+            }
+            
+            return <p key={idx} className={line.trim() ? "mb-2" : "mb-1"}>{line}</p>;
+          })}
+        </div>
+      );
+    }
+    
     return (
       <div className="space-y-4">
         {sections.map((section, idx) => {
@@ -57,7 +79,7 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
                 
                 <div className="mt-2 text-sm leading-relaxed">
                   {sectionContent.split('\n').map((line, lineIdx) => {
-                    const isBullet = line.startsWith('- ') || line.startsWith('* ');
+                    const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('* ');
                     
                     if (isBullet) {
                       return (
@@ -76,7 +98,7 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
           }
           
           return (
-            <div key={idx} className="leading-relaxed">
+            <div key={idx} className="leading-relaxed whitespace-pre-wrap">
               {section}
             </div>
           );
@@ -113,7 +135,7 @@ const Message = ({ content, sender, timestamp }: MessageProps) => {
       
       <div
         className={cn(
-          "max-w-[90%] rounded-2xl p-5 text-sm shadow-lg",
+          "max-w-[75%] rounded-2xl p-5 text-sm shadow-lg",
           sender === 'user'
             ? "bg-gradient-to-br from-primary to-sky-500 text-white"
             : "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"

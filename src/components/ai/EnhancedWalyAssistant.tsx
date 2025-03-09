@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, MessageCircle } from 'lucide-react';
 import EnhancedChatPanel from './EnhancedChatPanel';
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface EnhancedWalyAssistantProps {
   initialOpen?: boolean;
@@ -95,17 +95,20 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
             height: "64px"
           }}
         >
-          <div className="relative w-full h-full">
-            <Avatar className="w-full h-full border-2 border-white/20">
-              <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
-                <div className="relative">
-                  <MessageCircle className="h-6 w-6" />
-                  <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-yellow-300 animate-pulse" />
-                </div>
-              </AvatarFallback>
-            </Avatar>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/40 to-sky-500/40 animate-pulse-gentle group-hover:opacity-0 transition-opacity"></div>
-          </div>
+          <Avatar className="w-full h-full border-2 border-white/20">
+            <AvatarImage 
+              src="/lovable-uploads/576b2f20-ecd7-4793-bc03-a40c9349e2a1.png" 
+              alt="Waly" 
+              className="p-1"
+            />
+            <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
+              <div className="relative">
+                <MessageCircle className="h-6 w-6" />
+                <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-yellow-300 animate-pulse" />
+              </div>
+            </AvatarFallback>
+          </Avatar>
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/40 to-sky-500/40 animate-pulse-gentle group-hover:opacity-0 transition-opacity"></div>
         </Button>
       )}
       

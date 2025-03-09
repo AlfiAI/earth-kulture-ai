@@ -56,7 +56,7 @@ const WalyChatPanel = ({
           <Card
             ref={chatRef}
             className={cn(
-              "w-full max-w-5xl h-[80vh] shadow-2xl overflow-hidden",
+              "w-full max-w-5xl h-[80vh] max-h-[700px] shadow-2xl overflow-hidden",
               "bg-white/95 backdrop-blur-md dark:bg-gray-900/90",
               "border-none ring-1 ring-black/5 dark:ring-white/10 rounded-2xl"
             )}
