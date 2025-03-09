@@ -10,16 +10,15 @@ interface ChatButtonAvatarProps {
 const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
   const [imageError, setImageError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const defaultAvatarPath = "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png";
   
   // Reset error state when avatar path changes and preload image
   useEffect(() => {
     setImageError(false);
     setIsLoaded(false);
     
-    console.log("ChatButtonAvatar: Loading avatar image:", avatarPath);
-    
     // Explicitly set the default path if none provided
-    const path = avatarPath || "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png";
+    const path = avatarPath || defaultAvatarPath;
     
     // Preload the image and handle fallback cases
     const img = new Image();
@@ -38,9 +37,9 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
       setIsLoaded(true); // Still mark as loaded so we show fallback
       
       // Try loading the default image if this was a custom one
-      if (path !== "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png") {
+      if (path !== defaultAvatarPath) {
         const defaultImg = new Image();
-        defaultImg.src = "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png";
+        defaultImg.src = defaultAvatarPath;
       }
     };
     
@@ -77,7 +76,7 @@ const ChatButtonAvatar = ({ avatarPath }: ChatButtonAvatarProps) => {
     )}>
       {isLoaded ? (
         <img 
-          src={avatarPath || "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png"} 
+          src={avatarPath || defaultAvatarPath} 
           alt="Waly AI" 
           className="w-full h-full object-cover p-2"
           onError={handleImageError}

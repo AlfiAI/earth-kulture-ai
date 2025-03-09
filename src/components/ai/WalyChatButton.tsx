@@ -28,28 +28,41 @@ const WalyChatButton = ({
   const isOverlapping = useOverlapDetection('chat-button');
   const buttonRef = useRef<HTMLDivElement>(null);
   
-  // For direct DOM manipulation (index page fix)
+  // Force visibility on mount and periodically
   useEffect(() => {
-    // First render check
-    if (buttonRef.current) {
-      buttonRef.current.style.visibility = 'visible';
-      buttonRef.current.style.opacity = '1';
-      buttonRef.current.style.display = 'block';
-    }
+    console.log("WalyChatButton: Component mounted");
     
-    // Set a timeout to handle possible race conditions
-    const timeoutId = setTimeout(() => {
+    // Function to ensure button visibility
+    const ensureButtonVisibility = () => {
+      if (buttonRef.current) {
+        buttonRef.current.style.visibility = 'visible';
+        buttonRef.current.style.opacity = '1';
+        buttonRef.current.style.display = 'block';
+        buttonRef.current.style.zIndex = '999999';
+      }
+      
+      // Also apply directly to DOM element by ID
       const button = document.getElementById('chat-button');
       if (button) {
         button.style.visibility = 'visible';
         button.style.opacity = '1';
         button.style.display = 'block';
         button.style.zIndex = '999999';
-        console.log("Fixed chat button visibility via setTimeout");
       }
-    }, 100);
+    };
     
-    return () => clearTimeout(timeoutId);
+    // Call immediately
+    ensureButtonVisibility();
+    
+    // Call multiple times with delays to handle potential race conditions
+    [100, 300, 500, 1000].forEach(delay => {
+      setTimeout(ensureButtonVisibility, delay);
+    });
+    
+    // Periodic check
+    const interval = setInterval(ensureButtonVisibility, 2000);
+    
+    return () => clearInterval(interval);
   }, []);
   
   // Conversation starter questions, use context-aware ones if provided
@@ -97,7 +110,8 @@ const WalyChatButton = ({
         visibility: 'visible',
         opacity: 1,
         display: 'block',
-        zIndex: 999999
+        zIndex: 999999,
+        position: 'fixed'
       }}
       whileHover={{ scale: 1.05, rotate: 3 }}
       onMouseEnter={handleMouseEnter}

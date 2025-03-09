@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import * as routes from './routes/routes';
 import { Toaster } from '@/components/ui/toaster';
@@ -9,12 +9,14 @@ import WalyActionHandler from '@/components/ai/WalyActionHandler';
 
 function App() {
   const location = useLocation();
+  const walyVisibilityChecked = useRef(false);
   
   // Make sure Waly is visible, especially on index page
   useEffect(() => {
     console.log('App: Current route is', location.pathname);
+    walyVisibilityChecked.current = false;
     
-    // Force visibility of Waly components
+    // Force visibility of Waly components with aggressive approach
     const forceWalyVisibility = () => {
       // Target container and chat button
       ['waly-container', 'chat-button'].forEach(id => {
@@ -24,22 +26,49 @@ function App() {
           el.style.opacity = '1';
           el.style.display = 'block';
           el.style.zIndex = '999999';
+          walyVisibilityChecked.current = true;
         }
       });
     };
     
-    // Index page needs special handling
-    if (location.pathname === '/') {
-      console.log('On index page - ensuring Waly is visible');
+    // Special handling for index page
+    const isIndexPage = location.pathname === '/';
+    if (isIndexPage) {
+      console.log('On index page - ensuring Waly is visible with extra measures');
+      
+      // Use MutationObserver to detect DOM changes that might affect Waly visibility
+      const observer = new MutationObserver((mutations) => {
+        forceWalyVisibility();
+      });
+      
+      // Start observing the document body for all changes
+      observer.observe(document.body, { 
+        childList: true, 
+        subtree: true,
+        attributes: true
+      });
+      
       // Call multiple times with different delays to ensure it works
-      [0, 100, 500, 1000].forEach(delay => {
+      [0, 100, 300, 500, 1000, 2000].forEach(delay => {
         setTimeout(forceWalyVisibility, delay);
       });
+      
+      return () => observer.disconnect();
     }
     
     // Call immediately and also on a timer
     forceWalyVisibility();
-    const interval = setInterval(forceWalyVisibility, 2000);
+    const interval = setInterval(() => {
+      // If visibility has been confirmed, we can reduce check frequency
+      if (walyVisibilityChecked.current) {
+        clearInterval(interval);
+        // Continue with less frequent checks
+        const backupInterval = setInterval(forceWalyVisibility, 5000);
+        setTimeout(() => clearInterval(backupInterval), 30000); // Stop after 30 seconds
+      } else {
+        forceWalyVisibility();
+      }
+    }, 1000);
     
     return () => clearInterval(interval);
   }, [location.pathname]);
@@ -74,7 +103,8 @@ function App() {
             visibility: 'visible', 
             display: 'block',
             opacity: 1,
-            zIndex: 999999
+            zIndex: 999999,
+            position: 'fixed'
           }}
         >
           <EnhancedWalyAssistant initialOpen={false} />
