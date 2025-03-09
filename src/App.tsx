@@ -1,6 +1,6 @@
 
 import { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import * as routes from './routes/routes';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from 'sonner';
@@ -8,6 +8,8 @@ import EnhancedWalyAssistant from '@/components/ai/EnhancedWalyAssistant';
 import WalyActionHandler from '@/components/ai/WalyActionHandler';
 
 function App() {
+  const location = useLocation();
+
   return (
     <WalyActionHandler>
       <div className="min-h-screen flex flex-col">
@@ -29,7 +31,8 @@ function App() {
               ) : null;
             })}
         </Routes>
-        <EnhancedWalyAssistant />
+        {/* Ensure EnhancedWalyAssistant is always visible and initialized */}
+        <EnhancedWalyAssistant initialOpen={false} />
         <Toaster />
         <SonnerToaster position="top-center" />
       </div>

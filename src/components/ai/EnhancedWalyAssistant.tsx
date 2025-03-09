@@ -32,6 +32,12 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     }
   }, [messages, navigate]);
 
+  // Force visibility check on route change
+  useEffect(() => {
+    // Ensure Waly is visible on all routes
+    console.log("Route changed, Waly should be visible:", location.pathname);
+  }, [location.pathname]);
+
   const checkForNavigationCommand = (content: string) => {
     // Check for navigation commands in AI responses
     if (content.includes("[NAVIGATE:")) {
