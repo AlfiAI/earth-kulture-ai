@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { alertService } from './alerts/alertService';
 import { complianceMonitor } from './compliance/complianceMonitor';
 import { analyticsMonitor } from './analytics/analyticsMonitor';
-import { ESGAlert, AlertSeverity, AlertType } from './types/alertTypes';
 
 /**
  * ESG Monitoring Service - Provides real-time monitoring and alerts
@@ -87,7 +86,7 @@ class ESGMonitoringService {
   markAlertAsRead = alertService.markAlertAsRead.bind(alertService);
 }
 
-// Re-export types for consumers of this service
-export { ESGAlert, AlertSeverity, AlertType };
+// Re-export types with 'export type' syntax to fix isolatedModules error
+export type { ESGAlert, AlertSeverity, AlertType } from './types/alertTypes';
 
 export const esgMonitoringService = new ESGMonitoringService();
