@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Bell, 
-  Globe, 
   Settings,
   LogOut
 } from 'lucide-react';
@@ -19,10 +18,12 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar/useSidebar";
 
 const Header = () => {
   const [notifications, setNotifications] = useState(3);
   const location = useLocation();
+  const { toggleSidebar } = useSidebar();
   
   const getPageTitle = () => {
     const path = location.pathname;
@@ -47,7 +48,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
       <div className="flex items-center gap-2 lg:gap-3">
-        <SidebarTrigger className="lg:hidden" />
+        <SidebarTrigger className="lg:hidden" onClick={toggleSidebar} />
 
         <div className="hidden md:flex h-10 w-px bg-border mx-1" />
 

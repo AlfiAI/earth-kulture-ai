@@ -2,7 +2,7 @@
 import { ReactNode } from 'react';
 import { cn } from "@/lib/utils";
 import Header from "@/components/layout/Header";
-import { useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar/useSidebar";
 import AppSidebar from "@/components/layout/AppSidebar";
 
 interface InsightsLayoutProps {
