@@ -15,18 +15,18 @@ function App() {
           {routes.router.routes
             .filter(route => route.path !== undefined)
             .map((route) => {
-              // Ensure we're handling the route element correctly
-              const routeElement = route.element ? route.element : null;
+              // TypeScript doesn't recognize the element property directly
+              // Use a type assertion to access it safely
+              const routeObject = route as unknown as { path?: string; element?: React.ReactNode };
               
-              return (
+              return routeObject.path ? (
                 <Route
-                  key={route.path}
-                  path={route.path}
-                  element={routeElement}
+                  key={routeObject.path}
+                  path={routeObject.path}
+                  element={routeObject.element || null}
                 />
-              );
-            })
-          }
+              ) : null;
+            })}
         </Routes>
         <EnhancedWalyAssistant />
         <Toaster />
