@@ -54,7 +54,7 @@ const WalyChatButton = ({
       onClick();
     }
   };
-  
+
   // Check for overlapping elements
   useEffect(() => {
     const checkOverlap = () => {
@@ -103,7 +103,10 @@ const WalyChatButton = ({
     };
   }, []);
   
-  // Force z-index to be high to ensure visibility
+  // Make sure the position values are in pixels, not rem
+  const bottomPx = typeof position.bottom === 'number' ? position.bottom : 20;
+  const rightPx = typeof position.right === 'number' ? position.right : 20;
+  
   return (
     <motion.div
       id="chat-button"
@@ -111,14 +114,13 @@ const WalyChatButton = ({
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
       className={cn(
-        "fixed z-50",
+        "fixed z-[9999]", // Ensure very high z-index
         isOverlapping && "opacity-80 hover:opacity-100"
       )}
       style={{ 
-        bottom: `${position.bottom}rem`, 
-        right: `${position.right}rem`,
-        transition: 'bottom 0.3s ease, right 0.3s ease',
-        zIndex: 9999 // Ensure it's on top of everything
+        bottom: `${bottomPx}px`, 
+        right: `${rightPx}px`,
+        transition: 'bottom 0.3s ease, right 0.3s ease'
       }}
       whileHover={{ scale: 1.05, rotate: 3 }}
       onMouseEnter={handleMouseEnter}

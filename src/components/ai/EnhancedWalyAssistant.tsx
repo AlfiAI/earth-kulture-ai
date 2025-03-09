@@ -1,5 +1,5 @@
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useChatPosition } from '@/hooks/use-chat-position';
 import WalyChatButton from './WalyChatButton';
@@ -25,8 +25,15 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   const { getContextAwareStarters } = useContextAwareStarters();
   const { inputValue, setInputValue, handleSend, messages, isTyping } = useEnhancedChat();
   
-  // Force visibility check on route change
-  console.log("EnhancedWalyAssistant rendered with position:", position, "on route:", location.pathname);
+  // Debug logging to track component state
+  useEffect(() => {
+    console.log("EnhancedWalyAssistant mounted with state:", {
+      isOpen,
+      showNewChat,
+      position,
+      route: location.pathname
+    });
+  }, [isOpen, showNewChat, position, location.pathname]);
   
   const toggleOpen = () => {
     console.log("Toggle chat open state from:", isOpen, "to:", !isOpen);
@@ -50,7 +57,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   };
 
   return (
-    <>
+    <div className="waly-assistant-container" style={{ position: 'fixed', zIndex: 9999 }}>
       {!isOpen && (
         <WalyChatButton 
           onClick={toggleOpen} 
@@ -84,7 +91,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
           onNewChat={handleNewChat}
         />
       )}
-    </>
+    </div>
   );
 };
 

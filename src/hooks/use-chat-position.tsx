@@ -26,6 +26,7 @@ export const useChatPosition = (initialPosition: Position = { bottom: 20, right:
       const footerElement = document.querySelector('footer');
       const bottomElements = document.querySelectorAll('.fixed-bottom, [data-fixed="bottom"]');
       
+      // Default bottom offset (in pixels, not rem)
       let bottomOffset = isMobile ? 20 : 20;
       
       // Adjust for footer or other bottom-fixed elements
@@ -52,7 +53,6 @@ export const useChatPosition = (initialPosition: Position = { bottom: 20, right:
       const rightOffset = isMobile ? 20 : 20;
       
       const newPosition = { bottom: bottomOffset, right: rightOffset };
-      console.log("New chat position:", newPosition);
       setPosition(newPosition);
     };
 
