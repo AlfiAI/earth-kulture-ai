@@ -4,4 +4,6 @@ export * from './types/externalTypes';
 export * from './benchmarkService';
 export * from './competitorService';
 export * from './regulationService';
-export { regulationsService } from './regulationsService';
+
+// Remove reference to regulationsService (plural) and only use the singular version
+// export { regulationsService } from './regulationsService';
