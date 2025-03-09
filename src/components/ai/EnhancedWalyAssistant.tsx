@@ -1,18 +1,21 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
 import { useChatPosition } from '@/hooks/use-chat-position';
 import WalyChatButton from './WalyChatButton';
 import EnhancedChatPanel from './EnhancedChatPanel';
 import OutsideClickHandler from './chat-panel/OutsideClickHandler';
 import NavigationListener from './chat-panel/NavigationListener';
 import { useContextAwareStarters } from '@/hooks/use-context-aware-starters';
+import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
 
 interface EnhancedWalyAssistantProps {
   initialOpen?: boolean;
 }
 
+/**
+ * Advanced AI assistant with ESG & Carbon Intelligence capabilities
+ */
 const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantProps) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [showNewChat, setShowNewChat] = useState(true);
