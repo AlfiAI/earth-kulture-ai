@@ -46,7 +46,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [isMobile]);
+  }, [isMobile, sidebarOpen, autoHide]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
