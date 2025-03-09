@@ -1,19 +1,19 @@
 
 import { toast } from "sonner";
-import { BenchmarkData, CompetitorData, RegulationData } from './types/externalTypes';
+import { ESGBenchmark, ESGCompetitor, ESGRegulation } from './types/externalTypes';
 
 // Class to handle all external data operations
 class ExternalDataService {
   /**
    * Fetch latest regulatory updates
    */
-  async fetchRegulations(): Promise<RegulationData[]> {
+  async fetchRegulations(): Promise<ESGRegulation[]> {
     try {
       // In a real app, this would call an API
       const regulations = await import('./regulationService').then(
-        module => module.fetchRegulations()
+        module => module.getESGRegulations()
       );
-      return regulations;
+      return regulations.data;
     } catch (error) {
       console.error('Error fetching regulations:', error);
       toast.error('Failed to load regulatory data');
@@ -24,10 +24,10 @@ class ExternalDataService {
   /**
    * Fetch industry benchmarks 
    */
-  async fetchBenchmarks(industry?: string): Promise<BenchmarkData[]> {
+  async fetchBenchmarks(industry?: string): Promise<ESGBenchmark[]> {
     try {
       const benchmarks = await import('./benchmarkService').then(
-        module => module.fetchBenchmarkData(industry)
+        module => module.getESGBenchmarks(industry)
       );
       return benchmarks;
     } catch (error) {
@@ -40,10 +40,10 @@ class ExternalDataService {
   /**
    * Fetch competitor analysis data
    */
-  async fetchCompetitorData(): Promise<CompetitorData[]> {
+  async fetchCompetitorData(): Promise<ESGCompetitor[]> {
     try {
       const competitors = await import('./competitorService').then(
-        module => module.fetchCompetitorData()
+        module => module.getESGCompetitors()
       );
       return competitors;
     } catch (error) {
@@ -57,7 +57,7 @@ class ExternalDataService {
 export const externalDataService = new ExternalDataService();
 
 // Combined export to simplify imports
-export * from './types/externalTypes';
+export type { ESGBenchmark, ESGCompetitor, ESGRegulation } from './types/externalTypes';
 export * from './benchmarkService';
 export * from './competitorService';
 export * from './regulationService';
