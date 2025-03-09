@@ -1,33 +1,25 @@
 
-import { ReactNode } from 'react';
-import { cn } from "@/lib/utils";
-import Header from "@/components/layout/Header";
-import { useSidebar } from "@/components/ui/sidebar/useSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar/SidebarProvider";
 import AppSidebar from "@/components/layout/AppSidebar";
+import Header from "@/components/layout/Header";
 
 interface InsightsLayoutProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 const InsightsLayout = ({ children }: InsightsLayoutProps) => {
-  const { open: sidebarOpen, isMobile } = useSidebar();
-  
   return (
-    <div className="min-h-screen flex w-full">
-      <AppSidebar />
-      
-      <div className={cn(
-        "flex-1 transition-all duration-300",
-        sidebarOpen ? "lg:ml-64" : "lg:ml-16",
-        isMobile ? "ml-0" : ""
-      )}>
-        <Header />
-        
-        <main className="container max-w-7xl mx-auto p-4 lg:p-6 pb-24 mt-16">
-          {children}
-        </main>
+    <SidebarProvider>
+      <div className="flex min-h-screen">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <Header />
+          <main className="flex-1 px-4 py-4 overflow-auto">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 

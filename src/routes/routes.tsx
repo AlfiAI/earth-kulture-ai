@@ -25,6 +25,11 @@ import Pricing from "@/pages/Pricing";
 import Landing from "@/pages/Landing";
 import Onboarding from "@/pages/Onboarding";
 
+// New pages to fix 404 errors
+import Documentation from "@/pages/Documentation";
+import Support from "@/pages/Support";
+import AIAssistant from "@/pages/AIAssistant";
+
 // Protected route layout
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
@@ -135,6 +140,19 @@ export const router = createBrowserRouter([
       {
         path: "/onboarding",
         element: <ProtectedRoute><Onboarding /></ProtectedRoute>,
+      },
+      // New routes for previously missing pages
+      {
+        path: "/documentation",
+        element: <ProtectedRoute><Documentation /></ProtectedRoute>,
+      },
+      {
+        path: "/support",
+        element: <ProtectedRoute><Support /></ProtectedRoute>,
+      },
+      {
+        path: "/ai-assistant",
+        element: <ProtectedRoute><AIAssistant /></ProtectedRoute>,
       },
       {
         path: "*",

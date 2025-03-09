@@ -1,259 +1,262 @@
 
-import { useState, useEffect } from 'react';
-import { Globe, Database, ListFilter, Calendar, RefreshCw } from 'lucide-react';
-import ESGRegulationsList from "@/components/external/ESGRegulationsList";
-import ESGBenchmarkCard from "@/components/external/ESGBenchmarkCard";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import InsightsLayout from "@/components/insights/InsightsLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { Globe, FileText, Database, RefreshCw, Filter, Download, Search } from "lucide-react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
-import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/integrations/supabase/client";
-import { externalDataService } from "@/services/external/externalDataService";
-
-const DataSourceHealth = () => {
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [dataSources, setDataSources] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  useEffect(() => {
-    const fetchDataSources = async () => {
-      try {
-        // In a real implementation, this would fetch from Supabase
-        // For now, providing sample data
-        setTimeout(() => {
-          setDataSources([
-            { name: 'Regulatory Updates', status: 'healthy', last_updated: '2023-10-15', record_count: 128, health_score: 95 },
-            { name: 'Carbon Emissions Data', status: 'healthy', last_updated: '2023-10-12', record_count: 245, health_score: 90 },
-            { name: 'ESG Ratings', status: 'needs_update', last_updated: '2023-09-20', record_count: 87, health_score: 72 },
-            { name: 'Industry Benchmarks', status: 'healthy', last_updated: '2023-10-14', record_count: 56, health_score: 88 },
-          ]);
-          setIsLoading(false);
-        }, 1000);
-      } catch (error) {
-        console.error("Error fetching data sources:", error);
-        setIsLoading(false);
-      }
-    };
-    
-    fetchDataSources();
-  }, []);
-  
-  const handleRefreshSources = async () => {
-    setIsRefreshing(true);
-    
-    try {
-      // Call our Supabase functions
-      const regulations = await externalDataService.fetchRegulations();
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Delay for UI feedback
-      
-      toast.success("Data sources refreshed successfully");
-      // Update the last_updated timestamp for our sources
-      const updatedSources = dataSources.map(source => ({
-        ...source,
-        last_updated: new Date().toISOString().split('T')[0],
-        status: 'healthy',
-        health_score: Math.min(source.health_score + 5, 100)
-      }));
-      
-      setDataSources(updatedSources);
-    } catch (error) {
-      console.error("Error refreshing data sources:", error);
-      toast.error("Failed to refresh data sources");
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-  
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Database className="h-5 w-5 mr-2 text-primary" />
-            <CardTitle className="text-xl">ESG Data Sources</CardTitle>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefreshSources}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            {isRefreshing ? 'Refreshing...' : 'Refresh All'}
-          </Button>
-        </div>
-        <CardDescription>
-          Monitor and manage your external ESG data connections
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent>
-        {isLoading ? (
-          <div className="space-y-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-center justify-between p-3 border rounded-md">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-40" />
-                  <Skeleton className="h-3 w-24" />
-                </div>
-                <Skeleton className="h-4 w-20" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {dataSources.map((source, index) => (
-              <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded-md">
-                <div>
-                  <h3 className="font-medium">{source.name}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    Last updated: {source.last_updated} • {source.record_count} records
-                  </p>
-                  <div className="mt-2 mb-1">
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span>Data Health</span>
-                      <span>{source.health_score}%</span>
-                    </div>
-                    <Progress value={source.health_score} className="h-1.5" />
-                  </div>
-                </div>
-                <div className={`text-xs px-2 py-1 rounded-full ${
-                  source.status === 'healthy' 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
-                    : 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300'
-                } mt-2 sm:mt-0 inline-block`}>
-                  {source.status === 'healthy' ? 'Healthy' : 'Needs Update'}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-        
-        <div className="mt-4 text-xs text-muted-foreground">
-          <p>
-            Data is automatically refreshed daily. Last automated refresh was 
-            {isLoading ? <Skeleton className="inline-block h-3 w-24 mx-1" /> : ' today at 3:00 AM UTC.'}
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import ESGRegulationsList from "@/components/external/ESGRegulationsList";
+import ESGRegulationsFilters from "@/components/external/ESGRegulationsFilters";
+import ESGBenchmarkCard from "@/components/external/ESGBenchmarkCard";
+import ESGPagination from "@/components/external/ESGPagination";
 
 const ExternalData = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilters, setActiveFilters] = useState({
+    region: "all",
+    category: "all",
+    status: "all"
+  });
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real app, this would trigger a search
+    console.log("Searching for:", searchTerm);
+  };
+
+  const handleFilterChange = (filterType: string, value: string) => {
+    setActiveFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
 
   return (
-    <InsightsLayout>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
-        <div className="flex items-center mb-4 sm:mb-0">
-          <Globe className="h-6 w-6 mr-2 flex-shrink-0" />
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">External ESG Data</h1>
-            <p className="text-muted-foreground">
-              Regulatory updates, benchmarks, and industry data
-            </p>
+    <DashboardLayout>
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center flex-wrap gap-4">
+          <h1 className="text-2xl font-bold">External ESG Data</h1>
+          <div className="flex gap-2">
+            <Button variant="outline" className="gap-2">
+              <Download className="h-4 w-4" />
+              <span className="hidden md:inline">Export</span>
+            </Button>
+            <Button className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              <span className="hidden md:inline">Refresh Data</span>
+            </Button>
           </div>
         </div>
-        <Button 
-          variant="outline" 
-          onClick={() => navigate('/benchmark')}
-          className="whitespace-nowrap"
-        >
-          <ListFilter className="h-4 w-4 mr-2" />
-          View Industry Benchmarks
-        </Button>
+
+        <Card className="bg-gradient-to-r from-primary/10 to-muted border-primary/20">
+          <CardContent className="pt-6">
+            <div className="flex flex-col md:flex-row md:items-center gap-4">
+              <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
+                <Globe className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-semibold mb-1">External ESG Data Sources</h2>
+                <p className="text-muted-foreground mb-3">
+                  Access industry benchmarks, regulatory updates, and market trends
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search regulations, benchmarks, or datasets..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Button type="submit">Search</Button>
+          <Button variant="outline" className="gap-2">
+            <Filter className="h-4 w-4" />
+            <span className="hidden md:inline">Filters</span>
+          </Button>
+        </form>
+
+        <Tabs defaultValue="regulations">
+          <TabsList className="mb-4">
+            <TabsTrigger value="regulations">
+              <FileText className="h-4 w-4 mr-2" />
+              Regulations
+            </TabsTrigger>
+            <TabsTrigger value="benchmarks">
+              <Database className="h-4 w-4 mr-2" />
+              Industry Benchmarks
+            </TabsTrigger>
+            <TabsTrigger value="datasets">
+              <Globe className="h-4 w-4 mr-2" />
+              Public Datasets
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="regulations" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="md:col-span-1">
+                <ESGRegulationsFilters 
+                  activeFilters={activeFilters}
+                  onFilterChange={handleFilterChange}
+                />
+              </div>
+              <div className="md:col-span-3">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>ESG Regulations & Frameworks</CardTitle>
+                    <CardDescription>Latest regulatory updates and compliance frameworks</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ESGRegulationsList filters={activeFilters} search={searchTerm} />
+                  </CardContent>
+                  <CardFooter className="flex justify-between border-t pt-4">
+                    <div className="text-sm text-muted-foreground">Showing 1-10 of 42 regulations</div>
+                    <ESGPagination totalPages={5} currentPage={1} />
+                  </CardFooter>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="benchmarks" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                {
+                  title: "Technology Sector ESG Performance",
+                  metrics: {
+                    environmental: 72,
+                    social: 68,
+                    governance: 81
+                  },
+                  companies: 145,
+                  updated: "2025-01-15"
+                },
+                {
+                  title: "Manufacturing Industry Carbon Metrics",
+                  metrics: {
+                    environmental: 65,
+                    social: 70,
+                    governance: 75
+                  },
+                  companies: 212,
+                  updated: "2025-02-03"
+                },
+                {
+                  title: "Financial Services Governance Standards",
+                  metrics: {
+                    environmental: 61,
+                    social: 73,
+                    governance: 85
+                  },
+                  companies: 178,
+                  updated: "2025-01-28"
+                },
+                {
+                  title: "Healthcare Social Responsibility Metrics",
+                  metrics: {
+                    environmental: 68,
+                    social: 81,
+                    governance: 77
+                  },
+                  companies: 98,
+                  updated: "2025-02-10"
+                },
+                {
+                  title: "Energy Sector Transition Benchmark",
+                  metrics: {
+                    environmental: 59,
+                    social: 65,
+                    governance: 72
+                  },
+                  companies: 87,
+                  updated: "2025-01-20"
+                },
+                {
+                  title: "Retail Industry Supply Chain Ethics",
+                  metrics: {
+                    environmental: 64,
+                    social: 76,
+                    governance: 70
+                  },
+                  companies: 156,
+                  updated: "2025-02-05"
+                }
+              ].map((benchmark, index) => (
+                <ESGBenchmarkCard key={index} benchmark={benchmark} />
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="datasets" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Public ESG Datasets</CardTitle>
+                <CardDescription>Authoritative datasets from governmental and research organizations</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[
+                    {
+                      title: "Global Carbon Project Data",
+                      source: "Global Carbon Project",
+                      description: "Annual updates on global carbon dioxide emissions and carbon budget allocation.",
+                      format: "CSV, Excel",
+                      lastUpdated: "2025-01-10"
+                    },
+                    {
+                      title: "Corporate Governance Indicators",
+                      source: "World Economic Forum",
+                      description: "Global dataset on corporate governance practices across major stock indices.",
+                      format: "JSON, CSV",
+                      lastUpdated: "2024-12-15"
+                    },
+                    {
+                      title: "EU Emissions Trading System Data",
+                      source: "European Commission",
+                      description: "Verified emissions, allocations and compliance data for EU ETS operators.",
+                      format: "Excel, CSV",
+                      lastUpdated: "2025-02-01"
+                    },
+                    {
+                      title: "Global Sustainability Standards Compliance",
+                      source: "International Standards Organization",
+                      description: "Data on compliance rates with key sustainability standards by country and sector.",
+                      format: "CSV, API",
+                      lastUpdated: "2025-01-22"
+                    }
+                  ].map((dataset, index) => (
+                    <div key={index} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-medium">{dataset.title}</h3>
+                          <p className="text-sm text-muted-foreground">Source: {dataset.source}</p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <Download className="h-4 w-4 mr-2" />
+                          Download
+                        </Button>
+                      </div>
+                      <p className="mt-2 text-sm">{dataset.description}</p>
+                      <div className="mt-2 flex gap-4">
+                        <div className="text-xs text-muted-foreground">Format: {dataset.format}</div>
+                        <div className="text-xs text-muted-foreground">Updated: {dataset.lastUpdated}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="data-sources">Data Sources</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="overview" className="space-y-6">
-          <ESGRegulationsList />
-          <ESGBenchmarkCard />
-        </TabsContent>
-        
-        <TabsContent value="data-sources" className="space-y-6">
-          <DataSourceHealth />
-          <Card>
-            <CardHeader>
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 mr-2 text-primary" />
-                <CardTitle className="text-xl">Data Collection Schedule</CardTitle>
-              </div>
-              <CardDescription>
-                Automated data collection schedule and settings
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="p-3 border rounded-md">
-                  <h3 className="font-medium">Regulatory Updates</h3>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    Collects ESG regulations, frameworks, and guidelines from authoritative sources.
-                  </p>
-                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-                    <span>
-                      <span className="font-medium">Frequency:</span> Daily
-                    </span>
-                    <span>
-                      <span className="font-medium">Next run:</span> Tomorrow, 3:00 AM UTC
-                    </span>
-                    <span>
-                      <span className="font-medium">Sources:</span> 15
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="p-3 border rounded-md">
-                  <h3 className="font-medium">Carbon Emissions Data</h3>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    Collects industry and country-level carbon emissions data and forecasts.
-                  </p>
-                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-                    <span>
-                      <span className="font-medium">Frequency:</span> Weekly
-                    </span>
-                    <span>
-                      <span className="font-medium">Next run:</span> Sunday, 5:00 AM UTC
-                    </span>
-                    <span>
-                      <span className="font-medium">Sources:</span> 8
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="p-3 border rounded-md">
-                  <h3 className="font-medium">ESG Ratings & Benchmarks</h3>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    Collects ESG ratings, peer benchmarks, and industry standards.
-                  </p>
-                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-                    <span>
-                      <span className="font-medium">Frequency:</span> Monthly
-                    </span>
-                    <span>
-                      <span className="font-medium">Next run:</span> Nov 1, 1:00 AM UTC
-                    </span>
-                    <span>
-                      <span className="font-medium">Sources:</span> 6
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </InsightsLayout>
+    </DashboardLayout>
   );
 };
 
