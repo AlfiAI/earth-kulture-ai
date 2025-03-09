@@ -8,7 +8,7 @@ interface MessageAvatarProps {
 }
 
 const MessageAvatar = ({ sender }: MessageAvatarProps) => {
-  // The Waly AI avatar image path
+  // The Waly AI avatar image path - using the robot image
   const walyAvatarPath = "/lovable-uploads/3b18ef6a-0e85-4835-b4fc-f047a22347e8.png";
   
   return (
