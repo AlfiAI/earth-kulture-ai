@@ -34,10 +34,14 @@ const Insights = () => {
 
   return (
     <DashboardLayout>
-      <div className="container max-w-7xl mx-auto p-4 lg:p-6 pb-24">
+      <div className="container max-w-7xl mx-auto px-4 py-6 pb-24">
         <InsightsHeader onRefresh={handleRefresh} />
-        <InsightsBanner />
-        <InsightsContent />
+        <div className="mt-6">
+          <InsightsBanner />
+        </div>
+        <div className="mt-6">
+          <InsightsContent />
+        </div>
       </div>
     </DashboardLayout>
   );

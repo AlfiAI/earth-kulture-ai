@@ -17,24 +17,26 @@ export default function Index() {
   
   return (
     <DashboardLayout>
-      <div className="p-4">
+      <div className="container max-w-7xl mx-auto px-4 py-6">
         <h1 className="text-2xl font-bold mb-6">ESG Dashboard</h1>
         
         {/* Main Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <DashboardESGScore />
           <CarbonFootprint />
           <ComplianceStatus />
         </div>
         
         {/* AI Insights */}
-        <AIInsights />
+        <div className="mb-6">
+          <AIInsights />
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="md:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2">
             <PredictiveInsights />
           </div>
-          <div className="md:col-span-1">
+          <div>
             <ActivityFeed />
           </div>
         </div>

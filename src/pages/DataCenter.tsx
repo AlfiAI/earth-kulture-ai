@@ -13,7 +13,7 @@ const DataCenter = () => {
   
   return (
     <DashboardLayout>
-      <div className="container max-w-7xl mx-auto p-4 lg:p-6 pb-24">
+      <div className="container max-w-7xl mx-auto px-4 py-6 pb-24">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
           <DataHeader 
             title="Data Management" 
@@ -21,7 +21,7 @@ const DataCenter = () => {
           />
           <Button 
             variant="outline" 
-            className="mt-2 sm:mt-0"
+            className="mt-4 sm:mt-0 whitespace-nowrap"
             onClick={() => navigate('/external-data')}
           >
             <ExternalLink className="h-4 w-4 mr-2" />

@@ -38,20 +38,20 @@ const ComplianceStatus = () => {
     <DashboardCard
       title="Compliance Status"
       description="Framework adherence"
-      className="col-span-1"
+      className="h-full"
     >
       <div className="space-y-3 pt-2">
         {complianceItems.map((item, index) => (
           <div key={index} className="flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{item.name}</span>
+            <div className="flex flex-col overflow-hidden">
+              <span className="text-sm font-medium truncate">{item.name}</span>
               <span className="text-xs text-muted-foreground">
                 {item.lastUpdated}
               </span>
             </div>
             <Badge
               className={cn(
-                "text-xs",
+                "text-xs whitespace-nowrap ml-2",
                 item.status === 'Compliant' && "bg-green-100 text-green-800 hover:bg-green-200",
                 item.status === 'In Progress' && "bg-blue-100 text-blue-800 hover:bg-blue-200",
                 item.status === 'Attention Needed' && "bg-amber-100 text-amber-800 hover:bg-amber-200"

@@ -21,17 +21,17 @@ const DashboardCard = ({
   children,
 }: DashboardCardProps) => {
   return (
-    <Card className={cn("overflow-hidden transition-all duration-200 animate-in", className)}>
-      <CardHeader className="pb-2">
+    <Card className={cn("overflow-hidden transition-all duration-200 animate-in h-full", className)}>
+      <CardHeader className="pb-2 px-4 pt-4">
         <CardTitle className="text-md font-medium">{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+        {description && <CardDescription className="text-xs">{description}</CardDescription>}
       </CardHeader>
       
-      <CardContent className={cn("pt-2", contentClassName)}>
+      <CardContent className={cn("pt-2 px-4", contentClassName)}>
         {children}
       </CardContent>
       
-      {footer && <CardFooter className="border-t pt-3 text-xs text-muted-foreground">{footer}</CardFooter>}
+      {footer && <CardFooter className="border-t pt-3 px-4 text-xs text-muted-foreground">{footer}</CardFooter>}
     </Card>
   );
 };
