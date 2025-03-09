@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -144,7 +145,7 @@ export function AppSidebar() {
       <SidebarFooter>
         <div className="flex flex-col px-4 py-2">
           <Button variant="outline" size="sm" asChild>
-            <Link to="/help">Need Help?</Link>
+            <Link to="/support">Need Help?</Link>
           </Button>
         </div>
       </SidebarFooter>
