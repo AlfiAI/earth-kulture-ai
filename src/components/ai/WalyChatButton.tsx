@@ -27,8 +27,9 @@ const WalyChatButton = ({
   const [showStarters, setShowStarters] = useState(false);
   const isMobile = useIsMobile();
   const isOverlapping = useOverlapDetection('chat-button');
+  const [isVisible, setIsVisible] = useState(false);
   
-  // Debug logging and preload the image
+  // Debug logging and ensure the component is visible after a short delay
   useEffect(() => {
     console.log("WalyChatButton rendering with position:", position);
     console.log("Avatar path:", walyAvatarPath);
@@ -45,6 +46,13 @@ const WalyChatButton = ({
     preloadImage.onload = () => {
       console.log("Successfully preloaded Waly avatar image");
     };
+    
+    // Ensure the button becomes visible after a short delay
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, [position, walyAvatarPath]);
   
   // Conversation starter questions, use context-aware ones if provided
@@ -75,6 +83,10 @@ const WalyChatButton = ({
   const bottomPx = position.bottom * 16; // Convert rem to px (1rem = 16px)
   const rightPx = position.right * 16; // Convert rem to px (1rem = 16px)
   
+  if (!isVisible) {
+    return null; // Don't render until we're ready to show
+  }
+  
   return (
     <motion.div
       id="chat-button"
@@ -103,7 +115,7 @@ const WalyChatButton = ({
         )}
         aria-label="Chat with Waly AI"
       >
-        <div className="w-14 h-14 overflow-hidden">
+        <div className="w-14 h-14 overflow-hidden rounded-full">
           <ChatButtonAvatar avatarPath={walyAvatarPath} />
         </div>
         <AnimatedSparkle />

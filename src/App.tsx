@@ -37,10 +37,8 @@ function App() {
             })}
         </Routes>
         
-        {/* Explicitly add EnhancedWalyAssistant with absolute positioning */}
-        <div className="fixed bottom-0 right-0 z-[9999]">
-          <EnhancedWalyAssistant initialOpen={false} />
-        </div>
+        {/* Place the EnhancedWalyAssistant as a direct child of the App */}
+        <EnhancedWalyAssistant initialOpen={false} />
         
         <Toaster />
         <SonnerToaster position="top-center" />

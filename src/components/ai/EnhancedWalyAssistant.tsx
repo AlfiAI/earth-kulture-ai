@@ -19,6 +19,7 @@ interface EnhancedWalyAssistantProps {
 const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantProps) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [showNewChat, setShowNewChat] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
   const chatPanelRef = useRef<HTMLDivElement>(null);
   const position = useChatPosition();
   const location = useLocation();
@@ -31,19 +32,24 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       isOpen,
       showNewChat,
       position,
-      route: location.pathname
+      route: location.pathname,
+      initialized: isInitialized
     });
-  }, [isOpen, showNewChat, position, location.pathname]);
-  
-  // Force initialization on mount
-  useEffect(() => {
-    console.log("Forcing initialization check for Waly visibility");
-    // This will trigger a re-render/check of component visibility
+    
+    // Force initialization on mount with a delay
     const timer = setTimeout(() => {
-      setIsOpen(isOpen);
-    }, 500);
+      setIsInitialized(true);
+      console.log("Waly assistant initialized and ready to display");
+    }, 800);
+    
     return () => clearTimeout(timer);
   }, []);
+  
+  useEffect(() => {
+    if (isInitialized) {
+      console.log("Waly assistant is now initialized and should be visible");
+    }
+  }, [isInitialized]);
   
   const toggleOpen = () => {
     console.log("Toggle chat open state from:", isOpen, "to:", !isOpen);
@@ -65,6 +71,10 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     // Reset the chat
     window.location.reload();
   };
+
+  if (!isInitialized) {
+    return null; // Don't render until we're initialized
+  }
 
   return (
     <div className="waly-assistant-container fixed z-[9999]">
