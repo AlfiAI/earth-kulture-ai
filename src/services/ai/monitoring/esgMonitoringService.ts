@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { alertService } from './alerts/alertService';
 import { complianceMonitor } from './compliance/complianceMonitor';
 import { analyticsMonitor } from './analytics/analyticsMonitor';
+import { aiComplianceMonitor } from './compliance/aiComplianceMonitor';
 
 /**
  * ESG Monitoring Service - Provides real-time monitoring and alerts
@@ -23,16 +24,16 @@ class ESGMonitoringService {
       clearInterval(this.monitoringInterval);
     }
     
-    // Convert minutes to milliseconds
-    const intervalMs = intervalMinutes * 60 * 1000;
-    
     // Start immediate check
     this.runMonitoringCheck();
     
     // Set up regular interval
     this.monitoringInterval = window.setInterval(() => {
       this.runMonitoringCheck();
-    }, intervalMs);
+    }, intervalMinutes * 60 * 1000);
+    
+    // Start the advanced AI compliance monitoring with a shorter interval
+    aiComplianceMonitor.startContinuousMonitoring(30);
     
     console.log(`Automated ESG monitoring started (interval: ${intervalMinutes} minutes)`);
   }
@@ -44,6 +45,10 @@ class ESGMonitoringService {
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval);
       this.monitoringInterval = null;
+      
+      // Also stop AI compliance monitoring
+      aiComplianceMonitor.stopContinuousMonitoring();
+      
       console.log('Automated ESG monitoring stopped');
     }
   }
@@ -77,6 +82,22 @@ class ESGMonitoringService {
       console.error('Error during ESG monitoring check:', error);
     } finally {
       this.isMonitoring = false;
+    }
+  }
+  
+  /**
+   * Gather real-time ESG intelligence from external sources
+   */
+  async gatherESGIntelligence(industry?: string, region?: string, category?: string): Promise<any> {
+    try {
+      const { data } = await supabase.functions.invoke('esg-intelligence-aggregator', {
+        body: { industry, region, category }
+      });
+      
+      return data;
+    } catch (error) {
+      console.error('Error gathering ESG intelligence:', error);
+      throw error;
     }
   }
   
