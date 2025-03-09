@@ -87,11 +87,10 @@ enable_signup = true
 # If enabled, users need to confirm their phone number before signing in.
 enable_confirmations = false
 
-# Server port configuration (outside any section)
+# Server port configuration
 port = 54335
 
-# Configure Supabase Functions as a section
+# Configure Supabase Functions
 [functions]
-# Use a table format with proper key-value pairs
 node_modules = false
 import_map = "./import_map.json"
