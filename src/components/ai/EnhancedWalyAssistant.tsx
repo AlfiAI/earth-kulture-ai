@@ -40,6 +40,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       if (
         chatPanelRef.current && 
         !chatPanelRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('#chat-button') && // Use ID selector to match WalyChatButton
         !(event.target as HTMLElement).closest('button')
       ) {
         setIsOpen(false);

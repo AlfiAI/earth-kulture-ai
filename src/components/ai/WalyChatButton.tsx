@@ -1,11 +1,12 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sparkles, MessageSquare } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WalyChatButtonProps {
   onClick: () => void;
@@ -17,6 +18,8 @@ const WalyChatButton = ({ onClick, position, onStarterClick }: WalyChatButtonPro
   // Use the same avatar path as in MessageAvatar for consistency
   const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
   const [showStarters, setShowStarters] = useState(false);
+  const [isOverlapping, setIsOverlapping] = useState(false);
+  const isMobile = useIsMobile();
   
   // Conversation starter questions
   const starters = [
@@ -42,13 +45,69 @@ const WalyChatButton = ({ onClick, position, onStarterClick }: WalyChatButtonPro
     }
   };
   
+  // Check for overlapping elements
+  useEffect(() => {
+    const checkOverlap = () => {
+      const chatButton = document.getElementById('chat-button');
+      if (!chatButton) return;
+      
+      const buttonRect = chatButton.getBoundingClientRect();
+      const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+      const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+      
+      // Check all clickable elements (buttons, links, etc.)
+      const interactiveElements = document.querySelectorAll('button, a, [role="button"], input, select, textarea');
+      
+      let isOverlapping = false;
+      interactiveElements.forEach(element => {
+        if (element === chatButton) return; // Skip self
+        
+        const elementRect = element.getBoundingClientRect();
+        
+        // Check if the elements overlap
+        if (
+          buttonRect.right > elementRect.left &&
+          buttonRect.left < elementRect.right &&
+          buttonRect.bottom > elementRect.top &&
+          buttonRect.top < elementRect.bottom
+        ) {
+          isOverlapping = true;
+        }
+      });
+      
+      setIsOverlapping(isOverlapping);
+    };
+    
+    // Check overlap initially and on window resize
+    checkOverlap();
+    window.addEventListener('resize', checkOverlap);
+    window.addEventListener('scroll', checkOverlap);
+    
+    // Recheck periodically for dynamic content changes
+    const intervalId = setInterval(checkOverlap, 1000);
+    
+    return () => {
+      window.removeEventListener('resize', checkOverlap);
+      window.removeEventListener('scroll', checkOverlap);
+      clearInterval(intervalId);
+    };
+  }, []);
+  
   return (
     <motion.div
+      id="chat-button"
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="fixed z-50"
-      style={{ bottom: `${position.bottom}rem`, right: `${position.right}rem` }}
+      className={cn(
+        "fixed z-50",
+        isOverlapping && "opacity-80 hover:opacity-100"
+      )}
+      style={{ 
+        bottom: `${position.bottom}rem`, 
+        right: `${position.right}rem`,
+        transition: 'bottom 0.3s ease, right 0.3s ease'
+      }}
       whileHover={{ scale: 1.05, rotate: 3 }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -98,7 +157,10 @@ const WalyChatButton = ({ onClick, position, onStarterClick }: WalyChatButtonPro
           initial={{ opacity: 0, y: -10, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
-          className="absolute bottom-[4.5rem] right-0 mb-2"
+          className={cn(
+            "absolute mb-2",
+            isMobile ? "bottom-[4.5rem] right-0" : "bottom-[4.5rem] right-0"
+          )}
         >
           <Card className="p-1.5 bg-white/95 backdrop-blur-sm border border-primary/10 shadow-lg rounded-xl w-[220px]">
             <div className="text-xs font-medium text-muted-foreground px-2 py-1.5">
