@@ -15,6 +15,9 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   const [position, setPosition] = useState({ bottom: 2, right: 2 });
   const chatPanelRef = useRef<HTMLDivElement>(null);
   
+  // Use the same avatar path as in MessageAvatar for consistency
+  const walyAvatarPath = "/lovable-uploads/3b18ef6a-0e85-4835-b4fc-f047a22347e8.png";
+  
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
@@ -97,15 +100,16 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
         >
           <Avatar className="w-full h-full border-2 border-white/20">
             <AvatarImage 
-              src="/lovable-uploads/db6e9d05-9d19-408f-ac05-996d4d8006fb.png" 
+              src={walyAvatarPath} 
               alt="Waly" 
               className="p-1"
             />
             <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
-              <div className="relative">
-                <MessageCircle className="h-6 w-6" />
-                <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-yellow-300 animate-pulse" />
-              </div>
+              <img 
+                src={walyAvatarPath} 
+                alt="Waly" 
+                className="h-full w-full object-contain" 
+              />
             </AvatarFallback>
           </Avatar>
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/40 to-sky-500/40 animate-pulse-gentle group-hover:opacity-0 transition-opacity"></div>

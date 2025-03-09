@@ -9,7 +9,7 @@ interface MessageAvatarProps {
 
 const MessageAvatar = ({ sender }: MessageAvatarProps) => {
   // The Waly AI avatar image path
-  const walyAvatarPath = "/lovable-uploads/db6e9d05-9d19-408f-ac05-996d4d8006fb.png";
+  const walyAvatarPath = "/lovable-uploads/3b18ef6a-0e85-4835-b4fc-f047a22347e8.png";
   
   return (
     <motion.div
@@ -21,15 +21,15 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
       {sender === 'ai' ? (
         <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-sm">
           <AvatarImage 
-            src={walyAvatarPath} 
-            alt="Waly" 
-            className="p-1"
+            src={walyAvatarPath}
+            alt="Waly AI" 
+            className="p-0.5"
           />
           <AvatarFallback className="bg-gradient-to-br from-primary to-sky-500 text-white">
             <img 
               src={walyAvatarPath} 
-              alt="Waly" 
-              className="h-full w-full p-1 object-contain"
+              alt="Waly AI" 
+              className="h-full w-full p-0.5 object-contain"
             />
           </AvatarFallback>
         </Avatar>
