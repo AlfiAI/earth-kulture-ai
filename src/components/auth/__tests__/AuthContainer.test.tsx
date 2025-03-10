@@ -34,6 +34,7 @@ describe('AuthContainer', () => {
         authMode="login" 
         setAuthMode={mockSetAuthMode} 
         setAuthError={mockSetAuthError}
+        authError={null}
       />
     );
 
@@ -51,6 +52,7 @@ describe('AuthContainer', () => {
         authMode="signup" 
         setAuthMode={mockSetAuthMode} 
         setAuthError={mockSetAuthError}
+        authError={null}
       />
     );
 
@@ -66,6 +68,7 @@ describe('AuthContainer', () => {
         authMode="reset-password" 
         setAuthMode={mockSetAuthMode} 
         setAuthError={mockSetAuthError}
+        authError={null}
       />
     );
 
@@ -82,6 +85,7 @@ describe('AuthContainer', () => {
         authMode="login" 
         setAuthMode={mockSetAuthMode} 
         setAuthError={mockSetAuthError}
+        authError={null}
       />
     );
 
@@ -101,6 +105,7 @@ describe('AuthContainer', () => {
         authMode="login" 
         setAuthMode={mockSetAuthMode} 
         setAuthError={mockSetAuthError}
+        authError={null}
       />
     );
 
