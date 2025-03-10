@@ -102,7 +102,7 @@ const SimpleChatButton = ({ onClick, position = { bottom: 6, right: 2 } }: Simpl
       opacity: [0, 0.1, 0.2, 0.1, 0],
       transition: { 
         repeat: Infinity,
-        repeatType: "loop",  // Changed from string to literal "loop"
+        repeatType: "loop" as const,  // Fixed: using "as const" to make it a literal type
         duration: 3,
         ease: "easeInOut" 
       }
@@ -157,7 +157,7 @@ const SimpleChatButton = ({ onClick, position = { bottom: 6, right: 2 } }: Simpl
               transition={{ 
                 duration: 2,
                 repeat: Infinity,
-                repeatType: "loop"
+                repeatType: "loop" as const  // Fixed: using "as const" to make it a literal type
               }}
             >
               <Sparkles className="h-5 w-5 text-yellow-300" />
