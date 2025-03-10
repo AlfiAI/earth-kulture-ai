@@ -21,7 +21,7 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
       toast.info("Make sure Google provider is enabled in Supabase Auth settings", {
         duration: 5000,
         action: {
-          label: 'Learn More',
+          label: 'Open Settings',
           onClick: () => window.open('https://supabase.com/dashboard/project/ihijlloxwfjrrnhxqlfa/auth/providers', '_blank')
         }
       });
@@ -38,7 +38,7 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
       toast.info("Make sure GitHub provider is enabled in Supabase Auth settings", {
         duration: 5000,
         action: {
-          label: 'Learn More',
+          label: 'Open Settings',
           onClick: () => window.open('https://supabase.com/dashboard/project/ihijlloxwfjrrnhxqlfa/auth/providers', '_blank')
         }
       });
@@ -55,7 +55,7 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
       toast.info("Make sure LinkedIn provider is enabled in Supabase Auth settings", {
         duration: 5000,
         action: {
-          label: 'Learn More',
+          label: 'Open Settings',
           onClick: () => window.open('https://supabase.com/dashboard/project/ihijlloxwfjrrnhxqlfa/auth/providers', '_blank')
         }
       });

@@ -27,6 +27,7 @@ const AuthPage = () => {
       const errorDescription = hashParams.get('error_description');
       
       if (errorParam && errorDescription) {
+        console.error("Auth error from URL:", errorParam, errorDescription);
         setAuthError(`${errorParam}: ${errorDescription}`);
       }
     }

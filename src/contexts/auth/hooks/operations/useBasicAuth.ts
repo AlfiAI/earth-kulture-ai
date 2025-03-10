@@ -21,10 +21,15 @@ export const useBasicAuth = () => {
       });
       
       // Handle remember me functionality through localStorage
-      if (rememberMe) {
-        localStorage.setItem('supabase-remember-me', 'true');
-      } else {
-        localStorage.removeItem('supabase-remember-me');
+      try {
+        if (rememberMe) {
+          localStorage.setItem('supabase-remember-me', 'true');
+        } else {
+          localStorage.removeItem('supabase-remember-me');
+        }
+      } catch (storageError) {
+        console.error("LocalStorage error:", storageError);
+        // Continue without interruption even if localStorage fails
       }
       
       if (error) {
