@@ -31,21 +31,35 @@ export const useProfileManagement = (
   useEffect(() => {
     const loadUserProfile = async () => {
       if (user) {
-        const profileData = await fetchUserProfile(user.id);
-        if (profileData) {
-          setUserProfile({
-            id: profileData.id,
-            email: user.email || '',
-            full_name: profileData.full_name || '',
-            avatar_url: profileData.avatar_url || ''
-          });
-        } else {
+        try {
+          const profileData = await fetchUserProfile(user.id);
+          if (profileData) {
+            setUserProfile({
+              id: profileData.id,
+              email: user.email || '',
+              full_name: profileData.full_name || '',
+              avatar_url: profileData.avatar_url || ''
+            });
+          } else {
+            // Set a minimal profile even if fetching from DB fails
+            setUserProfile({
+              id: user.id,
+              email: user.email || '',
+              full_name: '',
+              avatar_url: ''
+            });
+            console.log("Created minimal profile due to fetch failure");
+          }
+        } catch (error) {
+          console.error("Failed to load user profile:", error);
+          // Still set a minimal profile on error
           setUserProfile({
             id: user.id,
             email: user.email || '',
             full_name: '',
             avatar_url: ''
           });
+          console.log("Created minimal profile due to error");
         }
       } else {
         setUserProfile(null);

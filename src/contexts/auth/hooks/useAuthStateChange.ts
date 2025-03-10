@@ -63,6 +63,7 @@ export const useAuthStateChange = (
                 full_name: '',
                 avatar_url: ''
               });
+              console.log("Set minimal profile due to failed fetch");
             }
           } catch (error) {
             console.error("Error fetching user profile:", error);
@@ -73,6 +74,7 @@ export const useAuthStateChange = (
               full_name: '',
               avatar_url: ''
             });
+            console.log("Set minimal profile due to error");
           }
         } else {
           setUserProfile(null);
@@ -83,17 +85,24 @@ export const useAuthStateChange = (
           // Get stored redirect path or default to dashboard
           const redirectTo = localStorage.getItem("redirectAfterLogin") || "/dashboard";
           
-          // Check if this is a new user by seeing if they have a profile with data
-          const profileData = newSession?.user ? await fetchUserProfile(newSession.user.id) : null;
-          const isNewUser = !profileData?.full_name;
-          
-          if (isNewUser) {
-            // Redirect to onboarding for new users
-            navigate('/onboarding');
-            toast.success("Account created! Let's set up your profile.");
-          } else {
-            // Regular login for existing users - use the stored redirect path
-            navigate(redirectTo);
+          try {
+            // Check if this is a new user by seeing if they have a profile with data
+            const profileData = newSession?.user ? await fetchUserProfile(newSession.user.id) : null;
+            const isNewUser = !profileData?.full_name;
+            
+            if (isNewUser) {
+              // Redirect to onboarding for new users
+              navigate('/onboarding');
+              toast.success("Account created! Let's set up your profile.");
+            } else {
+              // Regular login for existing users - use the stored redirect path
+              navigate(redirectTo);
+              toast.success("Login successful!");
+            }
+          } catch (error) {
+            console.error("Error during post-login navigation:", error);
+            // Fall back to dashboard on error
+            navigate('/dashboard');
             toast.success("Login successful!");
           }
           

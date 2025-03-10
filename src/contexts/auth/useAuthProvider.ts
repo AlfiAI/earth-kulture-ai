@@ -35,6 +35,22 @@ export const useAuthProvider = () => {
     disableMFA 
   } = useAuthOperations();
 
+  // Set up auth state change handler but with error handling
+  useAuthStateChange(setSession, setUser, setUserProfile, async (userId) => {
+    try {
+      return await fetchUserProfile(userId);
+    } catch (error) {
+      console.error("Error in fetchUserProfile during auth state change:", error);
+      // Return minimal profile data on error
+      return {
+        id: userId,
+        email: user?.email || '',
+        full_name: '',
+        avatar_url: ''
+      };
+    }
+  });
+
   // Implement the missing updateUserProfile method
   const updateUserProfile = async (profile: Partial<UserProfile>): Promise<void> => {
     try {
@@ -57,10 +73,26 @@ export const useAuthProvider = () => {
     }
   };
 
-  // Implement the missing getUserContext method
+  // Implement the missing getUserContext method with error handling
   const getUserContext = async (): Promise<UserContext> => {
-    if (!user || !userProfile) {
-      throw new Error("User not authenticated or profile not loaded");
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+    
+    // If userProfile is missing, create a minimal context
+    if (!userProfile) {
+      console.warn("User profile not loaded, returning minimal context");
+      return {
+        userId: user.id,
+        tenantId: null,
+        industry: 'corporate',
+        role: 'viewer',
+        preferences: {
+          dashboardType: 'business',
+          dataVisualizationPreference: 'visual',
+          reportFrequency: 'monthly'
+        }
+      };
     }
     
     return {

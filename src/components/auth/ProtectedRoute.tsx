@@ -3,35 +3,59 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
 import { toast } from 'sonner';
+import LoadingContent from './LoadingContent';
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, authError } = useAuth();
   const location = useLocation();
   const [redirecting, setRedirecting] = useState(false);
+  const [waitTime, setWaitTime] = useState(0);
 
   useEffect(() => {
+    // If not authenticated and not loading, start redirect process
     if (!isLoading && !isAuthenticated && !redirecting) {
       // Store the current path for redirecting back after login
       localStorage.setItem('redirectAfterLogin', location.pathname);
       toast.error("Please sign in to access this page");
       setRedirecting(true);
     }
-  }, [isAuthenticated, isLoading, location.pathname, redirecting]);
 
-  // While checking auth status, show loading state
-  if (isLoading) {
+    // Safety mechanism to prevent infinite loading
+    const timer = setTimeout(() => {
+      setWaitTime(prev => prev + 1);
+      if (waitTime > 5 && isLoading) {
+        console.log("Auth loading taking too long, forcing redirect");
+        setRedirecting(true);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [isAuthenticated, isLoading, location.pathname, redirecting, waitTime]);
+
+  // If loading for more than 5 seconds, show a more informative message
+  if (isLoading && waitTime <= 5) {
+    return <LoadingContent />;
+  }
+
+  // If loading takes too long or we get auth errors, show an enhanced loading state
+  if ((isLoading && waitTime > 5) || authError) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <svg className="animate-spin h-8 w-8 text-primary mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <p className="mt-4 text-lg font-medium">Verifying authentication...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <LoadingContent />
+          <p className="mt-4 text-muted-foreground">
+            {authError ? `Authentication error: ${authError}` : "Taking longer than expected..."}
+          </p>
+          <button 
+            onClick={() => window.location.href = '/auth'} 
+            className="mt-4 px-4 py-2 bg-primary text-white rounded-md"
+          >
+            Go to login page
+          </button>
         </div>
       </div>
     );

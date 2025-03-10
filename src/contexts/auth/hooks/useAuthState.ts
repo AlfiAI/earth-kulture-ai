@@ -52,6 +52,7 @@ export const useAuthState = () => {
         console.error("Unexpected error in auth initialization:", error);
         setAuthError(error.message);
       } finally {
+        // Always complete loading, even if there are errors
         setIsLoading(false);
       }
     };
@@ -91,7 +92,7 @@ export const useAuthState = () => {
       subscription.unsubscribe();
       clearTimeout(loadingTimeout);
     };
-  }, [isLoading]);
+  }, []);
 
   return {
     session,
