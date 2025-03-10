@@ -83,10 +83,17 @@ export const useAuthStateChange = (
             toast.success("Your profile has been updated");
             break;
             
-          case 'USER_DELETED':
-            navigate('/auth');
-            toast.info("Your account has been deleted");
+          case 'PASSWORD_RECOVERY':
+            // Handle password recovery event
+            toast.info("Password reset successful");
             break;
+            
+          case 'TOKEN_REFRESHED':
+            // Session token was refreshed
+            console.log("Session token refreshed");
+            break;
+            
+          // Removed the invalid USER_DELETED case as it's not a valid AuthChangeEvent in Supabase
         }
       }
     );
