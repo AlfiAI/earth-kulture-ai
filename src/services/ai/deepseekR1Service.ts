@@ -3,6 +3,7 @@ import { MessageProps } from '@/components/ai/Message';
 import { deepseekAPIService } from './deepseek/services/deepseekAPIService';
 import { categorizeIntent } from './deepseek/utils/deepseekUtils';
 import { IntentCategory } from './deepseek/types/deepseekTypes';
+import { toast } from "sonner";
 
 /**
  * DeepSeek R1 Service for AI-powered ESG insights with advanced caching and optimizations
@@ -18,6 +19,7 @@ class DeepseekR1Service {
   private pendingRequests: Map<string, Promise<string>> = new Map();
   
   constructor() {
+    console.log('DeepSeek R1 Service initialized');
     // Reset request count every minute
     setInterval(() => {
       this.requestCount = 0;
@@ -29,6 +31,8 @@ class DeepseekR1Service {
    * Process query using DeepSeek R1 API with advanced caching and rate limiting
    */
   async processQuery(query: string, previousMessages: MessageProps[] = [], customSystemPrompt?: string): Promise<string> {
+    console.log('DeepSeek R1 processing query:', query.substring(0, 50) + '...');
+    
     // Implement rate limiting
     if (this.isRateLimited()) {
       const waitTime = this.calculateWaitTime();
@@ -71,6 +75,7 @@ class DeepseekR1Service {
    */
   private async executeRequest(query: string, previousMessages: MessageProps[] = [], customSystemPrompt?: string): Promise<string> {
     try {
+      console.log('Executing DeepSeek R1 API request');
       // Increment request count for rate limiting
       this.requestCount++;
       
@@ -78,6 +83,7 @@ class DeepseekR1Service {
       return await deepseekAPIService.processQuery(query, previousMessages, customSystemPrompt);
     } catch (error) {
       console.error('Error in DeepSeek R1 service:', error);
+      toast.error('AI service connection issue. Using fallback mode.');
       
       // Generate fallback response if API fails
       return this.generateFallbackResponse(query);
@@ -115,6 +121,7 @@ class DeepseekR1Service {
    * Fallback response generator when API is unavailable
    */
   private generateFallbackResponse(query: string): string {
+    console.log('Generating fallback response for:', query.substring(0, 50) + '...');
     // Determine the intent of the query
     const intent = this.categorizeIntent(query);
     

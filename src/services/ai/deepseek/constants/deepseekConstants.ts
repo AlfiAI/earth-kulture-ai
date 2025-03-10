@@ -5,7 +5,7 @@
 
 // API constants
 export const DEEPSEEK_R1_URL = "https://api.deepseek.com/v1/chat/completions";
-export const DEEPSEEK_R1_API_KEY = "sk-c31c53e99fee40fb8e0cc5f70cdeb452"; // Your DeepSeek API key
+export const DEEPSEEK_R1_API_KEY = "sk-c31c53e99fee40fb8e0cc5f70cdeb452"; // DeepSeek API key
 
 // System prompt for ESG & Carbon Intelligence with enhanced capabilities
 export const ENHANCED_ESG_SYSTEM_PROMPT = `You are Waly Pro, an advanced ESG & Carbon Intelligence Assistant specialized in sustainability reporting, emissions analysis, 

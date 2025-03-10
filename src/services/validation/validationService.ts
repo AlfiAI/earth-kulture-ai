@@ -17,6 +17,7 @@ Provide specific identification of issues and actionable recommendations for fix
 export const validationService = {
   async performValidation(): Promise<ValidationResults> {
     try {
+      console.log('Starting DeepSeek AI validation process');
       // Get AI-powered validation insights
       const validationPrompt = `Perform a comprehensive validation analysis on the organization's ESG and carbon data, 
       identifying quality issues, inconsistencies, and potential compliance problems.`;
@@ -28,7 +29,7 @@ export const validationService = {
         DATA_VALIDATION_PROMPT
       );
       
-      console.log("AI validation response:", aiValidationResponse);
+      console.log("AI validation response received:", aiValidationResponse.substring(0, 100) + '...');
       
       // Parse the response to extract issues
       // For demo, we'll use mock data but in production this would parse the AI response
@@ -94,16 +95,19 @@ export const validationService = {
 
   async fixIssues(issue: ValidationIssue): Promise<ValidationResults> {
     try {
+      console.log('Using DeepSeek AI to fix issue:', issue.message);
       // Get AI-powered fix recommendations
       const fixPrompt = `Based on the identified data issue "${issue.message}" from source "${issue.source}", 
       suggest automated fixes and data transformation steps to resolve this issue without manual intervention.`;
       
       // Call DeepSeek for fix recommendations
-      await deepseekService.processQuery(
+      const fixResponse = await deepseekService.processQuery(
         fixPrompt,
         [],
         DATA_VALIDATION_PROMPT
       );
+      
+      console.log('Received fix recommendations from DeepSeek');
       
       // Return mock updated results to reflect fixes
       // In a real implementation, this would actually fix the data and return real results
@@ -111,7 +115,7 @@ export const validationService = {
         valid: 96,
         warning: 6,
         error: 0,
-        total: 102, // Added total property to fix TypeScript error
+        total: 102,
         issues: [
           // Return a filtered list of issues without the fixed one
         ]

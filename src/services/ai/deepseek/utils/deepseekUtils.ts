@@ -1,15 +1,11 @@
 
 import { MessageProps } from '@/components/ai/Message';
-import { IntentCategory } from '../types/deepseekTypes';
-
-/**
- * Utility functions for DeepSeek R1 service
- */
+import { IntentCategory, DeepseekMessage } from '../types/deepseekTypes';
 
 /**
  * Format message history for API
  */
-export function formatMessagesForAPI(messages: MessageProps[]): { role: string, content: string }[] {
+export function formatMessagesForAPI(messages: MessageProps[]): DeepseekMessage[] {
   return messages
     .filter(msg => msg.id !== '1') // Filter out the welcome message
     .map(msg => ({
@@ -19,16 +15,19 @@ export function formatMessagesForAPI(messages: MessageProps[]): { role: string, 
 }
 
 /**
- * Simple hash function for generating cache keys
+ * Generate a hash for a string (used for caching)
  */
 export function hashString(str: string): string {
   let hash = 0;
+  if (str.length === 0) return hash.toString();
+  
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
     hash = hash & hash; // Convert to 32bit integer
   }
-  return hash.toString(36);
+  
+  return hash.toString();
 }
 
 /**
@@ -37,19 +36,31 @@ export function hashString(str: string): string {
 export function categorizeIntent(query: string): IntentCategory {
   const lowerQuery = query.toLowerCase();
   
-  if (lowerQuery.includes('compliance') || lowerQuery.includes('regulation') || lowerQuery.includes('requirement')) {
+  if (lowerQuery.includes('regulation') || 
+      lowerQuery.includes('compliance') || 
+      lowerQuery.includes('legal') ||
+      lowerQuery.includes('requirement')) {
     return 'compliance';
   }
   
-  if (lowerQuery.includes('report') || lowerQuery.includes('document') || lowerQuery.includes('disclosure')) {
+  if (lowerQuery.includes('report') || 
+      lowerQuery.includes('document') || 
+      lowerQuery.includes('publish') ||
+      lowerQuery.includes('disclose')) {
     return 'reporting';
   }
   
-  if (lowerQuery.includes('compare') || lowerQuery.includes('benchmark') || lowerQuery.includes('industry') || lowerQuery.includes('competitor')) {
+  if (lowerQuery.includes('compare') || 
+      lowerQuery.includes('benchmark') || 
+      lowerQuery.includes('industry') ||
+      lowerQuery.includes('competitor')) {
     return 'benchmarking';
   }
   
-  if (lowerQuery.includes('carbon') || lowerQuery.includes('emission') || lowerQuery.includes('footprint') || lowerQuery.includes('ghg')) {
+  if (lowerQuery.includes('carbon') || 
+      lowerQuery.includes('emission') || 
+      lowerQuery.includes('footprint') ||
+      lowerQuery.includes('greenhouse')) {
     return 'carbon';
   }
   
@@ -57,25 +68,19 @@ export function categorizeIntent(query: string): IntentCategory {
 }
 
 /**
- * Generate fallback response based on intent category
+ * Fallback method if API fails
  */
 export function generateFallbackResponse(query: string): string {
-  const intent = categorizeIntent(query);
+  // Simple keyword matching to simulate AI understanding
+  const lowerQuery = query.toLowerCase();
   
-  switch (intent) {
-    case 'compliance':
-      return "Based on my analysis of your compliance data, I can provide insights on regulatory requirements and frameworks. However, I'm currently operating in fallback mode due to API connectivity issues. For comprehensive compliance analysis, please try again when our connection is restored.";
-    
-    case 'reporting':
-      return "I can help generate ESG reports tailored to different frameworks and stakeholders. In fallback mode, I have limited access to report templates and custom formatting. Please try again later for full reporting capabilities.";
-    
-    case 'benchmarking':
-      return "Industry benchmarking requires access to our comprehensive database of sector-specific ESG metrics. I'm currently in fallback mode with limited access to comparative data. For detailed benchmarking analysis, please try again when full connectivity is restored.";
-    
-    case 'carbon':
-      return "I can analyze your carbon emissions data across Scopes 1, 2, and 3 to provide reduction strategies. In fallback mode, I can offer general recommendations, but for detailed carbon analysis and predictive modeling, please try again when our API connection is restored.";
-    
-    default:
-      return "I'm here to assist with your ESG and sustainability questions. I'm currently operating in fallback mode with limited capabilities due to connectivity issues. For full AI-powered insights, please try again later when our connection is restored.";
+  if (lowerQuery.includes('carbon') || lowerQuery.includes('emission')) {
+    return "Based on your carbon emissions data, I can provide some insights. However, I'm currently operating in fallback mode due to API connectivity issues. Please try again later for more detailed analysis.";
   }
+  
+  if (lowerQuery.includes('esg') || lowerQuery.includes('compliance')) {
+    return "I can help with ESG compliance matters, but I'm currently operating in fallback mode. For accurate compliance insights, please try again when our API connection is restored.";
+  }
+  
+  return "I apologize, but I'm currently experiencing connection issues with my knowledge base. I'm operating in fallback mode with limited capabilities. Please try again later for full functionality.";
 }

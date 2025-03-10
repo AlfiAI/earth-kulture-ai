@@ -16,10 +16,11 @@ export class WalyAIServiceImpl implements WalyAIServiceInterface {
    * Enhanced AI processing function using DeepSeek R1 API
    */
   async processQuery(query: string, messageHistory: MessageProps[] = []): Promise<string> {
+    console.log('WalyAIServiceImpl processing query with history length:', messageHistory.length);
     // Update conversation context
     this.contextManager.updateContext(query, messageHistory);
     
-    // Process the query
+    // Process the query with DeepSeek R1
     return processQuery(query, messageHistory);
   }
 
