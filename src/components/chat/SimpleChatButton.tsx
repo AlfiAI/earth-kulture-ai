@@ -91,7 +91,7 @@ const SimpleChatButton = ({ onClick, position = { bottom: 6, right: 2 } }: Simpl
     }
   };
   
-  // Ripple animation for the button background
+  // Ripple animation for the button background - FIXED the repeatType to use literal "loop"
   const rippleVariants = {
     initial: { 
       scale: 1,
@@ -102,7 +102,7 @@ const SimpleChatButton = ({ onClick, position = { bottom: 6, right: 2 } }: Simpl
       opacity: [0, 0.1, 0.2, 0.1, 0],
       transition: { 
         repeat: Infinity,
-        repeatType: "loop",
+        repeatType: "loop",  // Changed from string to literal "loop"
         duration: 3,
         ease: "easeInOut" 
       }
