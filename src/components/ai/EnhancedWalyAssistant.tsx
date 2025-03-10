@@ -43,6 +43,9 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
           right: ${position.right}rem !important;
           pointer-events: auto !important;
           transform: none !important;
+          will-change: auto !important;
+          transition: none !important;
+          filter: none !important;
         `);
       }
       
@@ -56,20 +59,42 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
           position: fixed !important;
           pointer-events: auto !important;
           transform: none !important;
+          will-change: auto !important;
+          transition: none !important;
+          filter: none !important;
         `);
+      } else {
+        // Create container if it doesn't exist
+        const newContainer = document.createElement('div');
+        newContainer.id = 'waly-container';
+        newContainer.className = 'fixed bottom-0 right-0 z-[9999999]';
+        newContainer.style.cssText = `
+          visibility: visible !important;
+          opacity: 1 !important;
+          display: block !important;
+          z-index: 9999999 !important;
+          position: fixed !important;
+          bottom: 2rem !important;
+          right: 2rem !important;
+          pointer-events: auto !important;
+        `;
+        document.body.appendChild(newContainer);
+        
+        // Trigger a custom event to notify other components
+        document.dispatchEvent(new CustomEvent('waly-container-created'));
       }
     };
     
     // Apply immediately
     forceWalyVisibility();
     
-    // Apply with multiple delays to catch rendering issues
-    [50, 100, 200, 300, 500, 1000, 2000, 5000].forEach(delay => {
+    // Apply with multiple delays to catch rendering issues (shorter intervals)
+    [10, 50, 100, 150, 200, 300, 500, 1000, 2000].forEach(delay => {
       setTimeout(forceWalyVisibility, delay);
     });
     
-    // Continue checking periodically
-    const interval = setInterval(forceWalyVisibility, 500);
+    // Continue checking periodically with shorter interval
+    const interval = setInterval(forceWalyVisibility, 300);
     
     // Use MutationObserver to detect DOM changes
     const observer = new MutationObserver(() => {
@@ -90,11 +115,15 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     };
     
     document.addEventListener('open-waly-chat', handleOpenWalyEvent);
+    document.addEventListener('waly-force-visibility', forceWalyVisibility);
+    window.addEventListener('load', forceWalyVisibility);
     
     return () => {
       clearInterval(interval);
       observer.disconnect();
       document.removeEventListener('open-waly-chat', handleOpenWalyEvent);
+      document.removeEventListener('waly-force-visibility', forceWalyVisibility);
+      window.removeEventListener('load', forceWalyVisibility);
     };
   }, [location.pathname, position]);
   

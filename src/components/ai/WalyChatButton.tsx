@@ -45,6 +45,9 @@ const WalyChatButton = ({
           right: ${position.right}rem !important;
           pointer-events: auto !important;
           transform: none !important;
+          will-change: auto !important;
+          transition: none !important;
+          filter: none !important;
         `);
       }
       
@@ -61,6 +64,9 @@ const WalyChatButton = ({
           right: ${position.right}rem !important;
           pointer-events: auto !important;
           transform: none !important;
+          will-change: auto !important;
+          transition: none !important;
+          filter: none !important;
         `);
       }
     };
@@ -69,12 +75,12 @@ const WalyChatButton = ({
     ensureButtonVisibility();
     
     // Call multiple times with delays to handle potential race conditions
-    [50, 100, 200, 300, 500, 1000, 2000, 5000].forEach(delay => {
+    [10, 50, 100, 200, 300, 500, 1000, 2000].forEach(delay => {
       setTimeout(ensureButtonVisibility, delay);
     });
     
-    // Periodic check
-    const interval = setInterval(ensureButtonVisibility, 500);
+    // Periodic check with shorter interval
+    const interval = setInterval(ensureButtonVisibility, 300);
     
     // Use MutationObserver to detect DOM changes
     const observer = new MutationObserver(() => {
@@ -88,9 +94,13 @@ const WalyChatButton = ({
       attributes: true
     });
     
+    // Also listen for custom event
+    document.addEventListener('waly-force-visibility', ensureButtonVisibility);
+    
     return () => {
       clearInterval(interval);
       observer.disconnect();
+      document.removeEventListener('waly-force-visibility', ensureButtonVisibility);
     };
   }, [position]);
   
@@ -139,7 +149,11 @@ const WalyChatButton = ({
         opacity: 1,
         display: 'block',
         zIndex: 9999999,
-        position: 'fixed'
+        position: 'fixed',
+        transform: 'none',
+        willChange: 'auto',
+        transition: 'none',
+        filter: 'none'
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -153,6 +167,10 @@ const WalyChatButton = ({
           "border-4 border-primary" // Enhanced border for visibility
         )}
         aria-label="Chat with Waly AI"
+        style={{
+          transform: 'none !important',
+          filter: 'none !important'
+        }}
       >
         <div className="w-12 h-12 overflow-hidden rounded-full">
           <ChatButtonAvatar avatarPath={walyAvatarPath} />

@@ -31,6 +31,9 @@ function App() {
             position: fixed !important;
             pointer-events: auto !important;
             transform: none !important;
+            will-change: auto !important;
+            transition: none !important;
+            filter: none !important;
           `);
           walyVisibilityChecked.current = true;
         }
@@ -46,7 +49,28 @@ function App() {
           position: fixed !important;
           pointer-events: auto !important;
           transform: none !important;
+          will-change: auto !important;
+          transition: none !important;
+          filter: none !important;
         `);
+      }
+      
+      // If the waly-container doesn't exist, create it
+      if (!document.getElementById('waly-container')) {
+        const container = document.createElement('div');
+        container.id = 'waly-container';
+        container.className = 'fixed bottom-0 right-0 z-[9999999]';
+        container.style.cssText = `
+          visibility: visible !important;
+          opacity: 1 !important;
+          display: block !important;
+          z-index: 9999999 !important;
+          position: fixed !important;
+          bottom: 2rem !important;
+          right: 2rem !important;
+          pointer-events: auto !important;
+        `;
+        document.body.appendChild(container);
       }
     };
     
@@ -67,22 +91,30 @@ function App() {
       return observer;
     };
     
-    // Call multiple times with different delays to ensure it works
-    [0, 50, 100, 200, 300, 500, 1000, 2000, 5000].forEach(delay => {
+    // Call multiple times with different delays to ensure it works (more frequent checks)
+    [0, 10, 50, 100, 150, 200, 300, 500, 1000, 2000].forEach(delay => {
       setTimeout(forceWalyVisibility, delay);
     });
     
     // Create the observer
     const observer = createVisibilityObserver();
     
-    // Also check periodically
+    // Also check periodically with shorter interval
     const interval = setInterval(() => {
       forceWalyVisibility();
-    }, 500);
+    }, 300);
+    
+    // Listen for custom event
+    document.addEventListener('waly-force-visibility', forceWalyVisibility);
+    
+    // After page loads fully
+    window.addEventListener('load', forceWalyVisibility);
     
     return () => {
       clearInterval(interval);
       observer.disconnect();
+      document.removeEventListener('waly-force-visibility', forceWalyVisibility);
+      window.removeEventListener('load', forceWalyVisibility);
     };
   }, [location.pathname]);
 
@@ -121,7 +153,11 @@ function App() {
             position: 'fixed',
             bottom: '2rem',
             right: '2rem',
-            pointerEvents: 'auto'
+            pointerEvents: 'auto',
+            transform: 'none',
+            willChange: 'auto',
+            transition: 'none',
+            filter: 'none'
           }}
         >
           <EnhancedWalyAssistant initialOpen={false} />
