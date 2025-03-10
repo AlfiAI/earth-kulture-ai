@@ -24,7 +24,7 @@ const AnimatedSparkle = ({
       transition={{ 
         duration: 2, 
         repeat: Infinity,
-        repeatType: "loop" 
+        repeatType: "loop" as const 
       }}
     >
       <Sparkles className={`h-${size/4} w-${size/4} ${color}`} />
