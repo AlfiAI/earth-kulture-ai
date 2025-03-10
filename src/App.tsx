@@ -1,30 +1,34 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import * as routes from './routes/routes';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from 'sonner';
 import EnhancedWalyAssistant from '@/components/ai/EnhancedWalyAssistant';
 import WalyActionHandler from '@/components/ai/WalyActionHandler';
+import { useWalyInjector } from '@/hooks/use-waly-injector';
 
 function App() {
   const location = useLocation();
-  const walyContainerRef = useRef<HTMLDivElement>(null);
   
-  // Simple visibility check for Waly
+  // Use the Waly injector to ensure visibility
+  useWalyInjector();
+  
+  // Create and maintain Waly container
   useEffect(() => {
     console.log('App: Current route is', location.pathname);
+    console.log('Ensuring Waly container exists');
     
     // Create Waly container if it doesn't exist
     if (!document.getElementById('waly-container')) {
+      console.log('Creating waly-container in App component');
       const container = document.createElement('div');
       container.id = 'waly-container';
-      container.className = 'fixed bottom-0 right-0 z-[9999999]';
       container.style.cssText = `
         position: fixed !important;
-        bottom: 2rem !important;
-        right: 2rem !important;
-        z-index: 9999999 !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 99999999 !important;
         visibility: visible !important;
         display: block !important;
         opacity: 1 !important;
@@ -37,12 +41,9 @@ function App() {
     <WalyActionHandler>
       <div className="min-h-screen flex flex-col">
         <Routes>
-          {/* Render all the routes defined in routes.tsx */}
           {routes.router.routes
             .filter(route => route.path !== undefined)
             .map((route) => {
-              // TypeScript doesn't recognize the element property directly
-              // Use a type assertion to access it safely
               const routeObject = route as unknown as { path?: string; element?: React.ReactNode };
               
               return routeObject.path ? (
@@ -55,16 +56,15 @@ function App() {
             })}
         </Routes>
         
-        {/* Always render Waly with clear positioning */}
+        {/* Render Waly with clear positioning and high z-index */}
         <div 
           id="waly-container"
-          ref={walyContainerRef}
-          className="fixed bottom-0 right-0 z-[9999999]" 
+          className="fixed bottom-0 right-0" 
           style={{ 
             position: 'fixed',
-            bottom: '2rem',
-            right: '2rem',
-            zIndex: 9999999,
+            bottom: '20px',
+            right: '20px',
+            zIndex: 99999999,
             visibility: 'visible',
             display: 'block',
             opacity: 1

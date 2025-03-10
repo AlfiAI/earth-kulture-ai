@@ -14,30 +14,40 @@ export default function Index() {
   const { userProfile } = useAuth();
   const isEnterprise = userProfile?.dashboard_preference === 'enterprise';
   
-  // Use the injector hook to ensure Waly is available
+  // Use the enhanced Waly injector
   useWalyInjector();
   
-  // Basic visibility check for Waly when dashboard loads
+  // Additional safety check to ensure Waly is visible on the dashboard
   useEffect(() => {
-    console.log('Dashboard loaded, checking Waly visibility');
+    console.log('Dashboard loaded, ensuring Waly visibility');
     
-    // Create a simple container for Waly if none exists
-    if (!document.getElementById('waly-container')) {
-      console.log('Creating Waly container in dashboard');
-      const container = document.createElement('div');
-      container.id = 'waly-container';
-      container.className = 'fixed bottom-0 right-0 z-[9999999]';
-      container.style.cssText = `
-        position: fixed !important;
-        bottom: 2rem !important;
-        right: 2rem !important;
-        z-index: 9999999 !important;
-        visibility: visible !important;
-        display: block !important;
-        opacity: 1 !important;
-      `;
-      document.body.appendChild(container);
-    }
+    const ensureWalyVisibility = () => {
+      // Force Waly container to be visible
+      if (!document.getElementById('waly-container')) {
+        console.log('Creating Waly container in dashboard component');
+        const container = document.createElement('div');
+        container.id = 'waly-container';
+        container.style.cssText = `
+          position: fixed !important;
+          bottom: 20px !important;
+          right: 20px !important;
+          z-index: 99999999 !important;
+          visibility: visible !important;
+          display: block !important;
+          opacity: 1 !important;
+          pointer-events: auto !important;
+        `;
+        document.body.appendChild(container);
+      }
+    };
+    
+    // Run immediately
+    ensureWalyVisibility();
+    
+    // Run periodically
+    const interval = setInterval(ensureWalyVisibility, 1000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   return (

@@ -5,29 +5,39 @@ import { useChatPosition } from '@/hooks/use-chat-position';
 import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
 import WalyChatButton from './WalyChatButton';
 import EnhancedChatPanel from './EnhancedChatPanel';
+import { useWalyInjector } from '@/hooks/use-waly-injector';
 
 interface EnhancedWalyAssistantProps {
   initialOpen?: boolean;
 }
 
 /**
- * Simplified Enhanced Waly Assistant
+ * Enhanced Waly Assistant with improved visibility
  */
 const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantProps) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [showNewChat, setShowNewChat] = useState(true);
+  const [showStarters, setShowStarters] = useState(false);
   const chatPanelRef = useRef<HTMLDivElement>(null);
   const position = useChatPosition();
   const location = useLocation();
   
+  // Use the enhanced Waly injector to ensure visibility
+  useWalyInjector();
+  
   const { messages, inputValue, setInputValue, handleSend, isTyping } = useEnhancedChat();
   
-  // Basic visibility logging
+  // Log visibility status for debugging
   useEffect(() => {
     console.log("EnhancedWalyAssistant mounted on route:", location.pathname);
+    console.log("Chat is open:", isOpen);
+    
+    // Force re-render on route change
+    setIsOpen(isOpen);
   }, [location.pathname]);
   
   const toggleOpen = () => {
+    console.log("Toggling chat open state from", isOpen, "to", !isOpen);
     setIsOpen(!isOpen);
   };
   
@@ -44,6 +54,14 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     window.location.reload();
   };
   
+  const handleMouseEnter = () => {
+    setShowStarters(true);
+  };
+  
+  const handleMouseLeave = () => {
+    setShowStarters(false);
+  };
+  
   // Context-aware starters based on current route
   const getContextAwareStarters = () => {
     // Default starters
@@ -56,13 +74,16 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   };
 
   return (
-    <>
+    <div id="waly-assistant-container" className="fixed" style={{ zIndex: 9999999 }}>
       {!isOpen && (
         <WalyChatButton 
           onClick={toggleOpen} 
           position={position}
           onStarterClick={handleStarterClick}
           contextAwareStarters={getContextAwareStarters()}
+          showStarters={showStarters}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         />
       )}
       
@@ -82,7 +103,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
           onNewChat={handleNewChat}
         />
       )}
-    </>
+    </div>
   );
 };
 
