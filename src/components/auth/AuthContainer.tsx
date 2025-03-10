@@ -40,18 +40,23 @@ const AuthContainer = ({
 
   // Handle social login methods
   const handleSocialLogin = (provider: string) => {
-    switch (provider) {
-      case 'google':
-        signInWithGoogle();
-        break;
-      case 'github':
-        signInWithGithub();
-        break;
-      case 'linkedin':
-        signInWithLinkedIn();
-        break;
-      default:
-        console.error('Unsupported provider:', provider);
+    try {
+      switch (provider) {
+        case 'google':
+          signInWithGoogle();
+          break;
+        case 'github':
+          signInWithGithub();
+          break;
+        case 'linkedin':
+          signInWithLinkedIn();
+          break;
+        default:
+          console.error('Unsupported provider:', provider);
+      }
+    } catch (error) {
+      console.error('Error during social login:', error);
+      setAuthError('Failed to initialize social login. Please try again.');
     }
   };
 

@@ -47,6 +47,9 @@ const AuthPage = () => {
     console.log("AuthPage: isAuthenticated =", isAuthenticated, "isLoading =", isLoading);
   }, [isAuthenticated, isLoading]);
 
+  // Added debugging for rendering
+  console.log("Rendering AuthPage with mode:", authMode, "error:", authError);
+
   return (
     <AuthPageLayout>
       <AuthContainer 
