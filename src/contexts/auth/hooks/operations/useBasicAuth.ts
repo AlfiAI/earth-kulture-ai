@@ -12,6 +12,8 @@ export const useBasicAuth = () => {
         console.log("Using demo account credentials");
       }
       
+      console.log("Attempting to sign in with email:", email);
+      
       // Fix the options structure to match Supabase API expectations
       const { error, data } = await supabase.auth.signInWithPassword({ 
         email, 
@@ -25,7 +27,12 @@ export const useBasicAuth = () => {
         localStorage.removeItem('supabase-remember-me');
       }
       
-      if (error) throw error;
+      if (error) {
+        console.error("Sign in error:", error);
+        throw error;
+      }
+
+      console.log("Sign in successful:", data.session ? "Session created" : "No session");
 
       // Check if MFA is required
       if (data?.session?.user?.factors && data.session.user.factors.length > 0) {
@@ -54,7 +61,7 @@ export const useBasicAuth = () => {
       const currentUrl = window.location.origin;
       console.log("Signup with redirect to:", `${currentUrl}/auth`);
       
-      const { error } = await supabase.auth.signUp({ 
+      const { error, data } = await supabase.auth.signUp({ 
         email, 
         password,
         options: {
@@ -65,9 +72,20 @@ export const useBasicAuth = () => {
         }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Sign up error:", error);
+        throw error;
+      }
       
-      toast.success("Please check your email to verify your account. Check your spam folder if you don't see it.");
+      console.log("Sign up successful, verification needed:", data);
+      
+      // Check if email confirmation is required
+      if (data?.user?.identities?.length === 0) {
+        toast.error("This email is already registered. Please sign in instead.");
+        throw new Error("User already registered");
+      } else {
+        toast.success("Please check your email to verify your account. Check your spam folder if you don't see it.");
+      }
     } catch (error: any) {
       console.error("Error signing up:", error);
       captureException(error);
@@ -83,8 +101,13 @@ export const useBasicAuth = () => {
   
   const signOut = async () => {
     try {
+      console.log("Attempting to sign out");
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        console.error("Sign out error:", error);
+        throw error;
+      }
+      console.log("Sign out successful");
     } catch (error: any) {
       console.error("Error signing out:", error);
       captureException(error);

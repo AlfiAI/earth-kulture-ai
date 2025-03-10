@@ -41,8 +41,14 @@ export const useSocialAuth = () => {
       if (error) {
         if (error.message.includes("provider is not enabled")) {
           console.error("Google provider is not enabled in Supabase:", error);
-          toast.error("Google authentication is not enabled. Please contact support or use email login.");
-          throw new Error("Google provider is not enabled in Supabase Auth settings");
+          toast.error("Google authentication is not enabled. Please contact support or use email login.", {
+            duration: 7000,
+            action: {
+              label: 'How to Fix',
+              onClick: () => window.open('https://supabase.com/dashboard/project/ihijlloxwfjrrnhxqlfa/auth/providers', '_blank')
+            }
+          });
+          throw new Error("Google provider is not enabled in Supabase Auth settings. Go to Supabase Dashboard > Authentication > Providers to enable it.");
         }
         throw error;
       }
@@ -78,7 +84,13 @@ export const useSocialAuth = () => {
       if (error) {
         if (error.message.includes("provider is not enabled")) {
           console.error("GitHub provider is not enabled in Supabase:", error);
-          toast.error("GitHub authentication is not enabled. Please contact support or use email login.");
+          toast.error("GitHub authentication is not enabled. Please contact support or use email login.", {
+            duration: 7000,
+            action: {
+              label: 'How to Fix',
+              onClick: () => window.open('https://supabase.com/dashboard/project/ihijlloxwfjrrnhxqlfa/auth/providers', '_blank')
+            }
+          });
           throw new Error("GitHub provider is not enabled in Supabase Auth settings");
         }
         throw error;
@@ -117,7 +129,13 @@ export const useSocialAuth = () => {
       if (error) {
         if (error.message.includes("provider is not enabled")) {
           console.error("LinkedIn provider is not enabled in Supabase:", error);
-          toast.error("LinkedIn authentication is not enabled. Please contact support or use email login.");
+          toast.error("LinkedIn authentication is not enabled. Please contact support or use email login.", {
+            duration: 7000,
+            action: {
+              label: 'How to Fix',
+              onClick: () => window.open('https://supabase.com/dashboard/project/ihijlloxwfjrrnhxqlfa/auth/providers', '_blank')
+            }
+          });
           throw new Error("LinkedIn provider is not enabled in Supabase Auth settings");
         }
         throw error;

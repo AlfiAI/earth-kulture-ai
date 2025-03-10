@@ -39,18 +39,31 @@ export const supabase = createClient<Database>(
       storage: {
         getItem: (key: string) => {
           if (typeof window !== 'undefined') {
-            return window.localStorage.getItem(key);
+            try {
+              return window.localStorage.getItem(key);
+            } catch (error) {
+              console.error("Error accessing localStorage:", error);
+              return null;
+            }
           }
           return null;
         },
         setItem: (key: string, value: string) => {
           if (typeof window !== 'undefined') {
-            window.localStorage.setItem(key, value);
+            try {
+              window.localStorage.setItem(key, value);
+            } catch (error) {
+              console.error("Error setting localStorage:", error);
+            }
           }
         },
         removeItem: (key: string) => {
           if (typeof window !== 'undefined') {
-            window.localStorage.removeItem(key);
+            try {
+              window.localStorage.removeItem(key);
+            } catch (error) {
+              console.error("Error removing from localStorage:", error);
+            }
           }
         }
       }

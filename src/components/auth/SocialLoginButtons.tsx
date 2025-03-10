@@ -1,13 +1,21 @@
+
 import { Button } from "@/components/ui/button";
 import { Github, Linkedin } from "lucide-react";
 import { toast } from "sonner";
+import { useState } from "react";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 type SocialLoginButtonsProps = {
   onSocialLogin: (provider: string) => void;
 };
 
 const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
+  const [socialError, setSocialError] = useState<string | null>(null);
+
   const handleGoogleSignIn = () => {
+    setSocialError(null);
+    
     // Check if we're in development mode, show a helpful message
     if (process.env.NODE_ENV === 'development') {
       toast.info("Make sure Google provider is enabled in Supabase Auth settings", {
@@ -23,6 +31,8 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
   };
 
   const handleGithubSignIn = () => {
+    setSocialError(null);
+    
     // Check if we're in development mode, show a helpful message
     if (process.env.NODE_ENV === 'development') {
       toast.info("Make sure GitHub provider is enabled in Supabase Auth settings", {
@@ -38,6 +48,8 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
   };
 
   const handleLinkedInSignIn = () => {
+    setSocialError(null);
+    
     // Check if we're in development mode, show a helpful message
     if (process.env.NODE_ENV === 'development') {
       toast.info("Make sure LinkedIn provider is enabled in Supabase Auth settings", {
@@ -53,7 +65,14 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
   };
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-3">
+      {socialError && (
+        <Alert variant="destructive" className="mb-2">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="text-sm">{socialError}</AlertDescription>
+        </Alert>
+      )}
+
       <Button 
         variant="outline" 
         className="w-full justify-start" 
@@ -98,6 +117,10 @@ const SocialLoginButtons = ({ onSocialLogin }: SocialLoginButtonsProps) => {
         <Linkedin className="mr-2 h-4 w-4" />
         Continue with LinkedIn
       </Button>
+
+      <div className="mt-2 text-xs text-center text-muted-foreground">
+        <p>Note: Social providers must be enabled in the Supabase dashboard. <br/>Use email signup/login instead.</p>
+      </div>
     </div>
   );
 };

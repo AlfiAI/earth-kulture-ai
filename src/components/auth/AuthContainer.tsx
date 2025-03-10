@@ -27,6 +27,7 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError, authError }: AuthC
   const [rememberMe, setRememberMe] = useState(false);
   const [showMFAVerification, setShowMFAVerification] = useState(false);
   const [mfaFactorId, setMfaFactorId] = useState<string | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState<string>("email");
 
   // Listen for Waly AI auth actions
   useEffect(() => {
@@ -45,6 +46,11 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError, authError }: AuthC
     };
   }, [setAuthMode]);
 
+  // Custom effect to clear errors when changing modes or tabs
+  useEffect(() => {
+    setAuthError(null);
+  }, [authMode, activeTab, setAuthError]);
+
   const handleFormSubmit = async (values: { email: string; password: string }) => {
     setIsSubmitting(true);
     setAuthError(null);
@@ -52,6 +58,7 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError, authError }: AuthC
     
     try {
       if (authMode === 'login') {
+        console.log("Attempting login with email:", values.email);
         const result = await signIn(values.email, values.password, rememberMe);
         
         // Check if MFA is required
@@ -60,6 +67,7 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError, authError }: AuthC
           setMfaFactorId(result.factorId);
         }
       } else if (authMode === 'signup') {
+        console.log("Attempting signup with email:", values.email);
         await signUp(values.email, values.password);
         setSignupSuccess(true);
         setAuthMode('login');
@@ -90,15 +98,23 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError, authError }: AuthC
     setAuthError(null);
     try {
       if (provider === 'google') {
+        console.log("Attempting Google login");
         await signInWithGoogle();
       } else if (provider === 'github') {
+        console.log("Attempting GitHub login");
         await signInWithGithub();
       } else if (provider === 'linkedin') {
+        console.log("Attempting LinkedIn login");
         await signInWithLinkedIn();
       }
     } catch (error: any) {
       console.error(`Error with ${provider} login:`, error);
-      setAuthError(error.message || `Failed to sign in with ${provider}`);
+      
+      if (error.message.includes("provider is not enabled")) {
+        setAuthError(`${provider} login is not enabled. Please use email login instead or contact the administrator to enable ${provider} authentication.`);
+      } else {
+        setAuthError(error.message || `Failed to sign in with ${provider}`);
+      }
     }
   };
 
@@ -158,7 +174,7 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError, authError }: AuthC
         />
       ) : (
         <>
-          <Tabs defaultValue="email" className="w-full">
+          <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="email">Email</TabsTrigger>
               <TabsTrigger value="social">Social</TabsTrigger>
