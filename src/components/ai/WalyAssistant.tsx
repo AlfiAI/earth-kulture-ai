@@ -1,50 +1,23 @@
 
 import { useState, useRef } from 'react';
-import { Bot } from 'lucide-react';
-import { useWalyChat } from '@/hooks/use-waly-chat';
 import { useChatPosition } from '@/hooks/use-chat-position';
+import { useWalyChat } from '@/hooks/use-waly-chat';
 import WalyChatButton from './WalyChatButton';
 import WalyChatPanel from './WalyChatPanel';
-import WalyChatOutsideClickHandler from './WalyChatOutsideClickHandler';
+import { Bot } from 'lucide-react';
 
 interface WalyAssistantProps {
   initialOpen?: boolean;
 }
 
-// Conversation starter questions for standard Waly
-const starters = [
-  {
-    text: "How can I improve my ESG score?",
-    icon: <Bot className="h-4 w-4 text-primary" />
-  },
-  {
-    text: "Explain carbon footprint tracking",
-    icon: <Bot className="h-4 w-4 text-green-500" />
-  },
-  {
-    text: "What ESG metrics should I monitor?",
-    icon: <Bot className="h-4 w-4 text-blue-500" />
-  },
-  {
-    text: "How to start sustainability reporting?",
-    icon: <Bot className="h-4 w-4 text-purple-500" />
-  }
-];
-
 const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [showNewChat, setShowNewChat] = useState(true);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const position = useChatPosition();
   
-  const {
-    messages,
-    inputValue,
-    setInputValue,
-    isTyping,
-    handleSend
-  } = useWalyChat();
+  const { messages, inputValue, setInputValue, isTyping, handleSend } = useWalyChat();
   
   const toggleOpen = () => {
     setIsOpen(!isOpen);
@@ -57,9 +30,7 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   
   const handleStarterClick = (text: string) => {
     setInputValue(text);
-    // Open the chat when starter is clicked
     setIsOpen(true);
-    // Automatically send the message after a small delay
     setTimeout(() => {
       handleSend();
       setShowNewChat(false);
@@ -67,13 +38,48 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   };
   
   const handleNewChat = () => {
-    // Reset the chat
     window.location.reload();
   };
+  
+  // Starters definition
+  const starters = [
+    {
+      text: "How can I improve my ESG score?",
+      icon: <Bot className="h-4 w-4 text-primary" />
+    },
+    {
+      text: "Explain carbon footprint tracking",
+      icon: <Bot className="h-4 w-4 text-green-500" />
+    },
+    {
+      text: "What ESG metrics should I monitor?",
+      icon: <Bot className="h-4 w-4 text-blue-500" />
+    },
+    {
+      text: "How to start sustainability reporting?",
+      icon: <Bot className="h-4 w-4 text-purple-500" />
+    }
+  ];
+
+  // Handle outside clicks to close the panel
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (chatRef.current && !chatRef.current.contains(e.target as Node)) {
+      setIsOpen(false);
+    }
+  };
+
+  // Effect to add/remove click listener
+  useState(() => {
+    if (isOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  });
 
   return (
     <>
-      {/* Chat Button */}
       {!isOpen && (
         <WalyChatButton 
           onClick={toggleOpen} 
@@ -82,14 +88,6 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
         />
       )}
       
-      {/* Outside Click Handler */}
-      <WalyChatOutsideClickHandler 
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        chatRef={chatRef}
-      />
-      
-      {/* Chat Panel */}
       <WalyChatPanel
         isOpen={isOpen}
         position={position}

@@ -17,75 +17,27 @@ export default function Index() {
   // Use the injector hook to ensure Waly is available
   useWalyInjector();
   
-  // Force visibility of Waly when dashboard loads
+  // Basic visibility check for Waly when dashboard loads
   useEffect(() => {
-    console.log('Dashboard loaded, forcing Waly visibility');
+    console.log('Dashboard loaded, checking Waly visibility');
     
-    const forceWalyVisibility = () => {
-      // First check if the elements exist
-      ['waly-container', 'chat-button'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          console.log(`Found ${id}, enforcing visibility`);
-          el.setAttribute('style', `
-            visibility: visible !important;
-            opacity: 1 !important;
-            display: block !important;
-            z-index: 9999999 !important;
-            position: fixed !important;
-            pointer-events: auto !important;
-            transform: none !important;
-            will-change: auto !important;
-            transition: none !important;
-            filter: none !important;
-          `);
-        } else {
-          console.log(`${id} element not found, will be injected by useWalyInjector`);
-        }
-      });
-      
-      // Try to create if waly-container doesn't exist
-      if (!document.getElementById('waly-container')) {
-        const walyContainer = document.createElement('div');
-        walyContainer.id = 'waly-container';
-        walyContainer.className = 'fixed bottom-0 right-0 z-[9999999]';
-        walyContainer.style.cssText = `
-          visibility: visible !important;
-          opacity: 1 !important;
-          display: block !important;
-          z-index: 9999999 !important;
-          position: fixed !important;
-          bottom: 2rem !important;
-          right: 2rem !important;
-          pointer-events: auto !important;
-        `;
-        document.body.appendChild(walyContainer);
-      }
-    };
-    
-    // Execute multiple times with delays (more frequent)
-    [0, 50, 100, 200, 300, 500, 1000, 2000, 5000].forEach(delay => {
-      setTimeout(forceWalyVisibility, delay);
-    });
-    
-    // Also trigger a custom event to let Waly components know they should be visible
-    const event = new CustomEvent('waly-force-visibility');
-    document.dispatchEvent(event);
-    
-    // Set up a periodic check for the first 30 seconds
-    const interval = setInterval(() => {
-      forceWalyVisibility();
-      document.dispatchEvent(new CustomEvent('waly-force-visibility'));
-    }, 300);
-    
-    // Clear the interval after 30 seconds
-    setTimeout(() => {
-      clearInterval(interval);
-    }, 30000);
-    
-    return () => {
-      clearInterval(interval);
-    };
+    // Create a simple container for Waly if none exists
+    if (!document.getElementById('waly-container')) {
+      console.log('Creating Waly container in dashboard');
+      const container = document.createElement('div');
+      container.id = 'waly-container';
+      container.className = 'fixed bottom-0 right-0 z-[9999999]';
+      container.style.cssText = `
+        position: fixed !important;
+        bottom: 2rem !important;
+        right: 2rem !important;
+        z-index: 9999999 !important;
+        visibility: visible !important;
+        display: block !important;
+        opacity: 1 !important;
+      `;
+      document.body.appendChild(container);
+    }
   }, []);
 
   return (
