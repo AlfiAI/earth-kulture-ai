@@ -8,7 +8,7 @@ interface SimpleChatButtonProps {
   position?: { bottom: number; right: number };
 }
 
-const SimpleChatButton = ({ onClick, position = { bottom: 2, right: 2 } }: SimpleChatButtonProps) => {
+const SimpleChatButton = ({ onClick, position = { bottom: 6, right: 2 } }: SimpleChatButtonProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
   
   // Enhanced visibility using direct DOM manipulation

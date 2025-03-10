@@ -9,8 +9,9 @@ export const useChatPosition = () => {
   const isMobile = useIsMobile();
   
   // Set position immediately without useState to avoid initial undefined state
+  // Increasing bottom position to avoid overlap with "Need Help?" link
   const position = { 
-    bottom: isMobile ? 1.5 : 2, 
+    bottom: isMobile ? 5 : 6, 
     right: isMobile ? 1.5 : 2 
   };
   
