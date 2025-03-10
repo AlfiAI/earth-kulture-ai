@@ -9,7 +9,13 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const getSiteUrl = () => {
   // In browser environment
   if (typeof window !== 'undefined') {
-    // Handle preview environments correctly
+    // First check if we're in a preview environment
+    if (window.location.hostname.includes('preview--') || 
+        window.location.hostname.includes('lovable.app')) {
+      return window.location.origin;
+    }
+    
+    // For local development or other deployments
     const url = new URL(window.location.href);
     return `${url.protocol}//${url.host}`;
   }

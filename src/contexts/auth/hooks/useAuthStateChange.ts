@@ -40,20 +40,33 @@ export const useAuthStateChange = (
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthEventType, newSession) => {
-        console.log("Auth state changed:", event);
+        console.log("Auth state changed:", event, newSession?.user?.id);
         setSession(newSession);
         setUser(newSession?.user || null);
         
         if (newSession?.user) {
-          const profileData = await fetchUserProfile(newSession.user.id);
-          if (profileData) {
-            setUserProfile({
-              id: profileData.id,
-              email: newSession.user.email || '',
-              full_name: profileData.full_name || '',
-              avatar_url: profileData.avatar_url || ''
-            });
-          } else {
+          // Fetch user profile when we have a session
+          try {
+            const profileData = await fetchUserProfile(newSession.user.id);
+            if (profileData) {
+              setUserProfile({
+                id: profileData.id,
+                email: newSession.user.email || '',
+                full_name: profileData.full_name || '',
+                avatar_url: profileData.avatar_url || ''
+              });
+            } else {
+              // Set basic profile if we couldn't fetch from database
+              setUserProfile({
+                id: newSession.user.id,
+                email: newSession.user.email || '',
+                full_name: '',
+                avatar_url: ''
+              });
+            }
+          } catch (error) {
+            console.error("Error fetching user profile:", error);
+            // Still set a basic profile on error
             setUserProfile({
               id: newSession.user.id,
               email: newSession.user.email || '',
@@ -65,7 +78,11 @@ export const useAuthStateChange = (
           setUserProfile(null);
         }
         
+        // Handle different auth events
         if (event === 'SIGNED_IN') {
+          // Get stored redirect path or default to dashboard
+          const redirectTo = localStorage.getItem("redirectAfterLogin") || "/dashboard";
+          
           // Check if this is a new user by seeing if they have a profile with data
           const profileData = newSession?.user ? await fetchUserProfile(newSession.user.id) : null;
           const isNewUser = !profileData?.full_name;
@@ -75,10 +92,13 @@ export const useAuthStateChange = (
             navigate('/onboarding');
             toast.success("Account created! Let's set up your profile.");
           } else {
-            // Regular login for existing users
-            navigate('/dashboard');
+            // Regular login for existing users - use the stored redirect path
+            navigate(redirectTo);
             toast.success("Login successful!");
           }
+          
+          // Clear the stored redirect path after using it
+          localStorage.removeItem("redirectAfterLogin");
         } else if (event === 'SIGNED_OUT') {
           navigate('/auth');
           toast.success("You have been logged out");

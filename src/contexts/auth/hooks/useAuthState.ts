@@ -17,11 +17,12 @@ export const useAuthState = () => {
       setIsLoading(true);
       
       try {
+        // Check for hash parameters in the URL which might indicate an OAuth error
         const hasHashParams = window.location.hash && window.location.hash.length > 0;
         if (hasHashParams) {
           console.log("Hash params detected, handling auth redirect");
           
-          // Additional logging for debugging hash params
+          // Parse hash parameters for error information
           const hashParams = new URLSearchParams(window.location.hash.substring(1));
           const errorParam = hashParams.get('error');
           const errorDescription = hashParams.get('error_description');
@@ -33,6 +34,8 @@ export const useAuthState = () => {
           }
         }
         
+        // Get the current session from Supabase
+        console.log("Fetching Supabase session...");
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -40,6 +43,7 @@ export const useAuthState = () => {
           setAuthError(error.message);
           toast.error(`Authentication error: ${error.message}`);
         } else {
+          console.log("Session fetched:", session ? "Valid session" : "No session");
           setSession(session);
           setUser(session?.user || null);
           setAuthError(null);
@@ -56,31 +60,38 @@ export const useAuthState = () => {
     
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log("Auth state change:", event);
-        setSession(session);
-        setUser(session?.user || null);
+      async (event, newSession) => {
+        console.log("Auth state change:", event, newSession?.user?.id);
+        setSession(newSession);
+        setUser(newSession?.user || null);
         
         if (event === 'SIGNED_IN') {
           toast.success("Successfully signed in!");
         } else if (event === 'SIGNED_OUT') {
           toast.info("You have been signed out");
+          // Clear any stored redirects when signed out
+          localStorage.removeItem("redirectAfterLogin");
         } else if (event === 'USER_UPDATED') {
           toast.success("Your profile has been updated");
+        } else if (event === 'PASSWORD_RECOVERY') {
+          toast.success("Password recovery successful");
         }
       }
     );
     
     // Fallback timeout to ensure loading state doesn't get stuck
     const loadingTimeout = setTimeout(() => {
-      setIsLoading(false);
+      if (isLoading) {
+        console.log("Auth loading state timed out, forcing completion");
+        setIsLoading(false);
+      }
     }, 5000);
     
     return () => {
       subscription.unsubscribe();
       clearTimeout(loadingTimeout);
     };
-  }, []);
+  }, [isLoading]);
 
   return {
     session,

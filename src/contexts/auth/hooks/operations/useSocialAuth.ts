@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { captureException } from "@/services/monitoring/errorTracking";
@@ -104,8 +105,9 @@ export const useSocialAuth = () => {
       const redirectUrl = `${getSiteUrl()}/auth`;
       console.log("Signing in with LinkedIn, redirect URL:", redirectUrl);
       
+      // Use LinkedIn OIDC provider instead of deprecated LinkedIn provider
       const { error, data } = await supabase.auth.signInWithOAuth({
-        provider: 'linkedin',
+        provider: 'linkedin_oidc',
         options: {
           redirectTo: redirectUrl,
           scopes: 'r_liteprofile r_emailaddress'

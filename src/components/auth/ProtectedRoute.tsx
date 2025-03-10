@@ -1,6 +1,6 @@
 
-import { ReactNode, useEffect } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { ReactNode, useEffect, useState } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
 import { toast } from 'sonner';
 
@@ -9,18 +9,18 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && !isAuthenticated && !redirecting) {
       // Store the current path for redirecting back after login
       localStorage.setItem('redirectAfterLogin', location.pathname);
       toast.error("Please sign in to access this page");
-      navigate('/auth', { state: { from: location.pathname } });
+      setRedirecting(true);
     }
-  }, [isAuthenticated, isLoading, navigate, location.pathname]);
+  }, [isAuthenticated, isLoading, location.pathname, redirecting]);
 
   // While checking auth status, show loading state
   if (isLoading) {
@@ -37,8 +37,13 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
+  // If redirecting or not authenticated, redirect to auth page
+  if (redirecting || !isAuthenticated) {
+    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
+  }
+
   // If authenticated and not loading, show the protected content
-  return isAuthenticated ? <>{children}</> : null;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

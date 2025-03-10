@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EmailLoginForm from "./EmailLoginForm";
 import SocialLoginButtons from "./SocialLoginButtons";
 import AuthToggle from "./AuthToggle";
 import ResetPasswordForm from "./ResetPasswordForm";
 import AnimatedAlert from "./AnimatedAlert";
+import AuthError from "./AuthError";
 import MFAVerification from "./MFAVerification";
 import { useAuth } from "@/contexts/auth";
 import { motion } from "framer-motion";
@@ -15,9 +16,10 @@ type AuthContainerProps = {
   authMode: 'login' | 'signup' | 'reset-password';
   setAuthMode: React.Dispatch<React.SetStateAction<'login' | 'signup' | 'reset-password'>>;
   setAuthError: React.Dispatch<React.SetStateAction<string | null>>;
+  authError: string | null;
 };
 
-const AuthContainer = ({ authMode, setAuthMode, setAuthError }: AuthContainerProps) => {
+const AuthContainer = ({ authMode, setAuthMode, setAuthError, authError }: AuthContainerProps) => {
   const { signIn, signUp, signInWithGoogle, signInWithGithub, signInWithLinkedIn, resetPassword } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
@@ -25,6 +27,23 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError }: AuthContainerPro
   const [rememberMe, setRememberMe] = useState(false);
   const [showMFAVerification, setShowMFAVerification] = useState(false);
   const [mfaFactorId, setMfaFactorId] = useState<string | undefined>(undefined);
+
+  // Listen for Waly AI auth actions
+  useEffect(() => {
+    const handleWalyAuthAction = (event: CustomEvent) => {
+      const { action } = event.detail;
+      if (action === 'login') {
+        setAuthMode('login');
+      } else if (action === 'signup') {
+        setAuthMode('signup');
+      }
+    };
+
+    window.addEventListener('waly-auth-action', handleWalyAuthAction as EventListener);
+    return () => {
+      window.removeEventListener('waly-auth-action', handleWalyAuthAction as EventListener);
+    };
+  }, [setAuthMode]);
 
   const handleFormSubmit = async (values: { email: string; password: string }) => {
     setIsSubmitting(true);
@@ -106,6 +125,8 @@ const AuthContainer = ({ authMode, setAuthMode, setAuthError }: AuthContainerPro
       animate="visible"
       exit="exit"
     >
+      {authError && <AuthError error={authError} />}
+      
       {signupSuccess && (
         <motion.div variants={itemVariants}>
           <AnimatedAlert 
