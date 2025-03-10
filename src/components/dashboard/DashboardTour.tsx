@@ -66,7 +66,7 @@ const DashboardTour: React.FC = () => {
         onClick={startTour}
         variant="outline"
         size="sm"
-        className="fixed bottom-4 right-4 gap-2 z-50 shadow-md"
+        className="fixed bottom-4 left-4 gap-2 z-50 shadow-md"
       >
         <HelpCircle size={16} />
         {hasSeenTour ? "Restart Tour" : "Take a Tour"}

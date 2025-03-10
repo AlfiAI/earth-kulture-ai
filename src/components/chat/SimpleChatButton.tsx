@@ -22,7 +22,7 @@ const SimpleChatButton = ({ onClick, position = { bottom: 2, right: 2 } }: Simpl
           position: fixed !important;
           bottom: ${position.bottom}rem !important;
           right: ${position.right}rem !important;
-          z-index: 999999999 !important;
+          z-index: 99999999 !important;
           visibility: visible !important;
           display: flex !important;
           opacity: 1 !important;
@@ -69,7 +69,7 @@ const SimpleChatButton = ({ onClick, position = { bottom: 2, right: 2 } }: Simpl
         position: 'fixed',
         bottom: `${position.bottom}rem`,
         right: `${position.right}rem`,
-        zIndex: 999999999,
+        zIndex: 99999999,
         visibility: 'visible',
         display: 'block'
       }}

@@ -4,6 +4,7 @@ import { Bot, ArrowRight, LineChart, Shield, Leaf } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import SimpleChat from '@/components/chat/SimpleChat';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -114,6 +115,9 @@ const Landing = () => {
           </div>
         </div>
       </footer>
+
+      {/* Add SimpleChat component */}
+      <SimpleChat />
     </div>
   );
 };
