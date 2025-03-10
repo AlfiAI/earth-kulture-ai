@@ -86,8 +86,8 @@ const WalyChatButton = ({
         bottom: `${position.bottom}rem`, 
         right: `${position.right}rem`,
         zIndex: 99999999,
-        visibility: 'visible !important',
-        display: 'block !important',
+        visibility: 'visible',
+        display: 'block',
         opacity: 1,
         pointerEvents: 'auto'
       }}
