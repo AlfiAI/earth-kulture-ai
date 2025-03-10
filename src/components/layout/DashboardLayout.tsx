@@ -6,6 +6,8 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "./AppSidebar";
 import MobileSidebarToggle from "./MobileSidebarToggle";
 import SimpleChat from '@/components/chat/SimpleChat';
+import { motion } from "framer-motion";
+import { pageTransitionVariants } from "@/styles/animations";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -26,13 +28,24 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <SidebarProvider defaultOpen={!isMobile}>
-      <div className="min-h-screen bg-background flex flex-col w-full">
+      <motion.div 
+        className="min-h-screen bg-background flex flex-col w-full"
+        variants={pageTransitionVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
         <Header />
         <div className="flex flex-1 pt-16">
           <AppSidebar />
-          <main className="flex-1 transition-all duration-200">
+          <motion.main 
+            className="flex-1 transition-all duration-200"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
             {children}
-          </main>
+          </motion.main>
         </div>
         
         {isMobile && (
@@ -41,7 +54,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         
         {/* Ensure chat is always mounted regardless of route */}
         <SimpleChat />
-      </div>
+      </motion.div>
     </SidebarProvider>
   );
 };

@@ -7,32 +7,10 @@ import ActivityFeed from "./ActivityFeed";
 import AIInsights from "./AIInsights";
 import PredictiveInsights from "@/components/predictive/PredictiveInsights";
 import { motion } from "framer-motion";
+import { containerVariants, itemVariants } from "@/styles/animations";
 
 const DashboardContent = () => {
   const { dashboardType } = useDashboard();
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { 
-        duration: 0.4,
-        ease: "easeOut"
-      }
-    }
-  };
 
   return (
     <motion.div
