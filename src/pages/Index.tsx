@@ -8,57 +8,33 @@ import EnterpriseTabs from "@/components/dashboard/EnterpriseTabs";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import DashboardTour from "@/components/dashboard/DashboardTour";
 import { useAuth } from "@/contexts/auth";
-import WalyAssistant from '@/components/ai/WalyAssistant';
+import SimpleChat from '@/components/chat/SimpleChat';
 
 export default function Index() {
   const { userProfile } = useAuth();
   const isEnterprise = userProfile?.dashboard_preference === 'enterprise';
   
-  // Debug Waly visibility
+  // Debug visibility
   useEffect(() => {
-    console.log('Index page loaded, ensuring Waly visibility');
+    console.log('Index page loaded with SimpleChat integration');
     
-    // Function to directly force Waly visibility with aggressive styling
-    const forceWalyVisibility = () => {
-      const walyContainer = document.getElementById('waly-assistant-container');
-      const chatButton = document.getElementById('chat-button');
-      
-      if (walyContainer) {
-        console.log('Found Waly container, forcing visibility');
-        walyContainer.style.cssText = `
-          position: fixed !important;
-          bottom: 20px !important;
-          right: 20px !important;
-          z-index: 9999999 !important;
-          visibility: visible !important;
-          display: block !important;
-          opacity: 1 !important;
-          pointer-events: auto !important;
-        `;
-      } else {
-        console.log('No Waly container found');
-      }
-      
-      if (chatButton) {
-        console.log('Found chat button, forcing visibility');
-        chatButton.style.cssText = `
-          position: fixed !important;
-          bottom: 20px !important;
-          right: 20px !important;
-          z-index: 9999999 !important;
-          visibility: visible !important;
-          display: block !important;
-          opacity: 1 !important;
-          pointer-events: auto !important;
-        `;
+    // Add a visible marker to check if page is rendering properly
+    const marker = document.createElement('div');
+    marker.id = 'index-page-marker';
+    marker.style.position = 'fixed';
+    marker.style.top = '0';
+    marker.style.left = '0';
+    marker.style.width = '5px';
+    marker.style.height = '5px';
+    marker.style.backgroundColor = 'red';
+    marker.style.zIndex = '999999';
+    document.body.appendChild(marker);
+    
+    return () => {
+      if (document.getElementById('index-page-marker')) {
+        document.body.removeChild(document.getElementById('index-page-marker')!);
       }
     };
-    
-    // Run immediately and on interval to ensure continuous visibility
-    forceWalyVisibility();
-    const interval = setInterval(forceWalyVisibility, 500);
-    
-    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -82,18 +58,8 @@ export default function Index() {
         </DashboardProvider>
       </div>
       
-      {/* Directly render WalyAssistant with a high z-index container */}
-      <div id="waly-root-container" style={{ 
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 9999999,
-        visibility: 'visible',
-        display: 'block',
-        pointerEvents: 'auto'
-      }}>
-        <WalyAssistant initialOpen={false} />
-      </div>
+      {/* New simplified chat component */}
+      <SimpleChat />
     </DashboardLayout>
   );
 }
