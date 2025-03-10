@@ -29,7 +29,7 @@ export const useSimpleChat = () => {
     const userMessage: MessageProps = {
       id: Date.now().toString(),
       content: messageText,
-      sender: 'user',
+      sender: 'user', // Explicitly using the literal type 'user'
       timestamp: new Date()
     };
     
@@ -43,7 +43,7 @@ export const useSimpleChat = () => {
       const aiMessage: MessageProps = {
         id: (Date.now() + 1).toString(),
         content: aiResponse,
-        sender: 'ai',
+        sender: 'ai', // Explicitly using the literal type 'ai'
         timestamp: new Date()
       };
       
@@ -58,7 +58,7 @@ export const useSimpleChat = () => {
       const errorMessage: MessageProps = {
         id: (Date.now() + 1).toString(),
         content: "Sorry, I encountered an error. Please try again later.",
-        sender: 'ai',
+        sender: 'ai', // Explicitly using the literal type 'ai'
         timestamp: new Date()
       };
       

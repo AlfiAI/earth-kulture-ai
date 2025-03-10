@@ -8,7 +8,7 @@ import { User, Bot, Sparkles } from "lucide-react";
 export interface MessageProps {
   id: string;
   content: string;
-  sender: 'user' | 'ai';
+  sender: 'user' | 'ai'; // This restricts to literal types 'user' or 'ai'
   timestamp: Date;
 }
 

@@ -38,7 +38,7 @@ export const simpleChatAIService = {
     return {
       id: '1',
       content: "Hello! I'm your sustainability assistant. How can I help you today?",
-      sender: 'ai',
+      sender: 'ai' as const, // Explicitly type as 'ai'
       timestamp: new Date()
     };
   }
