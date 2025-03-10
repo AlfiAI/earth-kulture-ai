@@ -16,9 +16,11 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [waitTime, setWaitTime] = useState(0);
 
   useEffect(() => {
+    console.log("ProtectedRoute state:", { isAuthenticated, isLoading, authError });
+    
     // If not authenticated and not loading, start redirect process
     if (!isLoading && !isAuthenticated && !redirecting) {
-      // Store the current path for redirecting back after login
+      console.log("Not authenticated, storing current path:", location.pathname);
       localStorage.setItem('redirectAfterLogin', location.pathname);
       toast.error("Please sign in to access this page");
       setRedirecting(true);
@@ -36,33 +38,14 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return () => clearTimeout(timer);
   }, [isAuthenticated, isLoading, location.pathname, redirecting, waitTime]);
 
-  // If loading for more than 5 seconds, show a more informative message
+  // Show loading state for a reasonable time
   if (isLoading && waitTime <= 5) {
     return <LoadingContent />;
   }
 
-  // If loading takes too long or we get auth errors, show an enhanced loading state
-  if ((isLoading && waitTime > 5) || authError) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <LoadingContent />
-          <p className="mt-4 text-muted-foreground">
-            {authError ? `Authentication error: ${authError}` : "Taking longer than expected..."}
-          </p>
-          <button 
-            onClick={() => window.location.href = '/auth'} 
-            className="mt-4 px-4 py-2 bg-primary text-white rounded-md"
-          >
-            Go to login page
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // If redirecting or not authenticated, redirect to auth page
   if (redirecting || !isAuthenticated) {
+    console.log("Redirecting to auth page from:", location.pathname);
     return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
   }
 

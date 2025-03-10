@@ -35,20 +35,14 @@ const AuthPage = () => {
 
   // If user is already authenticated, redirect to dashboard or original destination
   useEffect(() => {
+    console.log("AuthPage: Checking auth state...", { isAuthenticated, isLoading, redirectPath });
+    
     if (!isLoading && isAuthenticated) {
       console.log("User is authenticated, redirecting to:", redirectPath);
       navigate(redirectPath, { replace: true });
       localStorage.removeItem("redirectAfterLogin");
     }
   }, [isAuthenticated, isLoading, navigate, redirectPath]);
-
-  // For debugging auth state
-  useEffect(() => {
-    console.log("AuthPage: isAuthenticated =", isAuthenticated, "isLoading =", isLoading);
-  }, [isAuthenticated, isLoading]);
-
-  // Added debugging for rendering
-  console.log("Rendering AuthPage with mode:", authMode, "error:", authError);
 
   return (
     <AuthPageLayout>
