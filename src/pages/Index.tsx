@@ -8,36 +8,22 @@ import EnterpriseTabs from "@/components/dashboard/EnterpriseTabs";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import DashboardTour from "@/components/dashboard/DashboardTour";
 import { useAuth } from "@/contexts/auth";
-import { useWalyInjector } from '@/hooks/use-waly-injector';
+import WalyAssistant from '@/components/ai/WalyAssistant';
 
 export default function Index() {
   const { userProfile } = useAuth();
   const isEnterprise = userProfile?.dashboard_preference === 'enterprise';
   
-  // Use the enhanced Waly injector
-  useWalyInjector();
-  
-  // Additional safety check to ensure Waly is visible on the dashboard
+  // Ensure Waly visibility on the dashboard
   useEffect(() => {
     console.log('Dashboard loaded, ensuring Waly visibility');
     
     const ensureWalyVisibility = () => {
-      // Force Waly container to be visible
-      if (!document.getElementById('waly-container')) {
-        console.log('Creating Waly container in dashboard component');
-        const container = document.createElement('div');
-        container.id = 'waly-container';
-        container.style.cssText = `
-          position: fixed !important;
-          bottom: 20px !important;
-          right: 20px !important;
-          z-index: 99999999 !important;
-          visibility: visible !important;
-          display: block !important;
-          opacity: 1 !important;
-          pointer-events: auto !important;
-        `;
-        document.body.appendChild(container);
+      // Check for Waly container
+      const walyContainer = document.getElementById('waly-assistant-container');
+      
+      if (!walyContainer) {
+        console.log('No Waly container found, rendering WalyAssistant in Index');
       }
     };
     
@@ -69,6 +55,18 @@ export default function Index() {
           {/* Tour component */}
           <DashboardTour />
         </DashboardProvider>
+      </div>
+      
+      {/* Directly render WalyAssistant in the Index page */}
+      <div id="waly-container" style={{ 
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        zIndex: 9999999,
+        visibility: 'visible',
+        display: 'block'
+      }}>
+        <WalyAssistant initialOpen={false} />
       </div>
     </DashboardLayout>
   );

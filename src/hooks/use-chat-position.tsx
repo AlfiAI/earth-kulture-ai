@@ -7,10 +7,15 @@ import { useIsMobile } from './use-mobile';
  */
 export const useChatPosition = () => {
   const isMobile = useIsMobile();
-  const [position, setPosition] = useState({ bottom: 2, right: 2 });
+  const [position, setPosition] = useState({ 
+    bottom: isMobile ? 1.5 : 2, 
+    right: isMobile ? 1.5 : 2 
+  });
   
   // Update position on resize and ensure visibility
   useEffect(() => {
+    console.log('useChatPosition: Initializing position');
+    
     const updatePosition = () => {
       // Adjust position based on device
       const newPosition = {
@@ -21,7 +26,7 @@ export const useChatPosition = () => {
       setPosition(newPosition);
       
       // Force Waly visibility by directly setting element styles
-      const walyContainer = document.getElementById('waly-container');
+      const walyContainer = document.getElementById('waly-assistant-container');
       const chatButton = document.getElementById('chat-button');
       
       if (walyContainer) {
@@ -33,6 +38,7 @@ export const useChatPosition = () => {
           visibility: visible !important;
           display: block !important;
           opacity: 1 !important;
+          pointer-events: auto !important;
         `;
       }
       
@@ -45,6 +51,7 @@ export const useChatPosition = () => {
           visibility: visible !important;
           display: block !important;
           opacity: 1 !important;
+          pointer-events: auto !important;
         `;
       }
     };
@@ -54,7 +61,7 @@ export const useChatPosition = () => {
     window.addEventListener('resize', updatePosition);
     
     // Also run periodically to ensure continuous visibility
-    const interval = setInterval(updatePosition, 1000);
+    const interval = setInterval(updatePosition, 300);
     
     return () => {
       window.removeEventListener('resize', updatePosition);

@@ -29,24 +29,26 @@ const WalyChatButton = ({
   
   // Force visibility of chat button
   useEffect(() => {
+    console.log('WalyChatButton mounted, ensuring visibility');
     if (buttonRef.current) {
       const forceVisible = () => {
         if (buttonRef.current) {
           buttonRef.current.style.cssText = `
-            position: fixed !important;
-            bottom: ${position.bottom}rem !important;
-            right: ${position.right}rem !important;
-            z-index: 99999999 !important;
             visibility: visible !important;
             display: block !important;
             opacity: 1 !important;
+            z-index: 99999999 !important;
+            position: fixed !important;
+            bottom: ${position.bottom}rem !important;
+            right: ${position.right}rem !important;
             pointer-events: auto !important;
           `;
         }
       };
       
       forceVisible();
-      const interval = setInterval(forceVisible, 300);
+      // Run periodically to ensure continuous visibility
+      const interval = setInterval(forceVisible, 200);
       
       return () => clearInterval(interval);
     }
@@ -68,6 +70,8 @@ const WalyChatButton = ({
     }
   };
   
+  console.log('Rendering WalyChatButton, showStarters:', showStarters);
+  
   return (
     <motion.div
       id="chat-button"
@@ -76,11 +80,14 @@ const WalyChatButton = ({
       animate={{ opacity: 1 }}
       className="fixed"
       style={{ 
+        position: 'fixed',
         bottom: `${position.bottom}rem`, 
         right: `${position.right}rem`,
         zIndex: 99999999,
         visibility: 'visible',
-        display: 'block'
+        display: 'block',
+        opacity: 1,
+        pointerEvents: 'auto'
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
