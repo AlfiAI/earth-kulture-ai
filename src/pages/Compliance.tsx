@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import ComplianceHeader from "@/components/compliance/ComplianceHeader";
 import ComplianceDashboardSummary from "@/components/compliance/ComplianceDashboardSummary";
@@ -7,8 +6,6 @@ import ComplianceTabs from "@/components/compliance/ComplianceTabs";
 import { complianceItems } from "@/data/complianceData";
 
 const Compliance = () => {
-  const [mounted, setMounted] = useState(true);
-
   return (
     <DashboardLayout>
       <div className="p-6 max-w-7xl mx-auto">
