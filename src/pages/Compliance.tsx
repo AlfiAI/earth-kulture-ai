@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import InsightsLayout from "@/components/insights/InsightsLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import ComplianceHeader from "@/components/compliance/ComplianceHeader";
 import ComplianceDashboardSummary from "@/components/compliance/ComplianceDashboardSummary";
 import ComplianceTabs from "@/components/compliance/ComplianceTabs";
@@ -10,15 +10,15 @@ const Compliance = () => {
   const [mounted, setMounted] = useState(true);
 
   return (
-    <InsightsLayout>
-      <div className="max-w-7xl mx-auto">
+    <DashboardLayout>
+      <div className="p-6 max-w-7xl mx-auto">
         <ComplianceHeader />
         <ComplianceDashboardSummary complianceItems={complianceItems} />
         <div className="mb-6">
           <ComplianceTabs complianceItems={complianceItems} />
         </div>
       </div>
-    </InsightsLayout>
+    </DashboardLayout>
   );
 };
 
