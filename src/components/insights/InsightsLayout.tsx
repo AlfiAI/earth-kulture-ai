@@ -1,25 +1,15 @@
 
-import { SidebarProvider } from "@/components/ui/sidebar/SidebarProvider";
-import AppSidebar from "@/components/layout/AppSidebar";
-import Header from "@/components/layout/Header";
+import { ReactNode } from "react";
 
 interface InsightsLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const InsightsLayout = ({ children }: InsightsLayoutProps) => {
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col">
-          <Header />
-          <main className="flex-1 px-4 py-4 overflow-auto">
-            {children}
-          </main>
-        </div>
-      </div>
-    </SidebarProvider>
+    <div className="min-h-screen pt-20 pb-8 px-4 md:px-6">
+      {children}
+    </div>
   );
 };
 

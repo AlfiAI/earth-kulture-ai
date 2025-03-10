@@ -11,10 +11,12 @@ const Compliance = () => {
 
   return (
     <InsightsLayout>
-      <ComplianceHeader />
-      <ComplianceDashboardSummary complianceItems={complianceItems} />
-      <div className="mb-6">
-        <ComplianceTabs complianceItems={complianceItems} />
+      <div className="max-w-7xl mx-auto">
+        <ComplianceHeader />
+        <ComplianceDashboardSummary complianceItems={complianceItems} />
+        <div className="mb-6">
+          <ComplianceTabs complianceItems={complianceItems} />
+        </div>
       </div>
     </InsightsLayout>
   );
