@@ -1,6 +1,9 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { useUserAvatar } from "@/hooks/use-user-avatar";
+import { User } from "lucide-react";
 
 export interface MessageProps {
   id: string;
@@ -10,33 +13,46 @@ export interface MessageProps {
 }
 
 const SimpleMessage = ({ content, sender }: MessageProps) => {
+  const { avatarUrl, initials } = useUserAvatar();
+  const walyAvatarPath = "/lovable-uploads/fa2419be-7196-4ace-9f1c-60dec598d88b.png";
+  
   return (
-    <div className={cn(
-      "flex gap-3 items-start p-4",
-      sender === 'user' ? "justify-end" : "justify-start"
-    )}>
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={cn(
+        "flex gap-3 items-start p-2",
+        sender === 'user' ? "justify-end" : "justify-start"
+      )}
+    >
       {sender === 'ai' && (
-        <Avatar className="h-8 w-8">
-          <AvatarImage src="/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png" alt="AI" />
-          <AvatarFallback>AI</AvatarFallback>
+        <Avatar className="h-10 w-10 border-2 border-emerald-100 shadow-sm">
+          <AvatarImage src={walyAvatarPath} alt="Waly" className="p-1" />
+          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
+            <User className="h-5 w-5" />
+          </AvatarFallback>
         </Avatar>
       )}
       
       <div className={cn(
-        "rounded-lg p-4 max-w-[75%]",
+        "rounded-2xl p-4 max-w-[75%] shadow-sm",
         sender === 'user' 
-          ? "bg-primary text-white" 
-          : "bg-muted border border-border"
+          ? "bg-gradient-to-br from-primary to-sky-500 text-white" 
+          : "bg-white border border-gray-100"
       )}>
         {content}
       </div>
       
       {sender === 'user' && (
-        <Avatar className="h-8 w-8">
-          <AvatarFallback>U</AvatarFallback>
+        <Avatar className="h-10 w-10 border-2 border-primary/20 shadow-sm">
+          <AvatarImage src={avatarUrl} alt="User" />
+          <AvatarFallback className="bg-gradient-to-br from-sky-500 to-primary text-white">
+            {initials}
+          </AvatarFallback>
         </Avatar>
       )}
-    </div>
+    </motion.div>
   );
 };
 

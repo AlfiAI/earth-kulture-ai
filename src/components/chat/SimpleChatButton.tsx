@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface SimpleChatButtonProps {
   onClick: () => void;
@@ -74,13 +75,18 @@ const SimpleChatButton = ({ onClick, position = { bottom: 6, right: 2 } }: Simpl
         display: 'block'
       }}
     >
-      <Button
-        onClick={onClick}
-        className="w-16 h-16 rounded-full shadow-xl bg-primary hover:bg-primary/90 text-white flex items-center justify-center border-4 border-white"
-        size="icon"
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <MessageSquare className="h-8 w-8" />
-      </Button>
+        <Button
+          onClick={onClick}
+          className="w-16 h-16 rounded-full shadow-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:shadow-emerald-500/20 text-white flex items-center justify-center border-4 border-white"
+          size="icon"
+        >
+          <MessageSquare className="h-8 w-8" />
+        </Button>
+      </motion.div>
     </div>
   );
 };

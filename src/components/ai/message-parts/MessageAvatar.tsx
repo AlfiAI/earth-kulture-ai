@@ -10,8 +10,8 @@ interface MessageAvatarProps {
 }
 
 const MessageAvatar = ({ sender }: MessageAvatarProps) => {
-  // Use the robot avatar image for AI
-  const walyAvatarPath = "/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png";
+  // Use the updated Waly avatar image
+  const walyAvatarPath = "/lovable-uploads/fa2419be-7196-4ace-9f1c-60dec598d88b.png";
   
   // State to track image loading
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -62,7 +62,7 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
       whileHover={{ scale: 1.05, rotate: 2 }}
     >
       {sender === 'ai' ? (
-        <Avatar className="h-12 w-12 border-2 border-primary/20 bg-white shadow-sm">
+        <Avatar className="h-12 w-12 border-2 border-emerald-100 bg-white shadow-md">
           {imageError ? (
             <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
               <div className="h-full w-full flex items-center justify-center">
@@ -74,7 +74,7 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
               <AvatarImage 
                 src={walyAvatarPath}
                 alt="Waly AI" 
-                className="p-1.5"
+                className="p-1"
                 onError={handleImageError}
               />
               <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
@@ -86,7 +86,7 @@ const MessageAvatar = ({ sender }: MessageAvatarProps) => {
           )}
         </Avatar>
       ) : (
-        <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-sm">
+        <Avatar className="h-12 w-12 border-2 border-primary/20 bg-primary/10 shadow-md">
           <AvatarImage src={avatarUrl} alt="User" />
           <AvatarFallback className="bg-gradient-to-br from-sky-500 to-primary text-white">
             {initials}

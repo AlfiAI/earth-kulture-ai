@@ -15,7 +15,7 @@ interface ChatPanelHeaderProps {
 const ChatPanelHeader = ({ onClose, title, subtitle }: ChatPanelHeaderProps) => {
   const isMobile = useIsMobile();
   const displayTitle = title || (isMobile ? "Waly" : "Waly Assistant");
-  const walyAvatarPath = "/lovable-uploads/fc07f487-a214-40b3-9914-8b4068465a8a.png";
+  const walyAvatarPath = "/lovable-uploads/fa2419be-7196-4ace-9f1c-60dec598d88b.png";
 
   return (
     <motion.div 
@@ -30,7 +30,7 @@ const ChatPanelHeader = ({ onClose, title, subtitle }: ChatPanelHeaderProps) => 
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
           <Avatar className="h-14 w-14 bg-white/20 border-2 border-white/30 ring-2 ring-white/10 shadow-lg">
-            <AvatarImage src={walyAvatarPath} alt="Waly" className="p-2.5" />
+            <AvatarImage src={walyAvatarPath} alt="Waly" className="p-1.5" />
             <AvatarFallback className="bg-gradient-to-br from-white/90 to-white/70 text-primary">
               <Sparkles className="h-5 w-5" />
             </AvatarFallback>
@@ -61,7 +61,7 @@ const ChatPanelHeader = ({ onClose, title, subtitle }: ChatPanelHeaderProps) => 
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 500, damping: 30, delay: 0.3 }}
         >
-          <Badge variant="outline" className="text-xs bg-white/20 text-white border-white/20 shadow-sm ml-3">Beta</Badge>
+          <Badge variant="outline" className="text-xs bg-white/20 text-white border-white/20 shadow-sm ml-3">Pro</Badge>
         </motion.div>
       </div>
       

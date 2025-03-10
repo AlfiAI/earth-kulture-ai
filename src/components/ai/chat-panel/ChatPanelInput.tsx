@@ -1,6 +1,6 @@
 
 import { useRef } from 'react';
-import { SendHorizonal, Sparkles } from 'lucide-react';
+import { SendHorizontal, Sparkles } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -63,7 +63,7 @@ const ChatPanelInput = ({ inputValue, setInputValue, handleSend, inputRef, place
               "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
           >
-            <SendHorizonal className="h-5 w-5 text-white" />
+            <SendHorizontal className="h-5 w-5 text-white" />
           </Button>
         </motion.div>
       </div>
