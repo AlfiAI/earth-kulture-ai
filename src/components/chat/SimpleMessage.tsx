@@ -20,37 +20,54 @@ const SimpleMessage = ({ content, sender }: MessageProps) => {
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.3, type: "spring", damping: 25 }}
       className={cn(
         "flex gap-3 items-start p-2",
         sender === 'user' ? "justify-end" : "justify-start"
       )}
     >
       {sender === 'ai' && (
-        <Avatar className="h-10 w-10 border-2 border-emerald-100 shadow-sm">
-          <AvatarImage src={walyAvatarPath} alt="Waly" className="p-1" />
-          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
-            <User className="h-5 w-5" />
-          </AvatarFallback>
-        </Avatar>
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Avatar className="h-10 w-10 border-2 border-emerald-100 shadow-sm">
+            <AvatarImage src={walyAvatarPath} alt="Waly" className="p-1" />
+            <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
+              <User className="h-5 w-5" />
+            </AvatarFallback>
+          </Avatar>
+        </motion.div>
       )}
       
-      <div className={cn(
-        "rounded-2xl p-4 max-w-[75%] shadow-sm",
-        sender === 'user' 
-          ? "bg-gradient-to-br from-primary to-sky-500 text-white" 
-          : "bg-white border border-gray-100"
-      )}>
+      <motion.div 
+        className={cn(
+          "rounded-2xl p-4 max-w-[75%] shadow-sm",
+          sender === 'user' 
+            ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white" 
+            : "bg-white border border-gray-100"
+        )}
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.2, delay: 0.1 }}
+      >
         {content}
-      </div>
+      </motion.div>
       
       {sender === 'user' && (
-        <Avatar className="h-10 w-10 border-2 border-primary/20 shadow-sm">
-          <AvatarImage src={avatarUrl} alt="User" />
-          <AvatarFallback className="bg-gradient-to-br from-sky-500 to-primary text-white">
-            {initials}
-          </AvatarFallback>
-        </Avatar>
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Avatar className="h-10 w-10 border-2 border-emerald-200 shadow-sm">
+            <AvatarImage src={avatarUrl} alt="User" />
+            <AvatarFallback className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </motion.div>
       )}
     </motion.div>
   );
