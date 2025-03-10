@@ -13,6 +13,7 @@ interface WalyAssistantProps {
 const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [showNewChat, setShowNewChat] = useState(true);
+  const [showStarters, setShowStarters] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const position = useChatPosition();
@@ -39,6 +40,14 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   
   const handleNewChat = () => {
     window.location.reload();
+  };
+  
+  const handleMouseEnter = () => {
+    setShowStarters(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowStarters(false);
   };
   
   // Starters definition
@@ -85,6 +94,9 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
           onClick={toggleOpen} 
           position={position} 
           onStarterClick={handleStarterClick}
+          showStarters={showStarters}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         />
       )}
       
