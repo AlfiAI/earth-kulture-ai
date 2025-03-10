@@ -1,10 +1,12 @@
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Bell, 
   Settings,
   LogOut,
-  Globe
+  Globe,
+  HelpCircle
 } from 'lucide-react';
 import { 
   DropdownMenu,
@@ -21,6 +23,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useSidebar } from "@/components/ui/sidebar/useSidebar";
 import { useAuth } from "@/contexts/auth";
 import { useUserAvatar } from "@/hooks/use-user-avatar";
+import { useDashboardTour } from "@/hooks/use-dashboard-tour";
 
 const Header = () => {
   const [notifications, setNotifications] = useState(3);
@@ -28,6 +31,7 @@ const Header = () => {
   const { toggleSidebar } = useSidebar();
   const { userProfile, signOut } = useAuth();
   const { avatarUrl, initials } = useUserAvatar();
+  const { startTour } = useDashboardTour();
   
   const getPageTitle = () => {
     const path = location.pathname;
@@ -77,6 +81,16 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-4">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={startTour} 
+          className="flex items-center gap-1.5 text-sm"
+        >
+          <HelpCircle className="h-4 w-4" />
+          Restart Tour
+        </Button>
+        
         <div className="relative">
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />

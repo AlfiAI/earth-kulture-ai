@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDashboardTour } from "@/hooks/use-dashboard-tour";
 import { Button } from "@/components/ui/button";
-import { X, ChevronRight, ChevronLeft, HelpCircle } from "lucide-react";
+import { X, ChevronRight, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -12,8 +12,6 @@ const DashboardTour: React.FC = () => {
     isTourOpen, 
     tourSteps, 
     currentStep, 
-    hasSeenTour,
-    startTour, 
     endTour, 
     nextStep, 
     prevStep 
@@ -61,17 +59,7 @@ const DashboardTour: React.FC = () => {
   }, [isTourOpen, currentStep, tourSteps]);
 
   if (!isTourOpen) {
-    return (
-      <Button
-        onClick={startTour}
-        variant="outline"
-        size="sm"
-        className="fixed bottom-4 left-4 gap-2 z-50 shadow-md"
-      >
-        <HelpCircle size={16} />
-        {hasSeenTour ? "Restart Tour" : "Take a Tour"}
-      </Button>
-    );
+    return null; // No longer need to show a button here
   }
 
   const step = tourSteps[currentStep];
