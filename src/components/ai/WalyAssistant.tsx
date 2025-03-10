@@ -1,6 +1,5 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { useChatPosition } from '@/hooks/use-chat-position';
 import { useWalyChat } from '@/hooks/use-waly-chat';
 import WalyChatButton from './WalyChatButton';
 import WalyChatPanel from './WalyChatPanel';
@@ -16,21 +15,39 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
   const [showStarters, setShowStarters] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const position = useChatPosition();
+  
+  // Fixed position for all devices
+  const position = { bottom: 2, right: 2 };
   
   const { messages, inputValue, setInputValue, isTyping, handleSend } = useWalyChat();
   
   // Force visibility of the chat component
   useEffect(() => {
     console.log('WalyAssistant mounted, ensuring visibility');
-    const forceWalyVisibility = () => {
+    
+    const forceVisibility = () => {
       const container = document.getElementById('waly-assistant-container');
       if (container) {
         container.style.cssText = `
           position: fixed !important;
           bottom: ${position.bottom}rem !important;
           right: ${position.right}rem !important;
-          z-index: 99999999 !important;
+          z-index: 9999999 !important;
+          visibility: visible !important;
+          display: block !important;
+          opacity: 1 !important;
+          pointer-events: auto !important;
+        `;
+      }
+      
+      // Also ensure the button is visible
+      const button = document.getElementById('chat-button');
+      if (button && !isOpen) {
+        button.style.cssText = `
+          position: fixed !important;
+          bottom: ${position.bottom}rem !important;
+          right: ${position.right}rem !important;
+          z-index: 9999999 !important;
           visibility: visible !important;
           display: block !important;
           opacity: 1 !important;
@@ -39,14 +56,15 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
       }
     };
     
-    forceWalyVisibility();
-    // Run periodically to ensure visibility
-    const interval = setInterval(forceWalyVisibility, 300);
+    // Run immediately and periodically
+    forceVisibility();
+    const interval = setInterval(forceVisibility, 300);
     
     return () => clearInterval(interval);
-  }, [position]);
+  }, [isOpen, position]);
   
   const toggleOpen = () => {
+    console.log('Toggling chat open state:', !isOpen);
     setIsOpen(!isOpen);
     if (!isOpen) {
       setTimeout(() => {
@@ -96,34 +114,21 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
     }
   ];
 
-  // Handle outside clicks to close the panel
-  const handleOutsideClick = (e: MouseEvent) => {
-    if (chatRef.current && !chatRef.current.contains(e.target as Node)) {
-      setIsOpen(false);
-    }
-  };
-
-  // Effect to add/remove click listener
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener('mousedown', handleOutsideClick);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
-  }, [isOpen]);
-
   return (
-    <div id="waly-assistant-container" className="fixed" style={{ 
-      position: 'fixed',
-      bottom: `${position.bottom}rem`, 
-      right: `${position.right}rem`,
-      zIndex: 99999999,
-      visibility: 'visible',
-      display: 'block',
-      opacity: 1,
-      pointerEvents: 'auto'
-    }}>
+    <div 
+      id="waly-assistant-container" 
+      className="fixed" 
+      style={{ 
+        position: 'fixed',
+        bottom: `${position.bottom}rem`, 
+        right: `${position.right}rem`,
+        zIndex: 9999999,
+        visibility: 'visible',
+        display: 'block',
+        opacity: 1,
+        pointerEvents: 'auto'
+      }}
+    >
       {!isOpen && (
         <WalyChatButton 
           onClick={toggleOpen} 
@@ -135,22 +140,24 @@ const WalyAssistant = ({ initialOpen = false }: WalyAssistantProps) => {
         />
       )}
       
-      <WalyChatPanel
-        isOpen={isOpen}
-        position={position}
-        chatRef={chatRef}
-        onClose={toggleOpen}
-        messages={messages}
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        isTyping={isTyping}
-        handleSend={handleSend}
-        inputRef={inputRef}
-        showNewChat={showNewChat}
-        onStarterClick={handleStarterClick}
-        onNewChat={handleNewChat}
-        starters={starters}
-      />
+      {isOpen && (
+        <WalyChatPanel
+          isOpen={isOpen}
+          position={position}
+          chatRef={chatRef}
+          onClose={toggleOpen}
+          messages={messages}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          isTyping={isTyping}
+          handleSend={handleSend}
+          inputRef={inputRef}
+          showNewChat={showNewChat}
+          onStarterClick={handleStarterClick}
+          onNewChat={handleNewChat}
+          starters={starters}
+        />
+      )}
     </div>
   );
 };

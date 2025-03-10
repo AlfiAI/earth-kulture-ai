@@ -14,24 +14,49 @@ export default function Index() {
   const { userProfile } = useAuth();
   const isEnterprise = userProfile?.dashboard_preference === 'enterprise';
   
-  // Ensure Waly visibility on the dashboard
+  // Debug Waly visibility
   useEffect(() => {
-    console.log('Dashboard loaded, ensuring Waly visibility');
+    console.log('Index page loaded, ensuring Waly visibility');
     
-    const ensureWalyVisibility = () => {
-      // Check for Waly container
+    // Function to directly force Waly visibility with aggressive styling
+    const forceWalyVisibility = () => {
       const walyContainer = document.getElementById('waly-assistant-container');
+      const chatButton = document.getElementById('chat-button');
       
-      if (!walyContainer) {
-        console.log('No Waly container found, rendering WalyAssistant in Index');
+      if (walyContainer) {
+        console.log('Found Waly container, forcing visibility');
+        walyContainer.style.cssText = `
+          position: fixed !important;
+          bottom: 20px !important;
+          right: 20px !important;
+          z-index: 9999999 !important;
+          visibility: visible !important;
+          display: block !important;
+          opacity: 1 !important;
+          pointer-events: auto !important;
+        `;
+      } else {
+        console.log('No Waly container found');
+      }
+      
+      if (chatButton) {
+        console.log('Found chat button, forcing visibility');
+        chatButton.style.cssText = `
+          position: fixed !important;
+          bottom: 20px !important;
+          right: 20px !important;
+          z-index: 9999999 !important;
+          visibility: visible !important;
+          display: block !important;
+          opacity: 1 !important;
+          pointer-events: auto !important;
+        `;
       }
     };
     
-    // Run immediately
-    ensureWalyVisibility();
-    
-    // Run periodically
-    const interval = setInterval(ensureWalyVisibility, 1000);
+    // Run immediately and on interval to ensure continuous visibility
+    forceWalyVisibility();
+    const interval = setInterval(forceWalyVisibility, 500);
     
     return () => clearInterval(interval);
   }, []);
@@ -57,14 +82,15 @@ export default function Index() {
         </DashboardProvider>
       </div>
       
-      {/* Directly render WalyAssistant in the Index page */}
-      <div id="waly-container" style={{ 
+      {/* Directly render WalyAssistant with a high z-index container */}
+      <div id="waly-root-container" style={{ 
         position: 'fixed',
         bottom: '20px',
         right: '20px',
         zIndex: 9999999,
         visibility: 'visible',
-        display: 'block'
+        display: 'block',
+        pointerEvents: 'auto'
       }}>
         <WalyAssistant initialOpen={false} />
       </div>

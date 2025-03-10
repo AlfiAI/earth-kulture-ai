@@ -3,71 +3,54 @@ import { useState, useEffect } from 'react';
 import { useIsMobile } from './use-mobile';
 
 /**
- * Simple hook to manage chat position ensuring it's always visible
+ * Simple hook to provide stable chat position with aggressive visibility enforcement
  */
 export const useChatPosition = () => {
   const isMobile = useIsMobile();
-  const [position, setPosition] = useState({ 
+  
+  // Set position immediately without useState to avoid initial undefined state
+  const position = { 
     bottom: isMobile ? 1.5 : 2, 
     right: isMobile ? 1.5 : 2 
-  });
+  };
   
-  // Update position on resize and ensure visibility
+  // Debug position
   useEffect(() => {
-    console.log('useChatPosition: Initializing position');
+    console.log('useChatPosition: Using position:', position);
     
-    const updatePosition = () => {
-      // Adjust position based on device
-      const newPosition = {
-        bottom: isMobile ? 1.5 : 2,
-        right: isMobile ? 1.5 : 2
-      };
+    // Force visibility of Waly components
+    const forceVisibility = () => {
+      // Get all Waly-related elements
+      const walyElements = [
+        document.getElementById('waly-assistant-container'),
+        document.getElementById('chat-button'),
+        document.getElementById('waly-container'),
+        document.getElementById('waly-root-container')
+      ];
       
-      setPosition(newPosition);
-      
-      // Force Waly visibility by directly setting element styles
-      const walyContainer = document.getElementById('waly-assistant-container');
-      const chatButton = document.getElementById('chat-button');
-      
-      if (walyContainer) {
-        walyContainer.style.cssText = `
-          position: fixed !important;
-          bottom: ${newPosition.bottom}rem !important;
-          right: ${newPosition.right}rem !important;
-          z-index: 99999999 !important;
-          visibility: visible !important;
-          display: block !important;
-          opacity: 1 !important;
-          pointer-events: auto !important;
-        `;
-      }
-      
-      if (chatButton) {
-        chatButton.style.cssText = `
-          position: fixed !important;
-          bottom: ${newPosition.bottom}rem !important;
-          right: ${newPosition.right}rem !important;
-          z-index: 99999999 !important;
-          visibility: visible !important;
-          display: block !important;
-          opacity: 1 !important;
-          pointer-events: auto !important;
-        `;
-      }
+      // Apply aggressive styling to each element
+      walyElements.forEach(el => {
+        if (el) {
+          el.style.cssText = `
+            position: fixed !important;
+            bottom: ${position.bottom}rem !important;
+            right: ${position.right}rem !important;
+            z-index: 9999999 !important;
+            visibility: visible !important;
+            display: block !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+          `;
+        }
+      });
     };
     
-    // Run immediately and on resize
-    updatePosition();
-    window.addEventListener('resize', updatePosition);
+    // Run immediately and periodically
+    forceVisibility();
+    const interval = setInterval(forceVisibility, 300);
     
-    // Also run periodically to ensure continuous visibility
-    const interval = setInterval(updatePosition, 300);
-    
-    return () => {
-      window.removeEventListener('resize', updatePosition);
-      clearInterval(interval);
-    };
-  }, [isMobile]);
+    return () => clearInterval(interval);
+  }, [isMobile, position]);
   
   return position;
 };

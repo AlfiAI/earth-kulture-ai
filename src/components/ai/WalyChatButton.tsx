@@ -30,28 +30,30 @@ const WalyChatButton = ({
   // Force visibility of chat button
   useEffect(() => {
     console.log('WalyChatButton mounted, ensuring visibility');
-    if (buttonRef.current) {
-      const forceVisible = () => {
-        if (buttonRef.current) {
-          buttonRef.current.style.cssText = `
-            visibility: visible !important;
-            display: block !important;
-            opacity: 1 !important;
-            z-index: 99999999 !important;
-            position: fixed !important;
-            bottom: ${position.bottom}rem !important;
-            right: ${position.right}rem !important;
-            pointer-events: auto !important;
-          `;
-        }
-      };
-      
-      forceVisible();
-      // Run periodically to ensure continuous visibility
-      const interval = setInterval(forceVisible, 200);
-      
-      return () => clearInterval(interval);
-    }
+    
+    const forceVisible = () => {
+      if (buttonRef.current) {
+        console.log('Forcing button visibility');
+        buttonRef.current.style.cssText = `
+          visibility: visible !important;
+          display: block !important;
+          opacity: 1 !important;
+          z-index: 99999999 !important;
+          position: fixed !important;
+          bottom: ${position.bottom}rem !important;
+          right: ${position.right}rem !important;
+          pointer-events: auto !important;
+          width: auto !important;
+          height: auto !important;
+        `;
+      }
+    };
+    
+    // Run immediately and set interval
+    forceVisible();
+    const interval = setInterval(forceVisible, 200);
+    
+    return () => clearInterval(interval);
   }, [position]);
   
   // Conversation starter questions
@@ -84,8 +86,8 @@ const WalyChatButton = ({
         bottom: `${position.bottom}rem`, 
         right: `${position.right}rem`,
         zIndex: 99999999,
-        visibility: 'visible',
-        display: 'block',
+        visibility: 'visible !important',
+        display: 'block !important',
         opacity: 1,
         pointerEvents: 'auto'
       }}
