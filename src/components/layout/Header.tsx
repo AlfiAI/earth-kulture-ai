@@ -6,7 +6,8 @@ import {
   Settings,
   LogOut,
   Globe,
-  HelpCircle
+  HelpCircle,
+  ExternalLink
 } from 'lucide-react';
 import { 
   DropdownMenu,
@@ -43,6 +44,7 @@ const Header = () => {
     if (path === '/reports') return 'Reports';
     if (path === '/data') return 'Data Center';
     if (path === '/settings') return 'Settings';
+    if (path === '/external-data') return 'External Data';
     
     return '';
   };

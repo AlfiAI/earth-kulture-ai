@@ -1,4 +1,3 @@
-
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider } from "@/contexts/auth";
 import App from "@/App";

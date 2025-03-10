@@ -1,5 +1,6 @@
 
 import { ReactNode } from "react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
 interface InsightsLayoutProps {
   children: ReactNode;
@@ -7,9 +8,11 @@ interface InsightsLayoutProps {
 
 const InsightsLayout = ({ children }: InsightsLayoutProps) => {
   return (
-    <div className="min-h-screen pt-20 pb-8 px-4 md:px-6">
-      {children}
-    </div>
+    <DashboardLayout>
+      <div className="py-6 px-6">
+        {children}
+      </div>
+    </DashboardLayout>
   );
 };
 
