@@ -72,13 +72,16 @@ const AuthContainer = ({
       <OTPExpiryWarning />
       
       {authError && (
-        <AuthError error={authError} onDismiss={() => setAuthError(null)} />
+        <AuthError error={authError} />
       )}
       
       {showMFASetup ? (
         <MFASetup onComplete={() => setShowMFASetup(false)} />
       ) : showMFAVerification && mfaFactorId ? (
-        <MFAVerification factorId={mfaFactorId} />
+        <MFAVerification 
+          factorId={mfaFactorId} 
+          onBack={() => setShowMFAVerification(false)} 
+        />
       ) : (
         <>
           <motion.div variants={itemVariants}>
@@ -113,7 +116,7 @@ const AuthContainer = ({
           <motion.div variants={itemVariants} className="mt-6">
             <AuthToggle 
               authMode={authMode} 
-              onModeChange={setAuthMode} 
+              setAuthMode={setAuthMode} 
             />
           </motion.div>
           
