@@ -11,7 +11,7 @@ interface MessageAvatarProps {
 
 const MessageAvatar = ({ sender }: MessageAvatarProps) => {
   // Use the updated Waly avatar image
-  const walyAvatarPath = "/lovable-uploads/fa2419be-7196-4ace-9f1c-60dec598d88b.png";
+  const walyAvatarPath = "/lovable-uploads/e48e0f44-7e54-4337-b0ea-8893795682ba.png";
   
   // State to track image loading
   const [imageLoaded, setImageLoaded] = useState(false);

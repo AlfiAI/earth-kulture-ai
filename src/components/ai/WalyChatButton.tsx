@@ -103,7 +103,7 @@ const WalyChatButton = ({
         aria-label="Chat with Waly AI"
       >
         <div className="w-12 h-12 overflow-hidden rounded-full">
-          <ChatButtonAvatar avatarPath="/lovable-uploads/b4c78efa-4485-4d1a-8fa8-7b5337a8bd09.png" />
+          <ChatButtonAvatar avatarPath="/lovable-uploads/e48e0f44-7e54-4337-b0ea-8893795682ba.png" />
         </div>
         <AnimatedSparkle />
       </Button>
