@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "lucide-react";
 
 const TypingIndicator = () => {
   const walyAvatarPath = "/lovable-uploads/e48e0f44-7e54-4337-b0ea-8893795682ba.png";
@@ -14,7 +15,9 @@ const TypingIndicator = () => {
     >
       <Avatar className="h-10 w-10 border-2 border-emerald-100 shadow-sm">
         <AvatarImage src={walyAvatarPath} alt="Waly" className="p-1" />
-        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white" />
+        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-cyan-500 text-white">
+          <User className="h-5 w-5" />
+        </AvatarFallback>
       </Avatar>
       
       <div className="rounded-2xl p-4 max-w-[75%] shadow-sm bg-white border border-gray-100">

@@ -98,14 +98,9 @@ const SimpleChatButton = ({ onClick, position = { bottom: 6, right: 2 } }: Simpl
             initial={{ opacity: 0 }}
             whileHover={{ opacity: 1 }}
           />
-          <motion.div
-            className="absolute -top-1 -right-1"
-            initial={{ scale: 0 }}
-            animate={{ scale: [0, 1.2, 1] }}
-            transition={{ delay: 0.5, duration: 0.6, type: "spring" }}
-          >
+          <div className="absolute -top-1 -right-1">
             <Sparkles className="h-5 w-5 text-yellow-300 animate-pulse" />
-          </motion.div>
+          </div>
         </Button>
       </motion.div>
     </div>
