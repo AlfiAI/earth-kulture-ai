@@ -5,6 +5,7 @@ import Header from "./Header";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "./AppSidebar";
 import MobileSidebarToggle from "./MobileSidebarToggle";
+import SimpleChat from '@/components/chat/SimpleChat';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -37,6 +38,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {isMobile && (
           <MobileSidebarToggle />
         )}
+        
+        {/* Ensure chat is always mounted regardless of route */}
+        <SimpleChat />
       </div>
     </SidebarProvider>
   );
