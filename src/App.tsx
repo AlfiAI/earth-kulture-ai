@@ -27,9 +27,10 @@ function App() {
             visibility: visible !important;
             opacity: 1 !important;
             display: block !important;
-            z-index: 999999 !important;
+            z-index: 9999999 !important;
             position: fixed !important;
             pointer-events: auto !important;
+            transform: none !important;
           `);
           walyVisibilityChecked.current = true;
         }
@@ -41,9 +42,10 @@ function App() {
           visibility: visible !important;
           opacity: 1 !important;
           display: block !important;
-          z-index: 999999 !important;
+          z-index: 9999999 !important;
           position: fixed !important;
           pointer-events: auto !important;
+          transform: none !important;
         `);
       }
     };
@@ -76,7 +78,7 @@ function App() {
     // Also check periodically
     const interval = setInterval(() => {
       forceWalyVisibility();
-    }, 1000);
+    }, 500);
     
     return () => {
       clearInterval(interval);
@@ -110,12 +112,12 @@ function App() {
         <div 
           id="waly-container"
           ref={walyContainerRef}
-          className="fixed bottom-0 right-0 z-[999999]" 
+          className="fixed bottom-0 right-0 z-[9999999]" 
           style={{ 
-            visibility: "visible", // Type-safe style without !important
+            visibility: "visible",
             display: 'block',
             opacity: 1,
-            zIndex: 999999,
+            zIndex: 9999999,
             position: 'fixed',
             bottom: '2rem',
             right: '2rem',

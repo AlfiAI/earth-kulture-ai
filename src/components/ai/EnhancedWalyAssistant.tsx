@@ -37,9 +37,12 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
           visibility: visible !important;
           opacity: 1 !important;
           display: block !important;
-          z-index: 999999 !important;
+          z-index: 9999999 !important;
           position: fixed !important;
+          bottom: ${position.bottom}rem !important;
+          right: ${position.right}rem !important;
           pointer-events: auto !important;
+          transform: none !important;
         `);
       }
       
@@ -49,9 +52,10 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
           visibility: visible !important;
           opacity: 1 !important;
           display: block !important;
-          z-index: 999999 !important;
+          z-index: 9999999 !important;
           position: fixed !important;
           pointer-events: auto !important;
+          transform: none !important;
         `);
       }
     };
@@ -65,7 +69,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     });
     
     // Continue checking periodically
-    const interval = setInterval(forceWalyVisibility, 1000);
+    const interval = setInterval(forceWalyVisibility, 500);
     
     // Use MutationObserver to detect DOM changes
     const observer = new MutationObserver(() => {
@@ -79,11 +83,20 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
       attributes: true
     });
     
+    // Listen for custom event to open Waly from other components
+    const handleOpenWalyEvent = () => {
+      console.log("Received open-waly-chat event");
+      setIsOpen(true);
+    };
+    
+    document.addEventListener('open-waly-chat', handleOpenWalyEvent);
+    
     return () => {
       clearInterval(interval);
       observer.disconnect();
+      document.removeEventListener('open-waly-chat', handleOpenWalyEvent);
     };
-  }, [location.pathname]);
+  }, [location.pathname, position]);
   
   const toggleOpen = () => {
     console.log("Toggle chat open state from:", isOpen, "to:", !isOpen);
@@ -105,6 +118,11 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
     // Reset the chat
     window.location.reload();
   };
+
+  // Log to check if component is rendering
+  useEffect(() => {
+    console.log("EnhancedWalyAssistant rendering, isOpen:", isOpen);
+  }, [isOpen]);
 
   // Always render both components for reliability
   return (

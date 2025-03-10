@@ -26,9 +26,12 @@ export const useChatPosition = () => {
         visibility: visible !important;
         opacity: 1 !important;
         display: block !important;
-        z-index: 999999 !important;
+        z-index: 9999999 !important;
         position: fixed !important;
+        bottom: ${position.bottom}rem !important;
+        right: ${position.right}rem !important;
         pointer-events: auto !important;
+        transform: none !important;
       `);
     } else {
       console.warn("Chat button element not found in DOM");
@@ -40,7 +43,7 @@ export const useChatPosition = () => {
         visibility: visible !important;
         opacity: 1 !important;
         display: block !important;
-        z-index: 999999 !important;
+        z-index: 9999999 !important;
         position: fixed !important;
         pointer-events: auto !important;
       `);
@@ -55,10 +58,10 @@ export const useChatPosition = () => {
           el.style.visibility = 'visible';
           el.style.opacity = '1';
           el.style.display = el.style.display === 'none' ? 'block' : el.style.display;
-          el.style.zIndex = '999999';
+          el.style.zIndex = '9999999';
         }
       });
-  }, [location.pathname]);
+  }, [location.pathname, position]);
   
   // Update position when screen size changes
   useEffect(() => {

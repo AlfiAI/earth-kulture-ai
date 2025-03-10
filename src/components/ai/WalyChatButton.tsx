@@ -39,11 +39,12 @@ const WalyChatButton = ({
           visibility: visible !important;
           opacity: 1 !important;
           display: block !important;
-          z-index: 999999 !important;
+          z-index: 9999999 !important;
           position: fixed !important;
           bottom: ${position.bottom}rem !important;
           right: ${position.right}rem !important;
           pointer-events: auto !important;
+          transform: none !important;
         `);
       }
       
@@ -54,11 +55,12 @@ const WalyChatButton = ({
           visibility: visible !important;
           opacity: 1 !important;
           display: block !important;
-          z-index: 999999 !important;
+          z-index: 9999999 !important;
           position: fixed !important;
           bottom: ${position.bottom}rem !important;
           right: ${position.right}rem !important;
           pointer-events: auto !important;
+          transform: none !important;
         `);
       }
     };
@@ -67,12 +69,12 @@ const WalyChatButton = ({
     ensureButtonVisibility();
     
     // Call multiple times with delays to handle potential race conditions
-    [50, 100, 200, 300, 500, 1000, 2000].forEach(delay => {
+    [50, 100, 200, 300, 500, 1000, 2000, 5000].forEach(delay => {
       setTimeout(ensureButtonVisibility, delay);
     });
     
     // Periodic check
-    const interval = setInterval(ensureButtonVisibility, 1000);
+    const interval = setInterval(ensureButtonVisibility, 500);
     
     // Use MutationObserver to detect DOM changes
     const observer = new MutationObserver(() => {
@@ -124,23 +126,21 @@ const WalyChatButton = ({
     <motion.div
       id="chat-button"
       ref={buttonRef}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 1 }}
       className={cn(
-        "fixed z-[999999]", 
+        "fixed z-[9999999]", 
         isOverlapping && "opacity-80 hover:opacity-100"
       )}
       style={{ 
         bottom: `${bottomPx}px`, 
         right: `${rightPx}px`,
-        visibility: 'visible', // TypeScript compatible styles
+        visibility: 'visible',
         opacity: 1,
         display: 'block',
-        zIndex: 999999,
+        zIndex: 9999999,
         position: 'fixed'
       }}
-      whileHover={{ scale: 1.05, rotate: 3 }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
