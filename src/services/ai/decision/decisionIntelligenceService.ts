@@ -1,4 +1,3 @@
-
 import { deepseekR1Service } from '../deepseekR1Service';
 import { aiAgentOrchestrator } from '../orchestration/aiAgentOrchestrator';
 import { toast } from "sonner";
@@ -35,7 +34,7 @@ export interface ScenarioModelingResult {
 /**
  * Decision Intelligence Service - Provides AI-powered decision support
  */
-class DecisionIntelligenceService {
+class DecisionIntelligenceServiceImpl {
   /**
    * Generate scenario models for strategic decision-making
    */
@@ -303,6 +302,78 @@ class DecisionIntelligenceService {
       return [];
     }
   }
+
+  /**
+   * Analyze risk profile of data
+   */
+  async analyzeRisk(data: any, parameters: any): Promise<RiskAnalysisResult> {
+    try {
+      const analysisPrompt = `Analyze the risk profile of the following data: ${JSON.stringify(data)}. Parameters: ${JSON.stringify(parameters)}`;
+      const analysisResult = await deepseekR1Service.processQuery(
+        analysisPrompt,
+        []  // Empty conversation context
+      );
+      
+      // Parse the result
+      try {
+        return JSON.parse(analysisResult);
+      } catch (error) {
+        console.error('Error parsing risk analysis result:', error);
+        throw new Error('Failed to parse risk analysis results');
+      }
+    } catch (error) {
+      console.error("Error analyzing risk:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate ESG recommendations based on data
+   */
+  async generateRecommendations(data: any, context: string): Promise<Recommendation[]> {
+    try {
+      const recommendationsPrompt = `Generate ESG recommendations based on the following data: ${JSON.stringify(data)}. Context: ${context}`;
+      const recommendationsResult = await deepseekR1Service.processQuery(
+        recommendationsPrompt,
+        []  // Empty conversation context
+      );
+      
+      // Parse the result
+      try {
+        return JSON.parse(recommendationsResult);
+      } catch (error) {
+        console.error('Error parsing recommendations result:', error);
+        throw new Error('Failed to parse recommendations results');
+      }
+    } catch (error) {
+      console.error("Error generating recommendations:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Predict outcomes based on scenarios
+   */
+  async predictOutcomes(data: any, scenarios: string[]): Promise<OutcomePrediction[]> {
+    try {
+      const predictionsPrompt = `Predict outcomes for the following scenarios: ${JSON.stringify(scenarios)}. Based on data: ${JSON.stringify(data)}`;
+      const predictionsResult = await deepseekR1Service.processQuery(
+        predictionsPrompt,
+        []  // Empty conversation context
+      );
+      
+      // Parse the result
+      try {
+        return JSON.parse(predictionsResult);
+      } catch (error) {
+        console.error('Error parsing predictions result:', error);
+        throw new Error('Failed to parse predictions results');
+      }
+    } catch (error) {
+      console.error("Error predicting outcomes:", error);
+      throw error;
+    }
+  }
 }
 
-export const decisionIntelligenceService = new DecisionIntelligenceService();
+export const decisionIntelligenceService = new DecisionIntelligenceServiceImpl();

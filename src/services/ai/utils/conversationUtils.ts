@@ -50,6 +50,31 @@ export class ConversationContextManager {
 }
 
 /**
+ * Process a user's query with appropriate context and model selection
+ */
+export const processUserQuery = async (
+  query: string,
+  conversationHistory: any[] = [],
+  systemPrompt?: string
+): Promise<string> => {
+  try {
+    // Choose the appropriate model based on query complexity
+    const responsePromise = deepseekR1Service.processQuery(
+      query,
+      conversationHistory,
+      systemPrompt
+    );
+    
+    // Make sure we're properly awaiting the promise
+    const response = await responsePromise;
+    return response;
+  } catch (error) {
+    console.error("Error processing user query:", error);
+    return "I'm sorry, I encountered an error processing your request. Please try again.";
+  }
+};
+
+/**
  * Create a message object for user interactions
  */
 export function createUserMessage(content: string): MessageProps {
