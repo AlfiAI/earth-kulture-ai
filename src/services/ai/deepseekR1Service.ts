@@ -1,20 +1,22 @@
+
 import { toast } from "sonner";
 import { MessageProps } from '@/components/ai/Message';
 import { deepseekAPIService } from './deepseek/services/deepseekAPIService';
-import { categorizeIntent as categorizeFn } from './deepseek/utils/deepseekUtils';
+import { categorizeIntent } from './deepseek/utils/deepseekUtils';
+import { IntentCategory } from './deepseek/types/deepseekTypes';
 
 /**
  * DeepSeek Service - Enhanced version with dynamic model selection
  */
-class DeepSeekR1ServiceImpl {
-  private static instance: DeepSeekR1ServiceImpl;
+class DeepseekR1ServiceImpl {
+  private static instance: DeepseekR1ServiceImpl;
   private isAPIAvailable: boolean = true;
 
   constructor() {
-    if (DeepSeekR1ServiceImpl.instance) {
-      return DeepSeekR1ServiceImpl.instance;
+    if (DeepseekR1ServiceImpl.instance) {
+      return DeepseekR1ServiceImpl.instance;
     }
-    DeepSeekR1ServiceImpl.instance = this;
+    DeepseekR1ServiceImpl.instance = this;
     
     this.checkAPIAvailability();
   }
@@ -63,8 +65,8 @@ class DeepSeekR1ServiceImpl {
   /**
    * Categorize user intent based on query content
    */
-  categorizeIntent(query: string): string {
-    return categorizeFn(query);
+  categorizeIntent(query: string): IntentCategory {
+    return categorizeIntent(query);
   }
   
   /**
@@ -116,4 +118,4 @@ class DeepSeekR1ServiceImpl {
   }
 }
 
-export const deepseekR1Service = new DeepSeekR1ServiceImpl();
+export const deepseekR1Service = new DeepseekR1ServiceImpl();

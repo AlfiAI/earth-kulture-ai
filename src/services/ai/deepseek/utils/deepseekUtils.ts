@@ -64,6 +64,21 @@ export function categorizeIntent(query: string): IntentCategory {
     return 'carbon';
   }
   
+  if (lowerQuery.includes('analyze') ||
+      lowerQuery.includes('examine') ||
+      lowerQuery.includes('evaluate') ||
+      lowerQuery.includes('assess')) {
+    return 'analysis';
+  }
+  
+  if (lowerQuery.includes('why') || 
+      lowerQuery.includes('how') || 
+      lowerQuery.includes('explain') ||
+      lowerQuery.includes('relationship') ||
+      lowerQuery.includes('difference')) {
+    return 'complex';
+  }
+  
   return 'general';
 }
 
