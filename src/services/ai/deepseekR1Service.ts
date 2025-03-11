@@ -12,10 +12,10 @@ class DeepSeekR1ServiceImpl {
   private isAPIAvailable: boolean = true;
 
   constructor() {
-    if (DeepseekR1ServiceImpl.instance) {
-      return DeepseekR1ServiceImpl.instance;
+    if (DeepSeekR1ServiceImpl.instance) {
+      return DeepSeekR1ServiceImpl.instance;
     }
-    DeepseekR1ServiceImpl.instance = this;
+    DeepSeekR1ServiceImpl.instance = this;
     
     this.checkAPIAvailability();
   }
@@ -106,4 +106,4 @@ class DeepSeekR1ServiceImpl {
   }
 }
 
-export const deepseekR1Service = new DeepseekR1ServiceImpl();
+export const deepseekR1Service = new DeepSeekR1ServiceImpl();
