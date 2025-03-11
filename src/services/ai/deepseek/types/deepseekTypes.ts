@@ -42,4 +42,5 @@ export interface DeepseekRequestOptions {
   forceCloud?: boolean;
   temperature?: number;
   maxTokens?: number;
+  systemPrompt?: string;
 }

@@ -17,7 +17,8 @@ export class CloudAPIClient {
   async callCloudAPI(
     query: string, 
     conversationContext: any[] = [],
-    modelType: ModelType = 'deepseek-chat'
+    modelType: ModelType = 'deepseek-chat',
+    customSystemPrompt?: string
   ): Promise<string | null> {
     try {
       if (!DEEPSEEK_API_KEY) {
@@ -25,7 +26,7 @@ export class CloudAPIClient {
         return null;
       }
       
-      const systemPrompt = MODEL_CONFIG[modelType]?.systemPrompt || 'You are a helpful assistant.';
+      const systemPrompt = customSystemPrompt || MODEL_CONFIG[modelType]?.systemPrompt || 'You are a helpful assistant.';
       
       // Prepare messages for the API
       const messages = [

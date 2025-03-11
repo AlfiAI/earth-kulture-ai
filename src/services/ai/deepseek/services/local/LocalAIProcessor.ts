@@ -1,3 +1,4 @@
+
 /**
  * LocalAIProcessor - Handles processing queries using local AI models when possible
  */
@@ -18,7 +19,8 @@ export class LocalAIProcessor {
   async processLocally(
     query: string, 
     conversationContext: any[] = [],
-    modelType: ModelType = 'deepseek-chat'
+    modelType: ModelType = 'deepseek-chat',
+    customSystemPrompt?: string
   ): Promise<string | null> {
     try {
       // Check if local processing is available

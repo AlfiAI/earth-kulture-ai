@@ -91,8 +91,8 @@ Available routes: dashboard, analytics, compliance, benchmark, data, reports, go
       
       // Process the user query with DeepSeek R1 service
       let aiResponse = await deepseekR1Service.processQuery(
-        userMessage.content, 
-        messages.filter(msg => msg.id !== '1'), 
+        userMessage.content,
+        messages.filter(msg => msg.id !== '1'),
         customizedPrompt
       );
       

@@ -16,12 +16,12 @@ export class ConversationContextManager {
   /**
    * Update conversation context for improved contextual understanding
    */
-  updateContext(query: string, messageHistory: MessageProps[]): void {
+  async updateContext(query: string, messageHistory: MessageProps[]): Promise<void> {
     // Save the current query
     this.context.lastQuery = query;
     
-    // Extract intent from the query
-    const intent = deepseekR1Service.categorizeIntent(query);
+    // Extract intent from the query - make sure to wait for the result
+    const intent = await deepseekR1Service.categorizeIntent(query);
     
     // Update recent topics (keep last 5)
     this.context.recentTopics.unshift(intent);

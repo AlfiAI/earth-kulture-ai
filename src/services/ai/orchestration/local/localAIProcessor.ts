@@ -49,7 +49,12 @@ export class LocalAIProcessor {
   /**
    * Process a query using the local AI model
    */
-  async processQuery(systemPrompt: string, userPrompt: string, temperature: number = 0.5, maxTokens: number = 800): Promise<any> {
+  async processQuery(
+    systemPrompt: string, 
+    userPrompt: string, 
+    temperature: number = 0.5, 
+    maxTokens: number = 800
+  ): Promise<string> {
     try {
       const response = await fetch(this.config.url, {
         method: 'POST',

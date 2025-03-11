@@ -9,7 +9,7 @@ import { cloudAPIClient } from './cloud/CloudAPIClient';
 import { fallbackService } from './fallback/FallbackService';
 import { determineModelForQuery } from '../utils/modelSelectionUtils';
 import { hashString, formatAPIResponse } from '../utils/deepseekUtils';
-import { ModelType } from '../types/deepseekTypes';
+import { ModelType, DeepseekRequestOptions } from '../types/deepseekTypes';
 
 export class DeepseekAPIService {
   /**
@@ -18,7 +18,7 @@ export class DeepseekAPIService {
   async processQuery(
     query: string, 
     conversationContext: any[] = [], 
-    options: { preferredModel?: ModelType, forceCloud?: boolean } = {}
+    options: DeepseekRequestOptions = {}
   ): Promise<string> {
     try {
       // Try to get a cached response first
@@ -38,12 +38,12 @@ export class DeepseekAPIService {
       let response: string | null = null;
       
       if (!options.forceCloud) {
-        response = await localAIProcessor.processLocally(query, conversationContext, modelToUse);
+        response = await localAIProcessor.processLocally(query, conversationContext, modelToUse, options.systemPrompt);
       }
       
       // If local processing failed or was skipped, try cloud API
       if (!response) {
-        response = await cloudAPIClient.callCloudAPI(query, conversationContext, modelToUse);
+        response = await cloudAPIClient.callCloudAPI(query, conversationContext, modelToUse, options.systemPrompt);
       }
       
       // If we got a response, cache it and return

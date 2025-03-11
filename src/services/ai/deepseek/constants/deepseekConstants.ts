@@ -6,7 +6,8 @@ import { ModelType, ModelConfig } from '../types/deepseekTypes';
 
 // API configuration
 export const DEEPSEEK_API_BASE_URL = 'https://api.deepseek.com';
-export const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
+// In Vite, environment variables are accessed using import.meta.env instead of process.env
+export const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || '';
 
 // Model configuration
 export const MODEL_CONFIG: Record<ModelType, ModelConfig> = {
