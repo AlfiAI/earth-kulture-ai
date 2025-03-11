@@ -1,6 +1,8 @@
+
 import { toast } from "sonner";
 import { MessageProps } from '@/components/ai/Message';
 import { deepseekAPIService } from './deepseek/services/deepseekAPIService';
+import { categorizeIntent as categorizeFn } from './deepseek/utils/deepseekUtils';
 
 /**
  * DeepSeek R1 Service - Enhanced version
@@ -10,10 +12,10 @@ class DeepSeekR1ServiceImpl {
   private isAPIAvailable: boolean = true;
 
   constructor() {
-    if (DeepSeekR1ServiceImpl.instance) {
-      return DeepSeekR1ServiceImpl.instance;
+    if (DeepseekR1ServiceImpl.instance) {
+      return DeepseekR1ServiceImpl.instance;
     }
-    DeepSeekR1ServiceImpl.instance = this;
+    DeepseekR1ServiceImpl.instance = this;
     
     this.checkAPIAvailability();
   }
@@ -46,6 +48,13 @@ class DeepSeekR1ServiceImpl {
       toast.error("AI service is temporarily unavailable. Using fallback responses.");
       return this.generateFallbackResponse(query);
     }
+  }
+  
+  /**
+   * Categorize user intent based on query content
+   */
+  categorizeIntent(query: string): string {
+    return categorizeFn(query);
   }
   
   /**
@@ -97,4 +106,4 @@ class DeepSeekR1ServiceImpl {
   }
 }
 
-export const deepseekR1Service = new DeepSeekR1ServiceImpl();
+export const deepseekR1Service = new DeepseekR1ServiceImpl();
