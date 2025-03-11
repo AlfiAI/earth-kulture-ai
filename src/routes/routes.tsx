@@ -1,3 +1,4 @@
+
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider } from "@/contexts/auth";
 import App from "@/App";
@@ -35,7 +36,7 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 // Root component that wraps everything with AuthProvider and includes App for non-route components
 const Root = () => (
   <AuthProvider>
-    <Outlet />
+    <App />
   </AuthProvider>
 );
 
@@ -79,6 +80,11 @@ export const router = createBrowserRouter([
       {
         path: "/pricing",
         element: <Pricing />,
+      },
+      // Special unrestricted route for demo purposes
+      {
+        path: "/demo",
+        element: <DashboardPage />,
       },
       {
         path: "/dashboard",

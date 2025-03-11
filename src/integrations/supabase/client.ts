@@ -9,18 +9,22 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const getSiteUrl = () => {
   // In browser environment
   if (typeof window !== 'undefined') {
-    // First check if we're in a preview environment
-    if (window.location.hostname.includes('preview--') || 
-        window.location.hostname.includes('lovable.app')) {
+    // Check for production URL patterns
+    const hostname = window.location.hostname;
+    
+    // Handle production domains
+    if (hostname.includes('lovable.app') || 
+        hostname.includes('earth-kulture') || 
+        hostname.endsWith('.vercel.app')) {
       return window.location.origin;
     }
     
     // For local development or other deployments
-    const url = new URL(window.location.href);
-    return `${url.protocol}//${url.host}`;
+    return `${window.location.protocol}//${window.location.host}`;
   }
+  
   // Fallback for non-browser environments
-  return 'http://localhost:8080';
+  return 'http://localhost:5173';
 };
 
 // Configure auth redirect URLs

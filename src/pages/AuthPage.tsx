@@ -4,14 +4,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 import AuthPageLayout from "@/components/auth/AuthPageLayout";
 import AuthContainer from "@/components/auth/AuthContainer";
 import { useAuth } from "@/contexts/auth";
+import { toast } from "sonner";
 
 const AuthPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading } = useAuth();
-  const redirectPath = localStorage.getItem("redirectAfterLogin") || "/dashboard";
+  const { isAuthenticated, isLoading, signIn } = useAuth();
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'reset-password'>('login');
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
+  
+  // Get the intended redirect path from localStorage or URL state
+  const redirectPath = 
+    (location.state?.from) || 
+    localStorage.getItem("redirectAfterLogin") || 
+    "/dashboard";
 
   // Detect which authentication screen to show based on route
   useEffect(() => {
@@ -44,14 +51,38 @@ const AuthPage = () => {
     }
   }, [isAuthenticated, isLoading, navigate, redirectPath]);
 
+  // Add emergency demo login option
+  const handleDemoLogin = async () => {
+    try {
+      setIsDemo(true);
+      await signIn("demo@earthkulture.com", "demo123456");
+      toast.success("Logged in with demo account");
+      navigate(redirectPath, { replace: true });
+    } catch (error: any) {
+      console.error("Demo login error:", error);
+      setAuthError(error.message);
+    }
+  };
+
   return (
     <AuthPageLayout>
-      <AuthContainer 
-        authMode={authMode} 
-        setAuthMode={setAuthMode} 
-        setAuthError={setAuthError}
-        authError={authError}
-      />
+      <div className="w-full max-w-md flex flex-col gap-4">
+        <AuthContainer 
+          authMode={authMode} 
+          setAuthMode={setAuthMode} 
+          setAuthError={setAuthError}
+          authError={authError}
+        />
+        
+        {!isAuthenticated && (
+          <button 
+            onClick={handleDemoLogin}
+            className="mt-4 w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-md transition-colors"
+          >
+            {isDemo ? "Logging in with demo account..." : "Login with Demo Account (For MVP Presentation)"}
+          </button>
+        )}
+      </div>
     </AuthPageLayout>
   );
 };
