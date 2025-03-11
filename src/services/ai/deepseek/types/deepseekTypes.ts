@@ -1,6 +1,6 @@
 
 /**
- * Types for DeepSeek R1 API service
+ * Types for DeepSeek API service
  */
 
 // Interface for API response
@@ -31,4 +31,13 @@ export interface DeepseekMessage {
 }
 
 // Intent categories for query classification
-export type IntentCategory = 'compliance' | 'reporting' | 'benchmarking' | 'carbon' | 'general';
+export type IntentCategory = 'compliance' | 'reporting' | 'benchmarking' | 'carbon' | 'general' | 'complex' | 'analysis';
+
+// Model configuration
+export interface ModelConfiguration {
+  model: string;
+  temperature: number;
+  max_tokens: number;
+  top_p: number;
+  reason: string;
+}

@@ -1,11 +1,10 @@
-
 import { toast } from "sonner";
 import { MessageProps } from '@/components/ai/Message';
 import { deepseekAPIService } from './deepseek/services/deepseekAPIService';
 import { categorizeIntent as categorizeFn } from './deepseek/utils/deepseekUtils';
 
 /**
- * DeepSeek R1 Service - Enhanced version
+ * DeepSeek Service - Enhanced version with dynamic model selection
  */
 class DeepSeekR1ServiceImpl {
   private static instance: DeepSeekR1ServiceImpl;
@@ -21,12 +20,13 @@ class DeepSeekR1ServiceImpl {
   }
 
   /**
-   * Process a query using DeepSeek R1
+   * Process a query using DeepSeek with dynamic model selection
    */
   async processQuery(
     query: string, 
     previousMessages: MessageProps[] = [], 
-    customSystemPrompt?: string
+    customSystemPrompt?: string,
+    forcedModel?: string
   ): Promise<string> {
     try {
       // If running in a deployed environment, provide demo responses
@@ -34,10 +34,20 @@ class DeepSeekR1ServiceImpl {
         return this.generateFallbackResponse(query);
       }
       
-      // Otherwise use the DeepSeek API
-      return await deepseekAPIService.processQuery(query, previousMessages, customSystemPrompt);
+      // Categorize the intent to determine if reasoning is required
+      const intentCategory = this.categorizeIntent(query);
+      const requiresReasoning = intentCategory === 'complex' || intentCategory === 'analysis';
+      
+      // Otherwise use the DeepSeek API with dynamic model selection
+      return await deepseekAPIService.processQuery(
+        query, 
+        previousMessages, 
+        customSystemPrompt, 
+        forcedModel,
+        requiresReasoning
+      );
     } catch (error) {
-      console.error('DeepSeek R1 Service error:', error);
+      console.error('DeepSeek Service error:', error);
       this.isAPIAvailable = false;
       
       if (this.isDeployedEnvironment()) {
