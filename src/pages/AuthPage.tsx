@@ -61,8 +61,14 @@ const AuthPage = () => {
     } catch (error: any) {
       console.error("Demo login error:", error);
       setAuthError(error.message);
+    } finally {
+      setIsDemo(false); // Reset demo state regardless of outcome
     }
   };
+
+  // Add debugging console logs
+  console.log("AuthPage rendering with mode:", authMode);
+  console.log("AuthContainer props:", { authMode, authError });
 
   return (
     <AuthPageLayout>
@@ -77,7 +83,8 @@ const AuthPage = () => {
         {!isAuthenticated && (
           <button 
             onClick={handleDemoLogin}
-            className="mt-4 w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-md transition-colors"
+            disabled={isDemo}
+            className="mt-4 w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-md transition-colors disabled:opacity-70"
           >
             {isDemo ? "Logging in with demo account..." : "Login with Demo Account (For MVP Presentation)"}
           </button>

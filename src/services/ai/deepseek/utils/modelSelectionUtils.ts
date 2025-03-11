@@ -1,165 +1,49 @@
-import { 
-  DEEPSEEK_MODELS, 
-  PRICING_PERIODS, 
-  MODEL_SELECTION_THRESHOLDS 
-} from "../constants/deepseekConstants";
 
 /**
- * Calculate query complexity score (0-1)
+ * Model selection utilities for the DeepSeek API
  */
-export function calculateQueryComplexity(query: string): number {
-  const lowerQuery = query.toLowerCase();
-  
-  // Complexity indicators
-  const complexityIndicators = [
-    // Reasoning patterns
-    'why', 'how', 'explain', 'analyze', 'compare', 'difference', 'relationship',
-    'impact', 'effect', 'cause', 'implications', 'evaluate',
-    
-    // Technical terminology
-    'scope 3', 'emissions', 'ghg protocol', 'tcfd', 'science-based targets',
-    'eu taxonomy', 'csrd', 'materiality', 'carbon intensity', 'benchmark',
-    
-    // Multi-step requests
-    'step by step', 'process', 'strategy', 'plan', 'roadmap',
-    'recommendation', 'optimize', 'improve', 'framework',
-    
-    // Complex questions
-    'what if', 'scenario', 'projection', 'forecast', 'predict', 'future',
-    'risk assessment', 'opportunity identification'
-  ];
-  
-  // Count complexity indicators in the query
-  let indicatorCount = 0;
-  for (const indicator of complexityIndicators) {
-    if (lowerQuery.includes(indicator)) {
-      indicatorCount++;
-    }
-  }
-  
-  // Base complexity score
-  let complexityScore = Math.min(indicatorCount / 10, 0.7);
-  
-  // Adjust for query length (longer queries are generally more complex)
-  if (query.length > 200) {
-    complexityScore += 0.1;
-  }
-  if (query.length > 500) {
-    complexityScore += 0.1;
-  }
-  
-  // Adjust for question marks (more questions = more complexity)
-  const questionMarkCount = (query.match(/\?/g) || []).length;
-  if (questionMarkCount > 2) {
-    complexityScore += 0.1;
-  }
-  
-  return Math.min(complexityScore, 1.0);
-}
+import { ModelType } from '../types/deepseekTypes';
+import { MODEL_CONFIG } from '../constants/deepseekConstants';
 
 /**
- * Check if current time is in discount period
+ * Determine the best model to use based on query complexity, time of day (pricing), etc.
  */
-export function isDiscountPeriod(): boolean {
-  const now = new Date();
-  const utcHours = now.getUTCHours();
-  const utcMinutes = now.getUTCMinutes();
-  const currentTimeInUTC = utcHours + (utcMinutes / 60);
-  
-  const { DISCOUNT } = PRICING_PERIODS;
-  
-  // Handle the special case where discount period crosses midnight
-  if (DISCOUNT.start > DISCOUNT.end) {
-    return currentTimeInUTC >= DISCOUNT.start || currentTimeInUTC < DISCOUNT.end;
-  }
-  
-  // Normal case
-  return currentTimeInUTC >= DISCOUNT.start && currentTimeInUTC < DISCOUNT.end;
-}
-
-/**
- * Get context-aware model configuration
- */
-export function getModelConfiguration(
+export function determineModelForQuery(
   query: string, 
-  forcedModel?: string, 
-  requiresReasoning: boolean = false,
-  contextSize: number = 1
-): {
-  model: string;
-  temperature: number;
-  max_tokens: number;
-  top_p: number;
-  reason: string;
-} {
-  // If model is forced, use it
-  if (forcedModel && Object.values(DEEPSEEK_MODELS).includes(forcedModel)) {
-    return {
-      model: forcedModel,
-      temperature: forcedModel === DEEPSEEK_MODELS.REASONER ? 0.5 : 0.7,
-      max_tokens: MODEL_SELECTION_THRESHOLDS.MAX_TOKENS_OUTPUT.STANDARD,
-      top_p: 0.95,
-      reason: "User-specified model"
-    };
+  conversationContext: any[] = []
+): ModelType {
+  // Check if it's discount hours (UTC 16:30-00:30)
+  const now = new Date();
+  const utcHour = now.getUTCHours();
+  const utcMinutes = now.getUTCMinutes();
+  const isDiscountHours = 
+    (utcHour > 16 || (utcHour === 16 && utcMinutes >= 30)) || 
+    (utcHour < 0 || (utcHour === 0 && utcMinutes <= 30));
+  
+  // Simple complexity heuristic based on query length and presence of certain keywords
+  const isComplexQuery = 
+    query.length > 200 || 
+    /\b(explain|analyze|compare|reason|complex|detailed)\b/i.test(query) ||
+    conversationContext.length > 5;
+  
+  // During discount hours, prefer the reasoning model for complex queries
+  // as it has a bigger discount (75% vs 50%)
+  if (isDiscountHours && isComplexQuery) {
+    return 'deepseek-reasoner';
   }
   
-  // Check if query requires reasoning capabilities
-  const queryComplexity = calculateQueryComplexity(query);
-  
-  // Select model based on complexity and other factors
-  const isComplex = queryComplexity > MODEL_SELECTION_THRESHOLDS.COMPLEXITY || requiresReasoning;
-  const isDiscount = isDiscountPeriod();
-  
-  // Complex queries during discount period always use REASONER
-  if (isComplex && isDiscount) {
-    return {
-      model: DEEPSEEK_MODELS.REASONER,
-      temperature: 0.5, // Lower temperature for more precise reasoning
-      max_tokens: MODEL_SELECTION_THRESHOLDS.MAX_TOKENS_OUTPUT.STANDARD,
-      top_p: 0.95,
-      reason: "Complex query during discount period - using Reasoner model"
-    };
+  // For complex reasoning tasks, use the reasoning model
+  if (isComplexQuery) {
+    return 'deepseek-reasoner';
   }
   
-  // Complex queries during standard period - cost-benefit analysis
-  if (isComplex) {
-    // For very complex queries or when explicit reasoning is required, use REASONER
-    if (queryComplexity > 0.85 || requiresReasoning) {
-      return {
-        model: DEEPSEEK_MODELS.REASONER,
-        temperature: 0.5,
-        max_tokens: MODEL_SELECTION_THRESHOLDS.MAX_TOKENS_OUTPUT.STANDARD,
-        top_p: 0.95,
-        reason: "Highly complex query - using Reasoner model"
-      };
-    }
-    // Otherwise, use standard model for cost efficiency
-    return {
-      model: DEEPSEEK_MODELS.STANDARD,
-      temperature: 0.6, // Slightly lower temperature for more precise results
-      max_tokens: MODEL_SELECTION_THRESHOLDS.MAX_TOKENS_OUTPUT.STANDARD,
-      top_p: 0.95,
-      reason: "Moderately complex query - using Standard model for cost efficiency"
-    };
-  }
-  
-  // Simple queries during discount period - consider REASONER for better quality
-  if (isDiscount && contextSize > 3) {
-    return {
-      model: DEEPSEEK_MODELS.REASONER,
-      temperature: 0.6,
-      max_tokens: MODEL_SELECTION_THRESHOLDS.MAX_TOKENS_OUTPUT.STANDARD,
-      top_p: 0.95,
-      reason: "Multi-turn conversation during discount period - using Reasoner model"
-    };
-  }
-  
-  // Default to STANDARD model for simple queries
-  return {
-    model: DEEPSEEK_MODELS.STANDARD,
-    temperature: 0.7,
-    max_tokens: MODEL_SELECTION_THRESHOLDS.MAX_TOKENS_OUTPUT.STANDARD,
-    top_p: 0.95,
-    reason: "Standard query complexity - using Standard model"
-  };
+  // Default to the chat model for most queries as it's more cost-effective
+  return 'deepseek-chat';
+}
+
+/**
+ * Get the configuration for a specific model
+ */
+export function getModelConfig(modelType: ModelType) {
+  return MODEL_CONFIG[modelType] || MODEL_CONFIG['deepseek-chat'];
 }

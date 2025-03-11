@@ -1,10 +1,23 @@
 
 /**
- * Types for DeepSeek API service
+ * Type definitions for the DeepSeek API
  */
 
-// Interface for API response
-export interface DeepseekR1Response {
+export type ModelType = 'deepseek-chat' | 'deepseek-reasoner';
+
+export interface ModelConfig {
+  name: string;
+  systemPrompt: string;
+  temperature: number;
+  maxTokens: number;
+  contextLength: number;
+  costPerInputTokenCacheMiss: number;
+  costPerInputTokenCacheHit: number;
+  costPerOutputToken: number;
+  discountPercentage: number;
+}
+
+export interface DeepseekResponse {
   id: string;
   object: string;
   created: number;
@@ -24,20 +37,9 @@ export interface DeepseekR1Response {
   };
 }
 
-// Message format for API
-export interface DeepseekMessage {
-  role: string;
-  content: string;
-}
-
-// Intent categories for query classification
-export type IntentCategory = 'compliance' | 'reporting' | 'benchmarking' | 'carbon' | 'general' | 'complex' | 'analysis';
-
-// Model configuration
-export interface ModelConfiguration {
-  model: string;
-  temperature: number;
-  max_tokens: number;
-  top_p: number;
-  reason: string;
+export interface DeepseekRequestOptions {
+  preferredModel?: ModelType;
+  forceCloud?: boolean;
+  temperature?: number;
+  maxTokens?: number;
 }

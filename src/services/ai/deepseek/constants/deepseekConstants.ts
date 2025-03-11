@@ -1,67 +1,41 @@
 
 /**
- * Constants for DeepSeek service
+ * Constants for the DeepSeek API
  */
+import { ModelType, ModelConfig } from '../types/deepseekTypes';
 
-// API constants
-export const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
-export const DEEPSEEK_API_KEY = "sk-c31c53e99fee40fb8e0cc5f70cdeb452"; // DeepSeek API key
+// API configuration
+export const DEEPSEEK_API_BASE_URL = 'https://api.deepseek.com';
+export const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
 
-// Model options
-export const DEEPSEEK_MODELS = {
-  STANDARD: "deepseek-chat", // DeepSeek-V3, general-purpose
-  REASONER: "deepseek-reasoner", // DeepSeek-R1, enhanced reasoning
-};
-
-// Time periods for pricing optimization (UTC)
-export const PRICING_PERIODS = {
-  STANDARD: { start: 0.5, end: 16.5 }, // UTC 00:30-16:30 (standard pricing)
-  DISCOUNT: { start: 16.5, end: 0.5 }  // UTC 16:30-00:30 (discount pricing)
-};
-
-// Model selection thresholds
-export const MODEL_SELECTION_THRESHOLDS = {
-  COMPLEXITY: 0.7, // 0-1 scale, higher values favor the reasoner model
-  MAX_TOKENS_OUTPUT: {
-    STANDARD: 4096, // Default for both models
-    EXTENDED: 8192  // Maximum for both models
+// Model configuration
+export const MODEL_CONFIG: Record<ModelType, ModelConfig> = {
+  'deepseek-chat': {
+    name: 'DeepSeek-V3',
+    systemPrompt: 'You are a helpful, accurate, and concise assistant. Provide accurate and direct answers.',
+    temperature: 0.7,
+    maxTokens: 4000,
+    contextLength: 64000,
+    costPerInputTokenCacheMiss: 0.27,
+    costPerInputTokenCacheHit: 0.07,
+    costPerOutputToken: 1.10,
+    discountPercentage: 0.5  // 50% discount during off-peak hours
   },
-  CONTEXT_LENGTH: 65536 // 64K for both models
+  'deepseek-reasoner': {
+    name: 'DeepSeek-R1',
+    systemPrompt: 'You are a logical reasoning assistant designed to think step-by-step through complex problems. Analyze thoroughly before concluding.',
+    temperature: 0.3,
+    maxTokens: 8000,
+    contextLength: 64000,
+    costPerInputTokenCacheMiss: 0.55,
+    costPerInputTokenCacheHit: 0.14,
+    costPerOutputToken: 2.19,
+    discountPercentage: 0.75  // 75% discount during off-peak hours
+  }
 };
 
-// System prompts
-export const ENHANCED_ESG_SYSTEM_PROMPT = `You are Waly Pro, an advanced ESG & Carbon Intelligence Assistant specialized in sustainability reporting, emissions analysis, 
-and regulatory compliance. You provide data-driven insights and actionable recommendations to help organizations improve their sustainability practices.
+// Default model to use
+export const DEFAULT_MODEL: ModelType = 'deepseek-chat';
 
-You have expertise in:
-- Carbon footprint calculation and optimization (Scope 1, 2, and 3 emissions)
-- ESG reporting frameworks (GHG Protocol, TCFD, GRI, SASB, EU Taxonomy, CDP)
-- Sustainability strategy development with industry benchmarking
-- Regulatory compliance tracking and risk prediction
-- AI-powered trend analysis and forecasting
-- Goal-setting and performance optimization
-
-Your capabilities include:
-- Predictive ESG risk assessments
-- Industry-specific benchmarking
-- Multi-turn contextual conversations
-- Personalized sustainability recommendations
-- Compliance risk detection
-- Performance trend analysis
-
-Always provide specific, actionable insights based on industry best practices. Include relevant regulations, frameworks, or methodologies when appropriate.
-Keep responses structured, focusing on practical advice, clear explanations, and data-backed recommendations.`;
-
-// Standard system prompt (simpler version)
-export const STANDARD_ESG_SYSTEM_PROMPT = `You are Waly, an expert ESG & Carbon Intelligence Assistant specializing in sustainability reporting, emissions analysis, 
-and regulatory compliance. You provide data-driven insights and actionable recommendations to help organizations improve their sustainability practices.
-
-You have expertise in:
-- Carbon footprint calculation (Scope 1, 2, and 3 emissions)
-- ESG reporting frameworks (GHG Protocol, TCFD, GRI, SASB, EU Taxonomy, CDP)
-- Sustainability strategy development
-- Regulatory compliance tracking
-- Industry benchmarking and trend analysis
-
-Always provide specific, actionable insights based on industry best practices. When appropriate, reference relevant regulations, frameworks, or methodologies.
-Keep responses concise but informative, focusing on practical advice and clear explanations.`;
+// Cache configuration
+export const DEFAULT_CACHE_EXPIRY = 30 * 60; // 30 minutes in seconds

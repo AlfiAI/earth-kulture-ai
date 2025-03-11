@@ -1,98 +1,44 @@
-
 /**
- * LocalAIProcessor - Handles local AI model processing
+ * LocalAIProcessor - Handles processing queries using local AI models when possible
  */
+import { detectLocalAIAvailability } from '../../utils/deepseekUtils';
+import { ModelType } from '../../types/deepseekTypes';
 
 export class LocalAIProcessor {
-  private localAIAvailable: boolean | null = null;
-  private lastLocalAICheck: number = 0;
-  private readonly LOCAL_API_URL = "http://localhost:11434/api/chat";
-  private readonly LOCAL_MODEL_NAME = "llama3";
-
   /**
-   * Process query with local AI model
+   * Check if local AI processing is available
    */
-  async processWithLocalAI(query: string, formattedMessages: any[], systemPrompt: string): Promise<string> {
-    // Check if local AI is available
-    if (!(await this.checkLocalAIAvailability())) {
-      throw new Error("Local AI is not available");
-    }
-    
-    // Add system prompt and user query
-    const messages = [
-      { role: "system", content: systemPrompt },
-      ...formattedMessages,
-      { role: "user", content: query }
-    ];
-    
-    console.log("Processing with local AI model", this.LOCAL_MODEL_NAME);
-    
-    const response = await fetch(this.LOCAL_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: this.LOCAL_MODEL_NAME,
-        messages: messages,
-        temperature: 0.7,
-        max_tokens: 1024
-      })
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Local AI Error: ${errorText}`);
-    }
-    
-    const data = await response.json();
-    return data.choices[0].message.content;
+  async isLocalAIAvailable(): Promise<boolean> {
+    return await detectLocalAIAvailability();
   }
   
   /**
-   * Check if local AI is available
+   * Process a query using local AI infrastructure
    */
-  async checkLocalAIAvailability(): Promise<boolean> {
-    // Cache the check for 5 minutes
-    const now = Date.now();
-    if (this.localAIAvailable !== null && (now - this.lastLocalAICheck) < 5 * 60 * 1000) {
-      return this.localAIAvailable;
-    }
-    
+  async processLocally(
+    query: string, 
+    conversationContext: any[] = [],
+    modelType: ModelType = 'deepseek-chat'
+  ): Promise<string | null> {
     try {
-      const response = await fetch(this.LOCAL_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: this.LOCAL_MODEL_NAME,
-          messages: [{ role: "user", content: "hello" }],
-          max_tokens: 1
-        }),
-        signal: AbortSignal.timeout(3000) // 3 second timeout
-      });
+      // Check if local processing is available
+      const isAvailable = await this.isLocalAIAvailable();
+      if (!isAvailable) {
+        console.log('Local AI processing not available');
+        return null;
+      }
       
-      this.localAIAvailable = response.ok;
-      this.lastLocalAICheck = now;
-      return this.localAIAvailable;
+      // Local processing logic would go here
+      // This is a placeholder for actual implementation
+      console.log(`Processing query locally with model: ${modelType}`);
+      
+      // In a real implementation, this would call the local AI
+      // For now, return null to fall back to cloud processing
+      return null;
     } catch (error) {
-      console.error("Error checking local AI availability:", error);
-      this.localAIAvailable = false;
-      this.lastLocalAICheck = now;
-      return false;
+      console.error('Error in local AI processing:', error);
+      return null;
     }
-  }
-  
-  /**
-   * Determine if we should use local AI based on query complexity
-   */
-  shouldUseLocalAI(query: string, apiFailureCount: number, apiFailureThreshold: number): boolean {
-    // Simple complexity check - can be made more sophisticated
-    const isSimpleQuery = query.length < 100 && !query.includes("complex") && 
-                         !query.includes("analyze") && !query.includes("compare");
-    
-    return isSimpleQuery && apiFailureCount < apiFailureThreshold;
   }
 }
 
