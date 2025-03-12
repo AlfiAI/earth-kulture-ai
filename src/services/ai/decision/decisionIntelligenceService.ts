@@ -1,3 +1,4 @@
+import { RiskAnalysisResult, Recommendation, OutcomePrediction } from '../types/decisionTypes';
 import { deepseekR1Service } from '../deepseekR1Service';
 import { aiAgentOrchestrator } from '../orchestration/aiAgentOrchestrator';
 import { toast } from "sonner";

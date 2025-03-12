@@ -13,7 +13,16 @@ interface AIChatManagerProps {
  */
 const AIChatManager = ({ onNewChat, initialOpen = false }: AIChatManagerProps) => {
   const [showNewChat, setShowNewChat] = useState(true);
-  const { inputValue, setInputValue, handleSend, messages, isTyping } = useEnhancedChat();
+  const { 
+    input, 
+    setInput, 
+    messages, 
+    isTyping, 
+    handleSubmit,
+    handleSend,
+    inputValue,
+    setInputValue
+  } = useEnhancedChat();
   
   const handleStarterClick = (text: string) => {
     setInputValue(text);

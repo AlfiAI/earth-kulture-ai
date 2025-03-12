@@ -6,6 +6,7 @@ import { useEnhancedChat } from '@/hooks/use-enhanced-chat';
 import WalyChatButton from './WalyChatButton';
 import EnhancedChatPanel from './EnhancedChatPanel';
 import { useWalyInjector } from '@/hooks/use-waly-injector';
+import { MessageProps } from './Message';
 
 interface EnhancedWalyAssistantProps {
   initialOpen?: boolean;
@@ -25,7 +26,21 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
   // Use the enhanced Waly injector to ensure visibility
   useWalyInjector();
   
-  const { messages, inputValue, setInputValue, handleSend, isTyping } = useEnhancedChat();
+  const { 
+    messages, 
+    inputValue, 
+    setInputValue, 
+    handleSend, 
+    isTyping 
+  } = useEnhancedChat();
+  
+  // Convert Message[] to MessageProps[] for type compatibility
+  const convertedMessages: MessageProps[] = messages.map((msg, index) => ({
+    id: `msg-${index}`,
+    content: msg.text,
+    sender: msg.isUser ? 'user' : 'ai',
+    timestamp: new Date()
+  }));
   
   // Log visibility status for debugging
   useEffect(() => {
@@ -94,7 +109,7 @@ const EnhancedWalyAssistant = ({ initialOpen = false }: EnhancedWalyAssistantPro
           onClose={toggleOpen}
           position={position}
           currentPath={location.pathname}
-          messages={messages}
+          messages={convertedMessages}
           inputValue={inputValue}
           setInputValue={setInputValue}
           handleSend={handleSend}

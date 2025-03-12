@@ -1,16 +1,28 @@
+
 import { deepseekR1Service } from '../../deepseekR1Service';
 
 export interface DataProcessingAgent {
   processData(data: any, context: string): Promise<any>;
+  processWithLocalAI?(payload: any): Promise<any>;
+  processWithCloudAI?(payload: any): Promise<any>;
 }
 
 class DataProcessingAgentImpl implements DataProcessingAgent {
+  // Required by interface
+  async processWithLocalAI(payload: any): Promise<any> {
+    return this.processData(payload, 'local-ai-context');
+  }
+
+  // Required by interface
+  async processWithCloudAI(payload: any): Promise<any> {
+    return this.processData(payload, 'cloud-ai-context');
+  }
+
   async processData(data: any, context: string): Promise<any> {
     try {
       // Generate processing instructions using AI
       const processingInstructions = await deepseekR1Service.processQuery(
-        `Analyze and process the following data: ${JSON.stringify(data)}. Context: ${context}`,
-        []  // Empty conversation context
+        `Analyze and process the following data: ${JSON.stringify(data)}. Context: ${context}`
       );
       
       // Parse the processing instructions (assuming JSON format)

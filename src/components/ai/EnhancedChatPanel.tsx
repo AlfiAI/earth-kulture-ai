@@ -24,6 +24,7 @@ interface EnhancedChatPanelProps {
 
 const EnhancedChatPanel = forwardRef<HTMLDivElement, EnhancedChatPanelProps>(
   ({ isOpen, onClose, position, currentPath = '/', messages, inputValue, setInputValue, handleSend, showNewChat, onStarterClick, onNewChat }, ref) => {
+    // Use the isTyping from useEnhancedChat to have consistent state
     const { isTyping } = useEnhancedChat();
     
     // Get context-aware starters based on current path

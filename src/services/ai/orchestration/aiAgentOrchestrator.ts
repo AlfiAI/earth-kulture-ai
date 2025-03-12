@@ -3,9 +3,9 @@ import { toast } from "sonner";
 import { AgentType } from './types/agentTypes';
 import { LocalAIProcessor } from './local/localAIProcessor';
 import { TaskManager } from './queue/taskManager';
-import { DataProcessingAgent } from './agents/dataProcessingAgent';
-import { RegulatoryComplianceAgent } from './agents/regulatoryComplianceAgent';
-import { PredictiveAnalyticsAgent } from './agents/predictiveAnalyticsAgent';
+import { dataProcessingAgent } from './agents/dataProcessingAgent';
+import { regulatoryComplianceAgent } from './agents/regulatoryComplianceAgent';
+import { predictiveAnalyticsAgent } from './agents/predictiveAnalyticsAgent';
 
 /**
  * AI Agent Orchestrator - Manages communication between specialized AI agents
@@ -13,9 +13,6 @@ import { PredictiveAnalyticsAgent } from './agents/predictiveAnalyticsAgent';
 class AIAgentOrchestrator {
   private taskManager: TaskManager;
   private localAIProcessor: LocalAIProcessor;
-  private dataProcessingAgent: DataProcessingAgent;
-  private regulatoryComplianceAgent: RegulatoryComplianceAgent;
-  private predictiveAnalyticsAgent: PredictiveAnalyticsAgent;
   private apiFailureCount: number = 0;
   private readonly API_FALLBACK_THRESHOLD = 3;
   
@@ -31,11 +28,6 @@ class AIAgentOrchestrator {
     
     // Initialize task manager
     this.taskManager = new TaskManager();
-    
-    // Initialize agents
-    this.dataProcessingAgent = new DataProcessingAgent(this.localAIProcessor);
-    this.regulatoryComplianceAgent = new RegulatoryComplianceAgent(this.localAIProcessor);
-    this.predictiveAnalyticsAgent = new PredictiveAnalyticsAgent(this.localAIProcessor);
   }
   
   /**
@@ -126,18 +118,18 @@ class AIAgentOrchestrator {
     switch (agentType) {
       case 'data-processing':
         return useLocalAI ? 
-               this.dataProcessingAgent.processWithLocalAI(payload) : 
-               this.dataProcessingAgent.processWithCloudAI(payload);
+               dataProcessingAgent.processWithLocalAI(payload) : 
+               dataProcessingAgent.processWithCloudAI(payload);
       
       case 'regulatory-compliance':
         return useLocalAI ? 
-               this.regulatoryComplianceAgent.processWithLocalAI(payload) : 
-               this.regulatoryComplianceAgent.processWithCloudAI(payload);
+               regulatoryComplianceAgent.processWithLocalAI(payload) : 
+               regulatoryComplianceAgent.processWithCloudAI(payload);
       
       case 'predictive-analytics':
         return useLocalAI ? 
-               this.predictiveAnalyticsAgent.processWithLocalAI(payload) : 
-               this.predictiveAnalyticsAgent.processWithCloudAI(payload);
+               predictiveAnalyticsAgent.processWithLocalAI(payload) : 
+               predictiveAnalyticsAgent.processWithCloudAI(payload);
       
       default:
         throw new Error(`Unknown agent type: ${agentType}`);
