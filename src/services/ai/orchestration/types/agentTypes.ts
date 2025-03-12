@@ -12,10 +12,11 @@ export interface AIAgent {
 
 // Task priority for scheduling
 export enum TaskPriority {
-  CRITICAL = 0,
-  HIGH = 1,
-  NORMAL = 2,
-  LOW = 3
+  CRITICAL = 'critical',
+  HIGH = 'high',
+  MEDIUM = 'medium',
+  NORMAL = 'normal',
+  LOW = 'low'
 }
 
 // Use string literals for these values to match what's used in the code
@@ -37,6 +38,35 @@ export enum TaskState {
   PENDING = 'pending'  // Added to match string literal usage
 }
 
+// Industry types for ESG benchmarking and context
+export enum IndustryType {
+  CORPORATE = 'CORPORATE',
+  SME = 'SME',
+  GOVERNMENT = 'GOVERNMENT',
+  INDIVIDUAL = 'INDIVIDUAL',
+  EDUCATION = 'EDUCATION',
+  HEALTHCARE = 'HEALTHCARE',
+  ENERGY = 'ENERGY',
+  MANUFACTURING = 'MANUFACTURING',
+  FINANCIAL = 'FINANCIAL',
+  RETAIL = 'RETAIL',
+  TECHNOLOGY = 'TECHNOLOGY',
+  OTHER = 'OTHER',
+  VIEWER = 'VIEWER'
+}
+
+// User role types for permissions and context
+export enum UserRoleType {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  MANAGER = 'MANAGER',
+  ANALYST = 'ANALYST',
+  EXECUTIVE = 'EXECUTIVE',
+  SUSTAINABILITY_LEAD = 'SUSTAINABILITY_LEAD',
+  GUEST = 'GUEST',
+  VIEWER = 'VIEWER'
+}
+
 // Task definition
 export interface AITask {
   id: string;
@@ -52,44 +82,6 @@ export interface AITask {
   error?: string;
 }
 
-// Industry types for ESG benchmarking and context - using string literals to match usage in code
-export enum IndustryType {
-  CORPORATE = 'corporate',
-  SME = 'sme',
-  GOVERNMENT = 'government',
-  INDIVIDUAL = 'individual',
-  EDUCATION = 'education',
-  HEALTHCARE = 'healthcare',
-  ENERGY = 'energy',
-  MANUFACTURING = 'manufacturing',
-  FINANCIAL = 'financial',
-  RETAIL = 'retail',
-  TECHNOLOGY = 'technology',
-  OTHER = 'other',
-  VIEWER = 'viewer'  // Added to match usage in code
-}
-
-// User role types for permissions and context - using string literals to match usage in code
-export enum UserRoleType {
-  ADMIN = 'admin',
-  USER = 'user',
-  MANAGER = 'manager',
-  ANALYST = 'analyst',
-  EXECUTIVE = 'executive',
-  SUSTAINABILITY_LEAD = 'sustainability_lead',
-  GUEST = 'guest',
-  VIEWER = 'viewer'  // Added to match usage in code
-}
-
-// Agent types for orchestration
-export type AgentType = 
-  | 'data-processing'
-  | 'regulatory-compliance'
-  | 'predictive-analytics'
-  | 'risk-assessment'
-  | 'benchmarking'
-  | 'reporting';
-
 // Configuration for local AI processing
 export interface LocalAIConfig {
   modelPath: string;
@@ -97,22 +89,10 @@ export interface LocalAIConfig {
   temperature: number;
   contextWindow: number;
   processingMode: 'cpu' | 'gpu';
-  available?: boolean;  // Added to match usage in code
-  lastCheck?: Date;     // Added to match usage in code
-  url?: string;         // Added to match usage in code
-  modelName?: string;   // Added to match usage in code
-}
-
-// Task definition for agent queue
-export interface AgentTask {
-  id: string;
-  agentType: AgentType;
-  payload: any;
-  priority: TaskPriority;
-  createdAt: Date;
-  status: TaskState;
-  result?: any;
-  error?: string;
+  available?: boolean;
+  lastCheck?: Date;
+  url?: string;
+  modelName?: string;
 }
 
 // Task status response
@@ -122,3 +102,4 @@ export interface TaskStatusResponse {
   result?: any;
   error?: string;
 }
+
