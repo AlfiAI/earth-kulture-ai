@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { IndustryType } from '@/services/ai/orchestration/types/agentTypes';
+import { IndustryType, TaskPriority } from '@/services/ai/orchestration/types/agentTypes';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -78,7 +78,7 @@ const BenchmarkSimulator: React.FC<BenchmarkSimulatorProps> = ({ industryContext
           action: 'simulate-esg-scenarios',
           timeframe: '12-months'
         },
-        'high'
+        TaskPriority.HIGH
       );
       
       // Poll for task completion

@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/contexts/auth";
 import { Button } from "@/components/ui/button";
@@ -17,8 +16,8 @@ interface Insight {
 }
 
 // Industry-specific insights
-const industryInsights: Record<IndustryType, Insight[]> = {
-  corporate: [
+const industryInsights: Record<string, Insight[]> = {
+  [IndustryType.CORPORATE]: [
     {
       type: 'trend',
       title: 'Carbon intensity decreasing',
@@ -48,7 +47,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  sme: [
+  [IndustryType.SME]: [
     {
       type: 'recommendation',
       title: 'SME funding opportunity',
@@ -76,7 +75,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  government: [
+  [IndustryType.GOVERNMENT]: [
     {
       type: 'alert',
       title: 'Policy compliance gap',
@@ -106,7 +105,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  individual: [
+  [IndustryType.INDIVIDUAL]: [
     {
       type: 'trend',
       title: 'Personal carbon footprint',
@@ -136,7 +135,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  technology: [
+  [IndustryType.TECHNOLOGY]: [
     {
       type: 'trend',
       title: 'Data center efficiency',
@@ -166,7 +165,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  financial: [
+  [IndustryType.FINANCIAL]: [
     {
       type: 'trend',
       title: 'Financed emissions decreasing',
@@ -196,7 +195,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  education: [
+  [IndustryType.EDUCATION]: [
     {
       type: 'trend',
       title: 'Campus energy usage',
@@ -228,7 +227,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  healthcare: [
+  [IndustryType.HEALTHCARE]: [
     {
       type: 'alert',
       title: 'Medical waste compliance',
@@ -258,7 +257,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  energy: [
+  [IndustryType.ENERGY]: [
     {
       type: 'trend',
       title: 'Renewable generation mix',
@@ -288,7 +287,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  manufacturing: [
+  [IndustryType.MANUFACTURING]: [
     {
       type: 'trend',
       title: 'Production efficiency',
@@ -320,7 +319,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  retail: [
+  [IndustryType.RETAIL]: [
     {
       type: 'trend',
       title: 'Packaging waste reduction',
@@ -352,7 +351,7 @@ const industryInsights: Record<IndustryType, Insight[]> = {
       date: 'July 28, 2023'
     }
   ],
-  other: [
+  [IndustryType.OTHER]: [
     {
       type: 'trend',
       title: 'Carbon intensity decreasing',
@@ -423,7 +422,7 @@ const AIInsights = () => {
   
   useEffect(() => {
     if (userProfile?.industry) {
-      const industry = userProfile.industry as IndustryType;
+      const industry = userProfile.industry as string;
       const relevantInsights = industryInsights[industry] || sampleInsights;
       setInsights(relevantInsights);
     }

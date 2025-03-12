@@ -24,7 +24,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (userProfile) {
       setDashboardType(userProfile.dashboard_preference || 'business');
-      const industry = userProfile.industry as IndustryType || 'corporate';
+      const industry = (userProfile.industry as IndustryType) || IndustryType.CORPORATE;
       setIndustryContext(aiContext.getIndustryContext(industry));
     }
   }, [userProfile]);

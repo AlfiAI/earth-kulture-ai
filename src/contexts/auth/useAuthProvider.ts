@@ -5,6 +5,7 @@ import { useAuthOperations } from "./hooks/useAuthOperations";
 import { useAuthStateChange } from "./hooks/useAuthStateChange";
 import { UserContext, UserProfile } from "./types";
 import { supabase } from "@/integrations/supabase/client";
+import { IndustryType, UserRoleType } from "@/services/ai/orchestration/types/agentTypes";
 
 export const useAuthProvider = () => {
   const { 
@@ -85,8 +86,8 @@ export const useAuthProvider = () => {
       return {
         userId: user.id,
         tenantId: null,
-        industry: 'corporate',
-        role: 'viewer',
+        industry: IndustryType.CORPORATE,
+        role: UserRoleType.VIEWER,
         preferences: {
           dashboardType: 'business',
           dataVisualizationPreference: 'visual',
@@ -98,8 +99,8 @@ export const useAuthProvider = () => {
     return {
       userId: user.id,
       tenantId: userProfile.tenant_id,
-      industry: userProfile.industry || 'corporate',
-      role: userProfile.role || 'viewer',
+      industry: (userProfile.industry as IndustryType) || IndustryType.CORPORATE,
+      role: (userProfile.role as UserRoleType) || UserRoleType.VIEWER,
       preferences: {
         dashboardType: userProfile.dashboard_preference || 'business',
         dataVisualizationPreference: userProfile.data_visualization_preference || 'visual',

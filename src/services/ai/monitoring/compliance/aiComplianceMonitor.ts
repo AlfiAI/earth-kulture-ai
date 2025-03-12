@@ -1,6 +1,7 @@
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { aiAgentOrchestrator } from '../../orchestration/aiAgentOrchestrator';
+import { TaskPriority } from '../../orchestration/types/agentTypes';
 import { ESGAlert } from '../types/alertTypes';
 import { esgMonitoringService } from '../esgMonitoringService';
 
@@ -93,7 +94,7 @@ class AIComplianceMonitor {
         regulationsData,
         userId,
         action: 'detect-compliance-risks'
-      }, 'high');
+      }, TaskPriority.HIGH);
       
       let retries = 0;
       const maxRetries = 12;

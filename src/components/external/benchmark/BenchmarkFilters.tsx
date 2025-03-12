@@ -35,8 +35,9 @@ const BenchmarkFilters = ({
   // Auto-select user's industry if available
   useEffect(() => {
     if (userProfile?.industry && !selectedIndustry && !industry) {
-      const userIndustry = userProfile.industry as IndustryType;
-      const mappedIndustry = userIndustry === 'corporate' || userIndustry === 'sme' ? 'all' : userIndustry;
+      const userIndustry = userProfile.industry as string;
+      // Handle mapping industry from IndustryType to filter values
+      const mappedIndustry = userIndustry === IndustryType.CORPORATE || userIndustry === IndustryType.SME ? 'all' : userIndustry;
       
       // Check if the user's industry exists in the available industries
       if (industries.some(ind => ind.id === mappedIndustry)) {

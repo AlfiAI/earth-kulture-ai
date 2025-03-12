@@ -2,7 +2,7 @@
 import { dataProcessingAgent } from './agents/dataProcessingAgent';
 import { regulatoryComplianceAgent } from './agents/regulatoryComplianceAgent';
 import { predictiveAnalyticsAgent } from './agents/predictiveAnalyticsAgent';
-import { AIAgent, TaskPriority, AIMode, TaskState, AgentType, TaskStatusResponse } from './types/agentTypes';
+import { AIAgent, TaskPriority, AIMode, TaskState, TaskStatusResponse } from './types/agentTypes';
 
 // Typed configuration for orchestrator
 interface OrchestrationConfig {

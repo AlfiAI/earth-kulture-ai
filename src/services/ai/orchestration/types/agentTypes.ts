@@ -38,34 +38,43 @@ export enum TaskState {
   PENDING = 'pending'  // Added to match string literal usage
 }
 
-// Industry types for ESG benchmarking and context
+// Industry types for ESG benchmarking and context - lowercase for codebase consistency
 export enum IndustryType {
-  CORPORATE = 'CORPORATE',
-  SME = 'SME',
-  GOVERNMENT = 'GOVERNMENT',
-  INDIVIDUAL = 'INDIVIDUAL',
-  EDUCATION = 'EDUCATION',
-  HEALTHCARE = 'HEALTHCARE',
-  ENERGY = 'ENERGY',
-  MANUFACTURING = 'MANUFACTURING',
-  FINANCIAL = 'FINANCIAL',
-  RETAIL = 'RETAIL',
-  TECHNOLOGY = 'TECHNOLOGY',
-  OTHER = 'OTHER',
-  VIEWER = 'VIEWER'
+  CORPORATE = 'corporate',
+  SME = 'sme',
+  GOVERNMENT = 'government',
+  INDIVIDUAL = 'individual',
+  EDUCATION = 'education',
+  HEALTHCARE = 'healthcare',
+  ENERGY = 'energy',
+  MANUFACTURING = 'manufacturing',
+  FINANCIAL = 'financial',
+  RETAIL = 'retail',
+  TECHNOLOGY = 'technology',
+  OTHER = 'other',
+  VIEWER = 'viewer'
 }
 
-// User role types for permissions and context
+// User role types for permissions and context - lowercase for codebase consistency
 export enum UserRoleType {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  MANAGER = 'MANAGER',
-  ANALYST = 'ANALYST',
-  EXECUTIVE = 'EXECUTIVE',
-  SUSTAINABILITY_LEAD = 'SUSTAINABILITY_LEAD',
-  GUEST = 'GUEST',
-  VIEWER = 'VIEWER'
+  ADMIN = 'admin',
+  USER = 'user',
+  MANAGER = 'manager',
+  ANALYST = 'analyst',
+  EXECUTIVE = 'executive',
+  SUSTAINABILITY_LEAD = 'sustainability_lead',
+  GUEST = 'guest',
+  VIEWER = 'viewer'
 }
+
+// Agent types for orchestration
+export type AgentType = 
+  | 'data-processing'
+  | 'regulatory-compliance'
+  | 'predictive-analytics'
+  | 'risk-assessment'
+  | 'benchmarking'
+  | 'reporting';
 
 // Task definition
 export interface AITask {
@@ -78,6 +87,19 @@ export interface AITask {
   createdAt: Date;
   startedAt?: Date;
   completedAt?: Date;
+  result?: any;
+  error?: string;
+}
+
+// Task definition for agent queue
+export interface AgentTask {
+  id: string;
+  agentType: AgentType;
+  payload: any;
+  priority: string | TaskPriority;
+  status: string;
+  createdAt: Date;
+  useLocalAI?: boolean;
   result?: any;
   error?: string;
 }
@@ -102,4 +124,3 @@ export interface TaskStatusResponse {
   result?: any;
   error?: string;
 }
-

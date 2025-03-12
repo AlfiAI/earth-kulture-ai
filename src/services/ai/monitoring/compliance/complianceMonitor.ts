@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { aiAgentOrchestrator } from '../../orchestration';
+import { TaskPriority } from '../../orchestration/types/agentTypes';
 
 /**
  * Service for monitoring compliance status
@@ -26,7 +27,7 @@ class ComplianceMonitor {
         complianceData,
         userId,
         action: 'analyze-compliance'
-      }, 'high');
+      }, TaskPriority.HIGH);
     } catch (error) {
       console.error('Error checking compliance status:', error);
     }
@@ -51,7 +52,7 @@ class ComplianceMonitor {
         regulationsData,
         userId,
         action: 'analyze-regulatory-updates'
-      }, 'medium');
+      }, TaskPriority.MEDIUM);
     } catch (error) {
       console.error('Error checking regulatory updates:', error);
     }

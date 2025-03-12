@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { aiAgentOrchestrator } from '../../orchestration';
+import { TaskPriority } from '../../orchestration/types/agentTypes';
 
 /**
  * Service for monitoring analytics and performance trends
@@ -26,7 +27,7 @@ class AnalyticsMonitor {
         esgData,
         userId,
         action: 'analyze-trends'
-      }, 'low');
+      }, TaskPriority.LOW);
     } catch (error) {
       console.error('Error analyzing performance trends:', error);
     }
