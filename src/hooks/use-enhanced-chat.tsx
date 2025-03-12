@@ -1,13 +1,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { deepseekR1Service } from '@/services/ai/deepseekR1Service';
-// Remove the non-existent module import and create a simple context utility
 import { MessageProps } from '@/components/ai/Message';
-
-// Get context based on current page (placeholder function)
-const getContextForCurrentPage = () => {
-  return 'general context';
-};
+import { getContextForCurrentPage } from '@/services/ai/utils/contextUtils';
 
 interface Message {
   text: string;
@@ -19,7 +14,7 @@ export const useEnhancedChat = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isTyping, setIsTyping] = useState(false); // Add isTyping state
+  const [isTyping, setIsTyping] = useState(false);
 
   // Function to add a new message to the chat
   const addMessage = useCallback((text: string, isUser: boolean) => {
@@ -29,10 +24,10 @@ export const useEnhancedChat = () => {
   // Function to handle sending a message
   const sendMessage = async (message: string) => {
     setIsLoading(true);
-    setIsTyping(true); // Set typing indicator
+    setIsTyping(true);
     setError(null);
-    addMessage(message, true); // Add user message immediately
-    setInput(''); // Clear input field
+    addMessage(message, true);
+    setInput('');
 
     try {
       // Get relevant context
@@ -40,17 +35,16 @@ export const useEnhancedChat = () => {
       
       // Process query with the DeepSeek R1 service
       const response = await deepseekR1Service.processQuery(
-        message,
-        [] // Pass conversation history
+        message
       );
 
-      addMessage(response, false); // Add AI response
+      addMessage(response, false);
     } catch (error: any) {
       console.error("Error in enhanced chat:", error);
       setError(error.message || "Failed to send message. Please try again.");
     } finally {
       setIsLoading(false);
-      setIsTyping(false); // Clear typing indicator
+      setIsTyping(false);
     }
   };
 

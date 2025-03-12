@@ -1,18 +1,15 @@
 
 import { deepseekR1Service } from '@/services/ai/deepseekR1Service';
 
-export interface PredictionParameters {
-  timeframe: string;
-  confidenceLevel: number;
-}
-
 export interface PredictionResult {
-  predictedValue: number;
-  explanation: string;
+  prediction: any;
+  confidence: number;
+  factors: string[];
+  summary: string;
 }
 
 export interface PredictiveAnalyticsAgent {
-  generatePrediction(data: any, parameters: PredictionParameters): Promise<PredictionResult>;
+  predictOutcome(data: any, options?: any): Promise<PredictionResult>;
   processWithLocalAI?(payload: any): Promise<any>;
   processWithCloudAI?(payload: any): Promise<any>;
 }
@@ -20,34 +17,43 @@ export interface PredictiveAnalyticsAgent {
 class PredictiveAnalyticsAgentImpl implements PredictiveAnalyticsAgent {
   // Required by orchestrator
   async processWithLocalAI(payload: any): Promise<any> {
-    if (payload.data && payload.parameters) {
-      return this.generatePrediction(payload.data, payload.parameters);
+    if (payload.data) {
+      return this.predictOutcome(payload.data, payload.options);
     }
-    return { predictedValue: 0, explanation: "Invalid payload for local AI processing" };
+    return { 
+      prediction: null, 
+      confidence: 0,
+      factors: ["Invalid payload for local AI processing"],
+      summary: "Failed to process prediction request"
+    };
   }
 
   // Required by orchestrator
   async processWithCloudAI(payload: any): Promise<any> {
-    if (payload.data && payload.parameters) {
-      return this.generatePrediction(payload.data, payload.parameters);
+    if (payload.data) {
+      return this.predictOutcome(payload.data, payload.options);
     }
-    return { predictedValue: 0, explanation: "Invalid payload for cloud AI processing" };
+    return { 
+      prediction: null, 
+      confidence: 0,
+      factors: ["Invalid payload for cloud AI processing"],
+      summary: "Failed to process prediction request"
+    };
   }
 
-  async generatePrediction(data: any, parameters: PredictionParameters): Promise<PredictionResult> {
+  async predictOutcome(data: any, options: any = {}): Promise<PredictionResult> {
     try {
       // Generate prediction using AI
-      const predictionAnalysis = await deepseekR1Service.processQuery(
-        `Generate a prediction based on the following data: ${JSON.stringify(data)}. Parameters: ${JSON.stringify(parameters)}`
+      const predictionResponse = await deepseekR1Service.processQuery(
+        `Make a prediction based on the following data: ${JSON.stringify(data)}`
       );
-
-      // Parse the AI's response
-      const parsedResult: PredictionResult = {
-        predictedValue: parseFloat(predictionAnalysis),
-        explanation: 'AI-generated prediction based on provided data and parameters.'
+      
+      return {
+        prediction: predictionResponse,
+        confidence: 0.85, // Placeholder
+        factors: ["historical trends", "market conditions", "regulatory changes"],
+        summary: predictionResponse
       };
-
-      return parsedResult;
     } catch (error) {
       console.error("Error in predictive analytics agent:", error);
       throw error;

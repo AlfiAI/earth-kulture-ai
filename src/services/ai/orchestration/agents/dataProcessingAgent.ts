@@ -1,51 +1,50 @@
 
-import { deepseekR1Service } from '../../deepseekR1Service';
+import { deepseekR1Service } from '@/services/ai/deepseekR1Service';
+
+export interface ProcessingResult {
+  processed: boolean;
+  results: any;
+  insights: string[];
+}
 
 export interface DataProcessingAgent {
-  processData(data: any, context: string): Promise<any>;
+  processData(data: any, options?: any): Promise<ProcessingResult>;
   processWithLocalAI?(payload: any): Promise<any>;
   processWithCloudAI?(payload: any): Promise<any>;
 }
 
 class DataProcessingAgentImpl implements DataProcessingAgent {
-  // Required by interface
+  // Required by orchestrator
   async processWithLocalAI(payload: any): Promise<any> {
-    return this.processData(payload, 'local-ai-context');
+    if (payload.data) {
+      return this.processData(payload.data, payload.options);
+    }
+    return { processed: false, results: null, insights: ["Invalid payload for local AI processing"] };
   }
 
-  // Required by interface
+  // Required by orchestrator
   async processWithCloudAI(payload: any): Promise<any> {
-    return this.processData(payload, 'cloud-ai-context');
+    if (payload.data) {
+      return this.processData(payload.data, payload.options);
+    }
+    return { processed: false, results: null, insights: ["Invalid payload for cloud AI processing"] };
   }
 
-  async processData(data: any, context: string): Promise<any> {
+  async processData(data: any, options: any = {}): Promise<ProcessingResult> {
     try {
-      // Generate processing instructions using AI
-      const processingInstructions = await deepseekR1Service.processQuery(
-        `Analyze and process the following data: ${JSON.stringify(data)}. Context: ${context}`
+      // Process data using AI
+      const processingResults = await deepseekR1Service.processQuery(
+        `Process and analyze the following data: ${JSON.stringify(data)}`
       );
       
-      // Parse the processing instructions (assuming JSON format)
-      const instructions = JSON.parse(processingInstructions);
-
-      // Apply the processing instructions to the data
-      let processedData = data;
-      for (const instruction of instructions) {
-        if (instruction.action === 'filter') {
-          processedData = processedData.filter((item: any) => item[instruction.field] === instruction.value);
-        } else if (instruction.action === 'map') {
-          processedData = processedData.map((item: any) => ({
-            ...item,
-            [instruction.newField]: item[instruction.field] * instruction.multiplier,
-          }));
-        } else if (instruction.action === 'aggregate') {
-          // Example aggregation: sum of a specific field
-          processedData = processedData.reduce((acc: number, item: any) => acc + item[instruction.field], 0);
-        }
-        // Add more processing actions as needed
-      }
-
-      return processedData;
+      return {
+        processed: true,
+        results: {
+          summary: processingResults,
+          analysisDate: new Date().toISOString()
+        },
+        insights: [processingResults]
+      };
     } catch (error) {
       console.error("Error in data processing agent:", error);
       throw error;

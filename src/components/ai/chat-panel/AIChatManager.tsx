@@ -15,13 +15,11 @@ const AIChatManager = ({ onNewChat, initialOpen = false }: AIChatManagerProps) =
   const [showNewChat, setShowNewChat] = useState(true);
   const { 
     input, 
-    setInput, 
+    inputValue, 
+    setInputValue, 
     messages, 
     isTyping, 
-    handleSubmit,
-    handleSend,
-    inputValue,
-    setInputValue
+    handleSend 
   } = useEnhancedChat();
   
   const handleStarterClick = (text: string) => {

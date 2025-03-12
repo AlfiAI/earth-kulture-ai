@@ -1,179 +1,162 @@
 
-import { toast } from "sonner";
-import { AgentType } from './types/agentTypes';
-import { LocalAIProcessor } from './local/localAIProcessor';
-import { TaskManager } from './queue/taskManager';
 import { dataProcessingAgent } from './agents/dataProcessingAgent';
 import { regulatoryComplianceAgent } from './agents/regulatoryComplianceAgent';
 import { predictiveAnalyticsAgent } from './agents/predictiveAnalyticsAgent';
+import { AIAgent, TaskPriority, AIMode } from './types/agentTypes';
 
-/**
- * AI Agent Orchestrator - Manages communication between specialized AI agents
- */
-class AIAgentOrchestrator {
-  private taskManager: TaskManager;
-  private localAIProcessor: LocalAIProcessor;
-  private apiFailureCount: number = 0;
-  private readonly API_FALLBACK_THRESHOLD = 3;
-  
-  constructor() {
-    // Initialize local AI processor
-    this.localAIProcessor = new LocalAIProcessor({
-      enabled: true,
-      url: "http://localhost:11434/api/chat",
-      modelName: "llama3",
-      available: null,
-      lastCheck: 0
+// Typed configuration for orchestrator
+interface OrchestrationConfig {
+  preferLocalExecution: boolean;
+  maxParallelTasks: number;
+  defaultPriority: TaskPriority;
+  defaultMode: AIMode;
+}
+
+class AIAgentOrchestratorImpl {
+  private config: OrchestrationConfig;
+  private taskQueue: any[] = [];
+  private processing: boolean = false;
+
+  constructor(config: OrchestrationConfig) {
+    this.config = config;
+  }
+
+  // Initialize the orchestrator with the agents
+  initialize() {
+    console.log("AI Agent Orchestrator initialized with config:", this.config);
+    // Register agents and capabilities
+    return {
+      dataProcessingAgent,
+      regulatoryComplianceAgent,
+      predictiveAnalyticsAgent
+    };
+  }
+
+  // Schedule a task for processing
+  async scheduleTask(
+    task: {
+      agentType: string;
+      payload: any;
+      priority?: TaskPriority;
+      mode?: AIMode;
+    }
+  ): Promise<any> {
+    const { agentType, payload, priority = this.config.defaultPriority, mode = this.config.defaultMode } = task;
+    
+    // Add to queue with metadata
+    this.taskQueue.push({
+      agentType,
+      payload,
+      priority,
+      mode,
+      timestamp: Date.now()
     });
     
-    // Initialize task manager
-    this.taskManager = new TaskManager();
-  }
-  
-  /**
-   * Submit a task to be processed by a specific AI agent
-   */
-  async submitTask(
-    agentType: AgentType, 
-    payload: any, 
-    priority: 'high' | 'medium' | 'low' = 'medium',
-    forceLocalAI: boolean = false
-  ): Promise<string> {
-    // Check if we should use local AI
-    const useLocalAI = forceLocalAI || 
-                       (await this.shouldUseLocalAI(agentType, payload, priority));
+    // Sort queue by priority
+    this.taskQueue.sort((a, b) => {
+      if (a.priority === b.priority) {
+        return a.timestamp - b.timestamp; // FIFO for same priority
+      }
+      return a.priority - b.priority; // Higher priority first
+    });
     
-    // Create a task and add it to the queue
-    const taskId = this.taskManager.createTask(agentType, payload, priority, useLocalAI);
-    
-    // Start processing if not already running
-    if (!this.taskManager.isCurrentlyProcessing()) {
+    // Start processing if not already in progress
+    if (!this.processing) {
       this.processTasks();
     }
     
-    return taskId;
+    // For simplicity, directly process and return the result 
+    // In a real implementation, this would likely return a task ID
+    // and the result would be fetched later or via callback
+    return this.processTask(task);
   }
   
-  /**
-   * Get the status of a specific task
-   */
-  getTaskStatus(taskId: string) {
-    return this.taskManager.getTask(taskId);
-  }
-  
-  /**
-   * Process tasks in the queue
-   */
-  private async processTasks(): Promise<void> {
-    if (this.taskManager.isCurrentlyProcessing()) return;
+  // Process tasks from the queue
+  private async processTasks() {
+    if (this.taskQueue.length === 0) {
+      this.processing = false;
+      return;
+    }
     
-    this.taskManager.setProcessingStatus(true);
+    this.processing = true;
+    
+    // Process up to maxParallelTasks
+    const tasksToProcess = this.taskQueue.splice(0, this.config.maxParallelTasks);
     
     try {
-      // Get the next task
-      const task = this.taskManager.getNextPendingTask();
-      
-      if (!task) {
-        this.taskManager.setProcessingStatus(false);
-        return;
-      }
-      
-      this.taskManager.markTaskAsProcessing(task.id);
-      
-      // Route to appropriate agent
-      try {
-        const result = await this.routeTaskToAgent(task);
-        this.taskManager.markTaskAsCompleted(task.id, result);
-        
-        // Reset API failure count on success if using cloud AI
-        if (!task.useLocalAI) {
-          this.apiFailureCount = 0;
-        }
-      } catch (error) {
-        console.error(`Error processing task ${task.id}:`, error);
-        this.taskManager.markTaskAsFailed(task.id, error.message);
-        
-        // Increment API failure count if using cloud AI
-        if (!task.useLocalAI) {
-          this.apiFailureCount++;
-        }
-      }
-      
-      // Continue processing remaining tasks
-      this.taskManager.setProcessingStatus(false);
-      this.processTasks();
+      await Promise.all(tasksToProcess.map(task => this.processTask(task)));
     } catch (error) {
-      console.error('Error in task processing:', error);
-      this.taskManager.setProcessingStatus(false);
+      console.error("Error processing AI tasks:", error);
+    }
+    
+    // Continue with remaining tasks
+    this.processTasks();
+  }
+  
+  // Process an individual task
+  private async processTask(task: any): Promise<any> {
+    const { agentType, payload, mode } = task;
+    
+    try {
+      // Get the appropriate agent
+      const agent = this.getAgentByType(agentType);
+      if (!agent) {
+        throw new Error(`Agent type not found: ${agentType}`);
+      }
+      
+      // Execute on the appropriate runtime
+      const useLocal = mode === AIMode.LOCAL || 
+                      (mode === AIMode.AUTO && this.config.preferLocalExecution);
+      
+      if (useLocal) {
+        if (agentType === 'dataProcessing' && dataProcessingAgent.processWithLocalAI) {
+          return await dataProcessingAgent.processWithLocalAI(payload);
+        } else if (agentType === 'regulatoryCompliance' && regulatoryComplianceAgent.processWithLocalAI) {
+          return await regulatoryComplianceAgent.processWithLocalAI(payload);
+        } else if (agentType === 'predictiveAnalytics' && predictiveAnalyticsAgent.processWithLocalAI) {
+          return await predictiveAnalyticsAgent.processWithLocalAI(payload);
+        }
+      } else {
+        if (agentType === 'dataProcessing' && dataProcessingAgent.processWithCloudAI) {
+          return await dataProcessingAgent.processWithCloudAI(payload);
+        } else if (agentType === 'regulatoryCompliance' && regulatoryComplianceAgent.processWithCloudAI) {
+          return await regulatoryComplianceAgent.processWithCloudAI(payload);
+        } else if (agentType === 'predictiveAnalytics' && predictiveAnalyticsAgent.processWithCloudAI) {
+          return await predictiveAnalyticsAgent.processWithCloudAI(payload);
+        }
+      }
+      
+      throw new Error(`No appropriate processing method found for agent ${agentType}`);
+    } catch (error) {
+      console.error(`Error processing task for agent ${agentType}:`, error);
+      throw error;
     }
   }
   
-  /**
-   * Route a task to the appropriate specialized agent
-   */
-  private async routeTaskToAgent(task: any): Promise<any> {
-    const { agentType, payload, useLocalAI } = task;
-    
-    // Route to specific agent based on type
+  // Helper to get the right agent instance
+  private getAgentByType(agentType: string): any {
     switch (agentType) {
-      case 'data-processing':
-        return useLocalAI ? 
-               dataProcessingAgent.processWithLocalAI(payload) : 
-               dataProcessingAgent.processWithCloudAI(payload);
-      
-      case 'regulatory-compliance':
-        return useLocalAI ? 
-               regulatoryComplianceAgent.processWithLocalAI(payload) : 
-               regulatoryComplianceAgent.processWithCloudAI(payload);
-      
-      case 'predictive-analytics':
-        return useLocalAI ? 
-               predictiveAnalyticsAgent.processWithLocalAI(payload) : 
-               predictiveAnalyticsAgent.processWithCloudAI(payload);
-      
+      case 'dataProcessing':
+        return dataProcessingAgent;
+      case 'regulatoryCompliance':
+        return regulatoryComplianceAgent;
+      case 'predictiveAnalytics':
+        return predictiveAnalyticsAgent;
       default:
-        throw new Error(`Unknown agent type: ${agentType}`);
-    }
-  }
-  
-  /**
-   * Determine if we should use local AI based on task type and payload
-   */
-  private async shouldUseLocalAI(agentType: AgentType, payload: any, priority: string): Promise<boolean> {
-    // If local AI is not enabled, don't use it
-    if (!(this.localAIProcessor.getConfig().enabled)) return false;
-    
-    // Check if local AI is available
-    if (!(await this.localAIProcessor.isAvailable())) return false;
-    
-    // Always use cloud API for high priority tasks
-    if (priority === 'high') return false;
-    
-    // Use local AI if cloud API is having issues
-    if (this.apiFailureCount >= this.API_FALLBACK_THRESHOLD) return true;
-    
-    // Simple complexity check based on task type and payload
-    const payloadString = typeof payload === 'string' ? 
-                         payload : JSON.stringify(payload);
-    const payloadSize = payloadString.length;
-    
-    switch (agentType) {
-      case 'data-processing':
-        // Data processing can use local AI for small datasets
-        return payloadSize < 1000;
-      
-      case 'regulatory-compliance':
-        // Regulatory tasks usually need more context, prefer cloud
-        return false;
-      
-      case 'predictive-analytics':
-        // Predictive tasks usually need more power, prefer cloud
-        return false;
-      
-      default:
-        return false;
+        return null;
     }
   }
 }
 
-export const aiAgentOrchestrator = new AIAgentOrchestrator();
+// Create and export singleton instance
+export const aiAgentOrchestrator = new AIAgentOrchestratorImpl({
+  preferLocalExecution: true,
+  maxParallelTasks: 2,
+  defaultPriority: TaskPriority.NORMAL,
+  defaultMode: AIMode.AUTO
+});
+
+// Initialize on startup
+const agents = aiAgentOrchestrator.initialize();
+
+export { agents };

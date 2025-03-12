@@ -3,12 +3,6 @@
  * Utility functions to manage context for AI conversations
  */
 
-interface PageContext {
-  type: string;
-  data: any;
-  relevantTopics: string[];
-}
-
 /**
  * Get relevant context based on the current page
  */

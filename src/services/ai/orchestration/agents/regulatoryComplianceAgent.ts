@@ -1,5 +1,6 @@
 
 import { deepseekR1Service } from '@/services/ai/deepseekR1Service';
+import { RiskAnalysisResult } from '@/services/ai/types/decisionTypes';
 
 export interface ComplianceResult {
   isCompliant: boolean;

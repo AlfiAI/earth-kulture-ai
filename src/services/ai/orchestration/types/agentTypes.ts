@@ -1,60 +1,49 @@
 
-// Define the types of specialized AI agents
-export type AgentType = 'data-processing' | 'regulatory-compliance' | 'predictive-analytics';
+/**
+ * Types for AI Agent Orchestration
+ */
 
-// Define industry types
-export type IndustryType = 'corporate' | 'sme' | 'government' | 'individual' | 'education' | 'healthcare' | 'energy' | 'manufacturing' | 'financial' | 'retail' | 'technology' | 'other';
+// Base AI agent interface
+export interface AIAgent {
+  name: string;
+  processWithLocalAI?(payload: any): Promise<any>;
+  processWithCloudAI?(payload: any): Promise<any>;
+}
 
-// Define user role types
-export type UserRoleType = 'admin' | 'manager' | 'analyst' | 'viewer' | 'individual';
+// Task priority for scheduling
+export enum TaskPriority {
+  CRITICAL = 0,
+  HIGH = 1,
+  NORMAL = 2,
+  LOW = 3
+}
 
-// Agent task interface
-export interface AgentTask {
+// AI processing mode
+export enum AIMode {
+  AUTO = 'auto',     // Let orchestrator decide where to process
+  LOCAL = 'local',   // Force local processing
+  CLOUD = 'cloud'    // Force cloud processing
+}
+
+// Task state for tracking
+export enum TaskState {
+  QUEUED = 'queued',
+  PROCESSING = 'processing',
+  COMPLETED = 'completed',
+  FAILED = 'failed'
+}
+
+// Task definition
+export interface AITask {
   id: string;
-  agentType: AgentType;
+  agentType: string;
   payload: any;
-  priority: 'high' | 'medium' | 'low';
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  priority: TaskPriority;
+  mode: AIMode;
+  state: TaskState;
+  createdAt: Date;
+  startedAt?: Date;
+  completedAt?: Date;
   result?: any;
   error?: string;
-  createdAt: Date;
-  completedAt?: Date;
-  useLocalAI?: boolean;
-  industryContext?: IndustryType;
-  userRole?: UserRoleType;
-}
-
-// Local AI processing configuration
-export interface LocalAIConfig {
-  enabled: boolean;
-  url: string;
-  modelName: string;
-  available: boolean | null;
-  lastCheck: number;
-}
-
-// Multi-tenant configuration
-export interface TenantConfig {
-  id: string;
-  name: string;
-  industryType: IndustryType;
-  features: {
-    localAIEnabled: boolean;
-    advancedAnalyticsEnabled: boolean;
-    customReportingEnabled: boolean;
-    teamCollaborationEnabled: boolean;
-  };
-}
-
-// User context for AI processing
-export interface UserContext {
-  userId: string;
-  tenantId?: string;
-  industry: IndustryType;
-  role: UserRoleType;
-  preferences: {
-    dashboardType: 'individual' | 'business' | 'enterprise';
-    dataVisualizationPreference: 'detailed' | 'summary' | 'visual';
-    reportFrequency: 'daily' | 'weekly' | 'monthly' | 'quarterly';
-  };
 }
