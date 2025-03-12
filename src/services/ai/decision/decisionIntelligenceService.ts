@@ -2,6 +2,7 @@ import { RiskAnalysisResult, Recommendation, OutcomePrediction } from '../types/
 import { deepseekR1Service } from '../deepseekR1Service';
 import { aiAgentOrchestrator } from '../orchestration/aiAgentOrchestrator';
 import { toast } from "sonner";
+import { TaskPriority } from '../orchestration/types/agentTypes';
 
 // Decision scenario interface
 export interface DecisionScenario {
@@ -138,7 +139,7 @@ class DecisionIntelligenceServiceImpl {
         scenarioData,
         assessmentAreas
       },
-      'high'
+      TaskPriority.HIGH
     );
     
     // Wait for task completion (in a real app, this would be asynchronous with notifications)

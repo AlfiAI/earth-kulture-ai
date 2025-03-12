@@ -1,4 +1,3 @@
-
 /**
  * Types for AI Agent Orchestration
  */
@@ -96,9 +95,10 @@ export interface AgentTask {
   id: string;
   agentType: AgentType;
   payload: any;
-  priority: string | TaskPriority;
+  priority: string;
   status: string;
   createdAt: Date;
+  completedAt?: Date;
   useLocalAI?: boolean;
   result?: any;
   error?: string;

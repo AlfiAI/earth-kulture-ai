@@ -1,4 +1,3 @@
-
 import { LocalAIConfig } from '../types/agentTypes';
 
 /**
@@ -15,9 +14,12 @@ export class LocalAIProcessor {
    * Check if local AI is available
    */
   async isAvailable(): Promise<boolean> {
-    // Cache the check for 5 minutes
-    const now = Date.now();
-    if (this.config.available !== null && (now - this.config.lastCheck) < 5 * 60 * 1000) {
+    const now = new Date();
+    const fiveMinutesInMs = 5 * 60 * 1000;
+    
+    if (this.config.available !== null && 
+        this.config.lastCheck && 
+        (now.getTime() - this.config.lastCheck.getTime()) < fiveMinutesInMs) {
       return this.config.available;
     }
     
@@ -32,16 +34,16 @@ export class LocalAIProcessor {
           messages: [{ role: "user", content: "hello" }],
           max_tokens: 1
         }),
-        signal: AbortSignal.timeout(3000) // 3 second timeout
+        signal: AbortSignal.timeout(3000)
       });
       
       this.config.available = response.ok;
-      this.config.lastCheck = now;
+      this.config.lastCheck = new Date();
       return this.config.available;
     } catch (error) {
       console.error("Error checking local AI availability:", error);
       this.config.available = false;
-      this.config.lastCheck = now;
+      this.config.lastCheck = new Date();
       return false;
     }
   }

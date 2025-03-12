@@ -1,4 +1,3 @@
-
 import { AgentTask, AgentType } from '../types/agentTypes';
 
 /**
@@ -89,8 +88,8 @@ export class TaskManager {
   markTaskAsCompleted(taskId: string, result: any): AgentTask | undefined {
     return this.updateTask(taskId, { 
       status: 'completed', 
-      result, 
-      completedAt: new Date() 
+      result,
+      completedAt: new Date()
     });
   }
   
