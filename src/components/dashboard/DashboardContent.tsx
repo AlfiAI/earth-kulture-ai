@@ -17,11 +17,11 @@ const DashboardContent = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6"
+      className="space-y-4 md:space-y-6"
     >
       {dashboardType === 'individual' ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
             <motion.div variants={itemVariants} className="carbon-footprint">
               <CarbonFootprint />
             </motion.div>
@@ -35,7 +35,7 @@ const DashboardContent = () => {
         </>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6">
             <motion.div variants={itemVariants} className="dashboard-esg-score">
               <DashboardESGScore />
             </motion.div>
@@ -47,11 +47,11 @@ const DashboardContent = () => {
             </motion.div>
           </div>
           
-          <motion.div variants={itemVariants} className="mb-6 ai-insights">
+          <motion.div variants={itemVariants} className="mb-4 md:mb-6 ai-insights">
             <AIInsights />
           </motion.div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             <motion.div variants={itemVariants} className="lg:col-span-2">
               <PredictiveInsights />
             </motion.div>

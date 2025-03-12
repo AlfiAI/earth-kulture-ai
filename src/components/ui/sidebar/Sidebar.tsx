@@ -45,7 +45,7 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            className="w-[80vw] max-w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:right-4 [&>button]:top-4"
             style={
               {
                 "--sidebar-width": "18rem",

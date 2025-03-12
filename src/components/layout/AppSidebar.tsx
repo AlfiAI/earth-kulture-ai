@@ -32,10 +32,12 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function AppSidebar() {
   const { pathname } = useLocation();
   const { state } = useSidebar();
+  const isMobile = useIsMobile();
 
   const sidebarItems = [
     {
@@ -111,9 +113,9 @@ export function AppSidebar() {
   ];
 
   return (
-    <Sidebar side="left" variant="sidebar" collapsible="icon">
+    <Sidebar side="left" variant={isMobile ? "floating" : "sidebar"} collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center h-16 px-4 border-b">
+        <div className="flex items-center h-14 md:h-16 px-3 border-b">
           <Link to="/" className="flex items-center">
             <Globe className="h-6 w-6 text-primary" />
           </Link>
@@ -121,7 +123,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {sidebarItems.map((item) => (
@@ -133,7 +135,7 @@ export function AppSidebar() {
                   >
                     <Link to={item.href}>
                       {item.icon}
-                      <span>{item.title}</span>
+                      <span className="truncate">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -143,8 +145,8 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="flex flex-col px-4 py-2">
-          <Button variant="outline" size="sm" asChild>
+        <div className="flex flex-col px-3 py-2">
+          <Button variant="outline" size="sm" asChild className="w-full">
             <Link to="/support">Need Help?</Link>
           </Button>
         </div>

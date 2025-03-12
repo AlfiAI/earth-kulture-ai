@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import ChatButtonAvatar from './chat-button/ChatButtonAvatar';
 import AnimatedSparkle from './chat-button/AnimatedSparkle';
 import ConversationStarterDropdown from './chat-button/ConversationStarterDropdown';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface WalyChatButtonProps {
   onClick: () => void;
@@ -26,6 +27,7 @@ const WalyChatButton = ({
   onMouseLeave
 }: WalyChatButtonProps) => {
   const buttonRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   
   // Force visibility of chat button
   useEffect(() => {
@@ -40,8 +42,8 @@ const WalyChatButton = ({
           opacity: 1 !important;
           z-index: 99999999 !important;
           position: fixed !important;
-          bottom: ${position.bottom}rem !important;
-          right: ${position.right}rem !important;
+          bottom: ${isMobile ? '5rem' : `${position.bottom}rem`} !important;
+          right: ${isMobile ? '1rem' : `${position.right}rem`} !important;
           pointer-events: auto !important;
           width: auto !important;
           height: auto !important;
@@ -54,7 +56,7 @@ const WalyChatButton = ({
     const interval = setInterval(forceVisible, 200);
     
     return () => clearInterval(interval);
-  }, [position]);
+  }, [position, isMobile]);
   
   // Conversation starter questions
   const starters = contextAwareStarters || [
@@ -83,8 +85,8 @@ const WalyChatButton = ({
       className="fixed"
       style={{ 
         position: 'fixed',
-        bottom: `${position.bottom}rem`, 
-        right: `${position.right}rem`,
+        bottom: isMobile ? '5rem' : `${position.bottom}rem`, 
+        right: isMobile ? '1rem' : `${position.right}rem`,
         zIndex: 99999999,
         visibility: 'visible',
         display: 'block',
@@ -96,23 +98,23 @@ const WalyChatButton = ({
     >
       <Button
         onClick={onClick}
-        className="relative flex items-center justify-center p-0 w-16 h-16 rounded-full shadow-xl
+        className="relative flex items-center justify-center p-0 w-12 h-12 md:w-16 md:h-16 rounded-full shadow-xl
                  bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700
                  hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300
                  border-4 border-primary"
         aria-label="Chat with Waly AI"
       >
-        <div className="w-12 h-12 overflow-hidden rounded-full">
+        <div className="w-10 h-10 md:w-12 md:h-12 overflow-hidden rounded-full">
           <ChatButtonAvatar avatarPath="/lovable-uploads/e48e0f44-7e54-4337-b0ea-8893795682ba.png" />
         </div>
         <AnimatedSparkle />
       </Button>
       
-      {showStarters && (
+      {showStarters && !isMobile && (
         <ConversationStarterDropdown 
           starters={starters}
           onStarterClick={handleStarterClick}
-          isMobile={false}
+          isMobile={isMobile}
         />
       )}
     </motion.div>

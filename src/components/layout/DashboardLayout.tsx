@@ -29,17 +29,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <SidebarProvider defaultOpen={!isMobile}>
       <motion.div 
-        className="min-h-screen bg-background flex flex-col w-full"
+        className="min-h-screen bg-background flex flex-col w-full overflow-x-hidden"
         variants={pageTransitionVariants}
         initial="initial"
         animate="animate"
         exit="exit"
       >
         <Header />
-        <div className="flex flex-1 pt-16">
+        <div className="flex flex-1 pt-14 md:pt-16">
           <AppSidebar />
           <motion.main 
-            className="flex-1 transition-all duration-200"
+            className="flex-1 transition-all duration-200 px-2 md:px-4 pb-16 md:pb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
