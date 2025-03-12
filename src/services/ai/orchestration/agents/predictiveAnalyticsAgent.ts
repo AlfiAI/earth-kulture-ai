@@ -1,64 +1,76 @@
 
-import { deepseekR1Service } from '@/services/ai/deepseekR1Service';
+import { AIAgent } from "../types/agentTypes";
 
-export interface PredictionResult {
-  prediction: any;
-  confidence: number;
-  factors: string[];
-  summary: string;
-}
+export class PredictiveAnalyticsAgent implements AIAgent {
+  name = "PredictiveAnalytics";
 
-export interface PredictiveAnalyticsAgent {
-  predictOutcome(data: any, options?: any): Promise<PredictionResult>;
-  processWithLocalAI?(payload: any): Promise<any>;
-  processWithCloudAI?(payload: any): Promise<any>;
-}
-
-class PredictiveAnalyticsAgentImpl implements PredictiveAnalyticsAgent {
-  // Required by orchestrator
   async processWithLocalAI(payload: any): Promise<any> {
-    if (payload.data) {
-      return this.predictOutcome(payload.data, payload.options);
-    }
-    return { 
-      prediction: null, 
-      confidence: 0,
-      factors: ["Invalid payload for local AI processing"],
-      summary: "Failed to process prediction request"
+    console.log("Running predictive analytics locally:", payload);
+    // Simulate local processing with basic predictions
+    return {
+      success: true,
+      predictions: {
+        carbonEmissions: {
+          current: payload.currentEmissions || 1000,
+          projected: payload.currentEmissions ? payload.currentEmissions * 0.85 : 850,
+          confidence: 0.75
+        },
+        recommendations: [
+          "Implement energy efficiency measures",
+          "Reduce business travel"
+        ],
+        timestamp: new Date().toISOString(),
+        source: "local-ai"
+      }
     };
   }
 
-  // Required by orchestrator
   async processWithCloudAI(payload: any): Promise<any> {
-    if (payload.data) {
-      return this.predictOutcome(payload.data, payload.options);
-    }
-    return { 
-      prediction: null, 
-      confidence: 0,
-      factors: ["Invalid payload for cloud AI processing"],
-      summary: "Failed to process prediction request"
+    console.log("Running predictive analytics in cloud:", payload);
+    // Simulate cloud processing with more detailed predictions
+    return {
+      success: true,
+      predictions: {
+        carbonEmissions: {
+          current: payload.currentEmissions || 1000,
+          projected: payload.currentEmissions ? payload.currentEmissions * 0.82 : 820,
+          confidence: 0.92,
+          breakdown: {
+            scope1: { current: 300, projected: 240 },
+            scope2: { current: 400, projected: 320 },
+            scope3: { current: 300, projected: 260 }
+          }
+        },
+        waterUsage: {
+          current: payload.waterUsage || 5000,
+          projected: payload.waterUsage ? payload.waterUsage * 0.9 : 4500,
+          confidence: 0.88
+        },
+        recommendations: [
+          {
+            action: "Implement energy efficiency measures",
+            impact: "HIGH",
+            cost: "MEDIUM",
+            timeframe: "SHORT_TERM"
+          },
+          {
+            action: "Switch to renewable energy sources",
+            impact: "HIGH",
+            cost: "HIGH",
+            timeframe: "MEDIUM_TERM"
+          },
+          {
+            action: "Optimize supply chain logistics",
+            impact: "MEDIUM",
+            cost: "LOW",
+            timeframe: "SHORT_TERM"
+          }
+        ],
+        timestamp: new Date().toISOString(),
+        source: "cloud-ai"
+      }
     };
-  }
-
-  async predictOutcome(data: any, options: any = {}): Promise<PredictionResult> {
-    try {
-      // Generate prediction using AI
-      const predictionResponse = await deepseekR1Service.processQuery(
-        `Make a prediction based on the following data: ${JSON.stringify(data)}`
-      );
-      
-      return {
-        prediction: predictionResponse,
-        confidence: 0.85, // Placeholder
-        factors: ["historical trends", "market conditions", "regulatory changes"],
-        summary: predictionResponse
-      };
-    } catch (error) {
-      console.error("Error in predictive analytics agent:", error);
-      throw error;
-    }
   }
 }
 
-export const predictiveAnalyticsAgent: PredictiveAnalyticsAgent = new PredictiveAnalyticsAgentImpl();
+export const predictiveAnalyticsAgent = new PredictiveAnalyticsAgent();

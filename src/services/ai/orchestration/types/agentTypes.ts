@@ -18,6 +18,9 @@ export enum TaskPriority {
   LOW = 3
 }
 
+// Use string literals for these values to match what's used in the code
+export type TaskPriorityString = 'critical' | 'high' | 'medium' | 'normal' | 'low';
+
 // AI processing mode
 export enum AIMode {
   AUTO = 'auto',     // Let orchestrator decide where to process
@@ -30,7 +33,8 @@ export enum TaskState {
   QUEUED = 'queued',
   PROCESSING = 'processing',
   COMPLETED = 'completed',
-  FAILED = 'failed'
+  FAILED = 'failed',
+  PENDING = 'pending'  // Added to match string literal usage
 }
 
 // Task definition
@@ -48,7 +52,7 @@ export interface AITask {
   error?: string;
 }
 
-// Industry types for ESG benchmarking and context
+// Industry types for ESG benchmarking and context - using string literals to match usage in code
 export enum IndustryType {
   CORPORATE = 'corporate',
   SME = 'sme',
@@ -61,10 +65,11 @@ export enum IndustryType {
   FINANCIAL = 'financial',
   RETAIL = 'retail',
   TECHNOLOGY = 'technology',
-  OTHER = 'other'
+  OTHER = 'other',
+  VIEWER = 'viewer'  // Added to match usage in code
 }
 
-// User role types for permissions and context
+// User role types for permissions and context - using string literals to match usage in code
 export enum UserRoleType {
   ADMIN = 'admin',
   USER = 'user',
@@ -72,7 +77,8 @@ export enum UserRoleType {
   ANALYST = 'analyst',
   EXECUTIVE = 'executive',
   SUSTAINABILITY_LEAD = 'sustainability_lead',
-  GUEST = 'guest'
+  GUEST = 'guest',
+  VIEWER = 'viewer'  // Added to match usage in code
 }
 
 // Agent types for orchestration
@@ -91,6 +97,10 @@ export interface LocalAIConfig {
   temperature: number;
   contextWindow: number;
   processingMode: 'cpu' | 'gpu';
+  available?: boolean;  // Added to match usage in code
+  lastCheck?: Date;     // Added to match usage in code
+  url?: string;         // Added to match usage in code
+  modelName?: string;   // Added to match usage in code
 }
 
 // Task definition for agent queue

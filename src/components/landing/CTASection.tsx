@@ -58,9 +58,9 @@ const CTASection = () => {
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:shadow-lg hover:shadow-primary/20"
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate('/dashboard')}
               >
-                Get Started Today <ChevronRight className="ml-1 h-4 w-4" />
+                Go To Dashboard <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </motion.div>
           </CardContent>

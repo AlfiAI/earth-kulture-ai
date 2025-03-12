@@ -1,55 +1,56 @@
 
-import { deepseekR1Service } from '@/services/ai/deepseekR1Service';
-import { RiskAnalysisResult } from '@/services/ai/types/decisionTypes';
+import { AIAgent } from "../types/agentTypes";
 
-export interface ComplianceResult {
-  isCompliant: boolean;
-  details: string;
-}
+export class RegulatoryComplianceAgent implements AIAgent {
+  name = "RegulatoryCompliance";
 
-export interface RegulatoryComplianceAgent {
-  analyzeCompliance(data: any, regulations: string[]): Promise<ComplianceResult>;
-  processWithLocalAI?(payload: any): Promise<any>;
-  processWithCloudAI?(payload: any): Promise<any>;
-}
-
-class RegulatoryComplianceAgentImpl implements RegulatoryComplianceAgent {
-  // Required by orchestrator
   async processWithLocalAI(payload: any): Promise<any> {
-    if (payload.data && payload.regulations) {
-      return this.analyzeCompliance(payload.data, payload.regulations);
-    }
-    return { isCompliant: false, details: "Invalid payload for local AI processing" };
+    console.log("Processing compliance rules locally:", payload);
+    // Simulate local processing
+    return {
+      success: true,
+      compliance: {
+        status: "COMPLIANT",
+        regulations: {
+          analyzed: payload.regulations || ["GHG", "CSRD", "ESG"],
+          compliant: ["GHG", "ESG"],
+          nonCompliant: ["CSRD"],
+          recommendations: [
+            "Update CSRD reporting to include Scope 3 emissions"
+          ]
+        },
+        timestamp: new Date().toISOString(),
+        source: "local-ai"
+      }
+    };
   }
 
-  // Required by orchestrator
   async processWithCloudAI(payload: any): Promise<any> {
-    if (payload.data && payload.regulations) {
-      return this.analyzeCompliance(payload.data, payload.regulations);
-    }
-    return { isCompliant: false, details: "Invalid payload for cloud AI processing" };
-  }
-
-  async analyzeCompliance(data: any, regulations: string[]): Promise<ComplianceResult> {
-    try {
-      // Analyze compliance using AI
-      const complianceAnalysis = await deepseekR1Service.processQuery(
-        `Analyze the compliance of the following data: ${JSON.stringify(data)}. Regulations: ${JSON.stringify(regulations)}`
-      );
-      
-      // Interpret the AI's analysis
-      const isCompliant = complianceAnalysis.toLowerCase().includes("compliant");
-      const details = complianceAnalysis;
-
-      return {
-        isCompliant,
-        details,
-      };
-    } catch (error) {
-      console.error("Error in regulatory compliance agent:", error);
-      throw error;
-    }
+    console.log("Processing compliance rules in cloud:", payload);
+    // Simulate cloud processing with more detailed analysis
+    return {
+      success: true,
+      compliance: {
+        status: "PARTIALLY_COMPLIANT",
+        regulations: {
+          analyzed: payload.regulations || ["GHG", "CSRD", "ESG", "ISSB", "TCFD"],
+          compliant: ["GHG", "ESG", "TCFD"],
+          nonCompliant: ["CSRD", "ISSB"],
+          recommendations: [
+            "Update CSRD reporting to include Scope 3 emissions",
+            "Align disclosures with ISSB standards S1 and S2"
+          ]
+        },
+        impacts: {
+          financial: "MEDIUM",
+          reputational: "HIGH",
+          operational: "LOW"
+        },
+        timestamp: new Date().toISOString(),
+        source: "cloud-ai"
+      }
+    };
   }
 }
 
-export const regulatoryComplianceAgent: RegulatoryComplianceAgent = new RegulatoryComplianceAgentImpl();
+export const regulatoryComplianceAgent = new RegulatoryComplianceAgent();

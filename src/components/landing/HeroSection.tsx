@@ -80,9 +80,9 @@ const HeroSection = () => {
             <Button 
               size="lg" 
               className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:shadow-lg hover:shadow-primary/20"
-              onClick={() => navigate('/auth')}
+              onClick={() => navigate('/dashboard')}
             >
-              Get Started
+              Go To Dashboard
             </Button>
           </motion.div>
           <motion.div

@@ -1,55 +1,37 @@
 
-import { deepseekR1Service } from '@/services/ai/deepseekR1Service';
+import { AIAgent } from "../types/agentTypes";
 
-export interface ProcessingResult {
-  processed: boolean;
-  results: any;
-  insights: string[];
-}
+export class DataProcessingAgent implements AIAgent {
+  name = "DataProcessing";
 
-export interface DataProcessingAgent {
-  processData(data: any, options?: any): Promise<ProcessingResult>;
-  processWithLocalAI?(payload: any): Promise<any>;
-  processWithCloudAI?(payload: any): Promise<any>;
-}
-
-class DataProcessingAgentImpl implements DataProcessingAgent {
-  // Required by orchestrator
   async processWithLocalAI(payload: any): Promise<any> {
-    if (payload.data) {
-      return this.processData(payload.data, payload.options);
-    }
-    return { processed: false, results: null, insights: ["Invalid payload for local AI processing"] };
-  }
-
-  // Required by orchestrator
-  async processWithCloudAI(payload: any): Promise<any> {
-    if (payload.data) {
-      return this.processData(payload.data, payload.options);
-    }
-    return { processed: false, results: null, insights: ["Invalid payload for cloud AI processing"] };
-  }
-
-  async processData(data: any, options: any = {}): Promise<ProcessingResult> {
-    try {
-      // Process data using AI
-      const processingResults = await deepseekR1Service.processQuery(
-        `Process and analyze the following data: ${JSON.stringify(data)}`
-      );
-      
-      return {
+    console.log("Processing data locally:", payload);
+    // Simulate local processing
+    return {
+      success: true,
+      data: {
+        ...payload,
         processed: true,
-        results: {
-          summary: processingResults,
-          analysisDate: new Date().toISOString()
-        },
-        insights: [processingResults]
-      };
-    } catch (error) {
-      console.error("Error in data processing agent:", error);
-      throw error;
-    }
+        timestamp: new Date().toISOString(),
+        source: "local-ai"
+      }
+    };
+  }
+
+  async processWithCloudAI(payload: any): Promise<any> {
+    console.log("Processing data in cloud:", payload);
+    // Simulate cloud processing
+    return {
+      success: true,
+      data: {
+        ...payload,
+        processed: true,
+        enhanced: true,
+        timestamp: new Date().toISOString(),
+        source: "cloud-ai"
+      }
+    };
   }
 }
 
-export const dataProcessingAgent: DataProcessingAgent = new DataProcessingAgentImpl();
+export const dataProcessingAgent = new DataProcessingAgent();

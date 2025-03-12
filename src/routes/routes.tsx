@@ -1,5 +1,5 @@
 
-import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/auth";
 import App from "@/App";
 
@@ -29,9 +29,6 @@ import Onboarding from "@/pages/Onboarding";
 import Documentation from "@/pages/Documentation";
 import Support from "@/pages/Support";
 import AIAssistant from "@/pages/AIAssistant";
-
-// Protected route layout
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 // Root component that wraps everything with AuthProvider and includes App for non-route components
 const Root = () => (
@@ -81,83 +78,83 @@ export const router = createBrowserRouter([
         path: "/pricing",
         element: <Pricing />,
       },
-      // Special unrestricted route for demo purposes
+      // Make all dashboard routes accessible without authentication
       {
-        path: "/demo",
+        path: "/dashboard",
         element: <DashboardPage />,
       },
       {
-        path: "/dashboard",
-        element: <ProtectedRoute><DashboardPage /></ProtectedRoute>,
-      },
-      {
         path: "/app",
-        element: <ProtectedRoute><DashboardPage /></ProtectedRoute>,
+        element: <DashboardPage />,
       },
       {
         path: "/analytics",
-        element: <ProtectedRoute><Analytics /></ProtectedRoute>,
+        element: <Analytics />,
       },
       {
         path: "/compliance",
-        element: <ProtectedRoute><Compliance /></ProtectedRoute>,
+        element: <Compliance />,
       },
       {
         path: "/goals",
-        element: <ProtectedRoute><Goals /></ProtectedRoute>,
+        element: <Goals />,
       },
       {
         path: "/data",
-        element: <ProtectedRoute><DataCenter /></ProtectedRoute>,
+        element: <DataCenter />,
       },
       {
         path: "/reports",
-        element: <ProtectedRoute><Reports /></ProtectedRoute>,
+        element: <Reports />,
       },
       {
         path: "/settings",
-        element: <ProtectedRoute><Settings /></ProtectedRoute>,
+        element: <Settings />,
       },
       {
         path: "/benchmark",
-        element: <ProtectedRoute><BenchmarkDashboard /></ProtectedRoute>,
+        element: <BenchmarkDashboard />,
       },
       {
         path: "/benchmark-dashboard",
-        element: <ProtectedRoute><BenchmarkDashboard /></ProtectedRoute>,
+        element: <BenchmarkDashboard />,
       },
       {
         path: "/external-data",
-        element: <ProtectedRoute><ExternalData /></ProtectedRoute>,
+        element: <ExternalData />,
       },
       {
         path: "/insights",
-        element: <ProtectedRoute><Insights /></ProtectedRoute>,
+        element: <Insights />,
       },
       {
         path: "/ai-insights",
-        element: <ProtectedRoute><AIInsights /></ProtectedRoute>,
+        element: <AIInsights />,
       },
       {
         path: "/benchmarking",
-        element: <ProtectedRoute><BenchmarkingPage /></ProtectedRoute>,
+        element: <BenchmarkingPage />,
       },
       {
         path: "/onboarding",
-        element: <ProtectedRoute><Onboarding /></ProtectedRoute>,
+        element: <Onboarding />,
       },
       // New routes for previously missing pages
       {
         path: "/documentation",
-        element: <ProtectedRoute><Documentation /></ProtectedRoute>,
+        element: <Documentation />,
       },
       {
         path: "/support",
-        element: <ProtectedRoute><Support /></ProtectedRoute>,
+        element: <Support />,
       },
       {
         path: "/ai-assistant",
-        element: <ProtectedRoute><AIAssistant /></ProtectedRoute>,
+        element: <AIAssistant />,
+      },
+      {
+        path: "/demo",
+        element: <DashboardPage />,
       },
       {
         path: "*",
