@@ -2,7 +2,7 @@
 import { dataProcessingAgent } from './agents/dataProcessingAgent';
 import { regulatoryComplianceAgent } from './agents/regulatoryComplianceAgent';
 import { predictiveAnalyticsAgent } from './agents/predictiveAnalyticsAgent';
-import { AIAgent, TaskPriority, AIMode } from './types/agentTypes';
+import { AIAgent, TaskPriority, AIMode, TaskState, AgentType, TaskStatusResponse } from './types/agentTypes';
 
 // Typed configuration for orchestrator
 interface OrchestrationConfig {
@@ -16,6 +16,7 @@ class AIAgentOrchestratorImpl {
   private config: OrchestrationConfig;
   private taskQueue: any[] = [];
   private processing: boolean = false;
+  private taskHistory: Map<string, TaskStatusResponse> = new Map();
 
   constructor(config: OrchestrationConfig) {
     this.config = config;
@@ -32,7 +33,54 @@ class AIAgentOrchestratorImpl {
     };
   }
 
-  // Schedule a task for processing
+  // Submit a task to the orchestrator
+  async submitTask(
+    agentType: string,
+    payload: any,
+    priority: TaskPriority = this.config.defaultPriority
+  ): Promise<string> {
+    const taskId = `task_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    
+    // Add to queue with metadata
+    this.taskQueue.push({
+      id: taskId,
+      agentType,
+      payload,
+      priority,
+      state: TaskState.QUEUED,
+      createdAt: new Date(),
+      mode: this.config.defaultMode
+    });
+    
+    // Update task history
+    this.taskHistory.set(taskId, {
+      id: taskId,
+      status: TaskState.QUEUED
+    });
+    
+    // Sort queue by priority
+    this.taskQueue.sort((a, b) => {
+      if (a.priority === b.priority) {
+        return a.createdAt.getTime() - b.createdAt.getTime(); // FIFO for same priority
+      }
+      return a.priority - b.priority; // Higher priority first
+    });
+    
+    // Start processing if not already in progress
+    if (!this.processing) {
+      this.processTasks();
+    }
+    
+    return taskId;
+  }
+  
+  // Get status of a task
+  getTaskStatus(taskId: string): TaskStatusResponse | null {
+    const status = this.taskHistory.get(taskId);
+    return status || null;
+  }
+
+  // Schedule a task for processing (legacy API)
   async scheduleTask(
     task: {
       agentType: string;
@@ -95,9 +143,17 @@ class AIAgentOrchestratorImpl {
   
   // Process an individual task
   private async processTask(task: any): Promise<any> {
-    const { agentType, payload, mode } = task;
+    const { id, agentType, payload, mode } = task;
     
     try {
+      // Update task status if it has an ID
+      if (id) {
+        this.taskHistory.set(id, {
+          id,
+          status: TaskState.PROCESSING
+        });
+      }
+      
       // Get the appropriate agent
       const agent = this.getAgentByType(agentType);
       if (!agent) {
@@ -108,39 +164,58 @@ class AIAgentOrchestratorImpl {
       const useLocal = mode === AIMode.LOCAL || 
                       (mode === AIMode.AUTO && this.config.preferLocalExecution);
       
+      let result;
       if (useLocal) {
-        if (agentType === 'dataProcessing' && dataProcessingAgent.processWithLocalAI) {
-          return await dataProcessingAgent.processWithLocalAI(payload);
-        } else if (agentType === 'regulatoryCompliance' && regulatoryComplianceAgent.processWithLocalAI) {
-          return await regulatoryComplianceAgent.processWithLocalAI(payload);
-        } else if (agentType === 'predictiveAnalytics' && predictiveAnalyticsAgent.processWithLocalAI) {
-          return await predictiveAnalyticsAgent.processWithLocalAI(payload);
+        if (agent.processWithLocalAI) {
+          result = await agent.processWithLocalAI(payload);
+        } else {
+          throw new Error(`Local processing not supported for agent ${agentType}`);
         }
       } else {
-        if (agentType === 'dataProcessing' && dataProcessingAgent.processWithCloudAI) {
-          return await dataProcessingAgent.processWithCloudAI(payload);
-        } else if (agentType === 'regulatoryCompliance' && regulatoryComplianceAgent.processWithCloudAI) {
-          return await regulatoryComplianceAgent.processWithCloudAI(payload);
-        } else if (agentType === 'predictiveAnalytics' && predictiveAnalyticsAgent.processWithCloudAI) {
-          return await predictiveAnalyticsAgent.processWithCloudAI(payload);
+        if (agent.processWithCloudAI) {
+          result = await agent.processWithCloudAI(payload);
+        } else {
+          throw new Error(`Cloud processing not supported for agent ${agentType}`);
         }
       }
       
-      throw new Error(`No appropriate processing method found for agent ${agentType}`);
+      // Update task status if it has an ID
+      if (id) {
+        this.taskHistory.set(id, {
+          id,
+          status: TaskState.COMPLETED,
+          result
+        });
+      }
+      
+      return result;
     } catch (error) {
       console.error(`Error processing task for agent ${agentType}:`, error);
+      
+      // Update task status if it has an ID
+      if (id) {
+        this.taskHistory.set(id, {
+          id,
+          status: TaskState.FAILED,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+      
       throw error;
     }
   }
   
   // Helper to get the right agent instance
-  private getAgentByType(agentType: string): any {
+  private getAgentByType(agentType: string): AIAgent | null {
     switch (agentType) {
       case 'dataProcessing':
+      case 'data-processing':
         return dataProcessingAgent;
       case 'regulatoryCompliance':
+      case 'regulatory-compliance':
         return regulatoryComplianceAgent;
       case 'predictiveAnalytics':
+      case 'predictive-analytics':
         return predictiveAnalyticsAgent;
       default:
         return null;
