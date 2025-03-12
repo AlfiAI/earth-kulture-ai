@@ -39,12 +39,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <div className="flex flex-1 pt-14 md:pt-16">
           <AppSidebar />
           <motion.main 
-            className="flex-1 transition-all duration-200 px-2 md:px-4 pb-16 md:pb-8"
+            className="flex-1 transition-all duration-200 px-2 md:px-4 pb-24 md:pb-8 w-full overflow-x-hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            {children}
+            <div className="max-w-full overflow-x-hidden">
+              {children}
+            </div>
           </motion.main>
         </div>
         

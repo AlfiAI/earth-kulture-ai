@@ -15,7 +15,7 @@ const PageContainer = ({ children, className = '' }: PageContainerProps) => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className={`container mx-auto px-4 py-6 ${className}`}
+      className={`container mx-auto px-3 py-4 md:px-4 md:py-6 max-w-full overflow-x-hidden ${className}`}
     >
       {children}
     </motion.div>

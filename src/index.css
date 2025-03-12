@@ -96,6 +96,7 @@
     @apply bg-background text-foreground font-sans;
     font-family: 'Inter', sans-serif;
     -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
   }
   
   .glass-card {
@@ -132,15 +133,47 @@
     }
     
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
+      line-height: 1.75rem;
     }
     
     h2 {
-      font-size: 1.25rem;
+      font-size: 1.125rem;
+      line-height: 1.5rem;
+    }
+    
+    p {
+      font-size: 0.875rem;
     }
     
     .card {
       padding: 0.75rem;
+    }
+    
+    /* Fix horizontal overflow issues */
+    .overflow-x-auto {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Ensure tab lists don't overflow the screen */
+    [role="tablist"] {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    
+    [role="tablist"]::-webkit-scrollbar {
+      display: none;
+    }
+    
+    /* Improve mobile table display */
+    table {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
   }
 }
@@ -162,8 +195,8 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-gap: 0.75rem;
 }
 
 @media (min-width: 768px) {

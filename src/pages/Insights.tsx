@@ -1,6 +1,4 @@
 
-import { useNavigate } from 'react-router-dom';
-import { useIsMobile } from "@/hooks/use-mobile";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import InsightsHeader from "@/components/insights/InsightsHeader";
 import InsightsBanner from "@/components/insights/InsightsBanner";
@@ -14,12 +12,12 @@ const Insights = () => {
 
   return (
     <DashboardLayout>
-      <div className="container max-w-7xl mx-auto px-4 py-6 pb-24">
+      <div className="px-3 py-4 md:px-4 md:py-6 max-w-7xl mx-auto pb-24 overflow-x-hidden">
         <InsightsHeader onRefresh={handleRefresh} />
-        <div className="mt-6">
+        <div className="mt-4 md:mt-6">
           <InsightsBanner />
         </div>
-        <div className="mt-6">
+        <div className="mt-4 md:mt-6">
           <InsightsContent />
         </div>
       </div>

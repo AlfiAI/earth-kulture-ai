@@ -20,7 +20,7 @@ const MobileSidebarToggle = ({ onToggle }: MobileSidebarToggleProps) => {
       variant="default"
       size="icon"
       onClick={handleToggle}
-      className="fixed z-50 bottom-4 left-4 h-10 w-10 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
+      className="fixed z-[100] bottom-[calc(4rem+env(safe-area-inset-bottom))] left-4 h-10 w-10 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
       aria-label="Toggle sidebar"
     >
       <Menu className="h-5 w-5" />

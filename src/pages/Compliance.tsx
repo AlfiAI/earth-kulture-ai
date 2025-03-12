@@ -8,10 +8,10 @@ import { complianceItems } from "@/data/complianceData";
 const Compliance = () => {
   return (
     <DashboardLayout>
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="px-3 py-4 md:p-6 max-w-7xl mx-auto overflow-x-hidden">
         <ComplianceHeader />
         <ComplianceDashboardSummary complianceItems={complianceItems} />
-        <div className="mb-6">
+        <div className="mb-6 overflow-x-auto">
           <ComplianceTabs complianceItems={complianceItems} />
         </div>
       </div>
