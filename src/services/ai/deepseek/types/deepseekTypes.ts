@@ -1,9 +1,12 @@
 
-/**
- * Type definitions for the DeepSeek API
- */
+// Update existing types with additional energy-efficient model options
 
-export type ModelType = 'deepseek-chat' | 'deepseek-reasoner';
+export type ModelType = 
+  'deepseek-chat' | 
+  'deepseek-reasoner' | 
+  'mistral-small' | 
+  'mistral-large' | 
+  'mistral-tiny';
 
 export interface ModelConfig {
   name: string;
@@ -15,32 +18,16 @@ export interface ModelConfig {
   costPerInputTokenCacheHit: number;
   costPerOutputToken: number;
   discountPercentage: number;
-}
-
-export interface DeepseekResponse {
-  id: string;
-  object: string;
-  created: number;
-  model: string;
-  choices: {
-    index: number;
-    message: {
-      role: string;
-      content: string;
-    };
-    finish_reason: string;
-  }[];
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
+  energyEfficiency?: {
+    carbonFootprint: number; // gCO2e per query
+    energyUsage: number;     // Joules per token
+    isEcoFriendly: boolean;
   };
 }
 
 export interface DeepseekRequestOptions {
   preferredModel?: ModelType;
-  forceCloud?: boolean;
-  temperature?: number;
-  maxTokens?: number;
   systemPrompt?: string;
+  forceCloud?: boolean;
+  ecoMode?: boolean;
 }
