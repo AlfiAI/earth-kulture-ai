@@ -6,7 +6,6 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import IndustryContextCard from "@/components/dashboard/IndustryContextCard";
 import EnterpriseTabs from "@/components/dashboard/EnterpriseTabs";
 import DashboardContent from "@/components/dashboard/DashboardContent";
-import DashboardTour from "@/components/dashboard/DashboardTour";
 import { useAuth } from "@/contexts/auth";
 import SimpleChat from '@/components/chat/SimpleChat';
 
@@ -52,9 +51,6 @@ export default function Index() {
           {isEnterprise && <EnterpriseTabs />}
           
           <DashboardContent />
-          
-          {/* Tour component */}
-          <DashboardTour />
         </DashboardProvider>
       </div>
       

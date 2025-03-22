@@ -1,21 +1,31 @@
 
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useDashboardTour } from "@/hooks/use-dashboard-tour";
+import { useTour, TourStep } from "@/hooks/use-tour";
 import { Button } from "@/components/ui/button";
-import { X, ChevronRight, ChevronLeft } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip";
 
-const DashboardTour: React.FC = () => {
+interface PageTourProps {
+  className?: string;
+}
+
+const PageTour: React.FC<PageTourProps> = ({ className }) => {
   const { 
     isTourOpen, 
     tourSteps, 
     currentStep, 
     endTour, 
     nextStep, 
-    prevStep 
-  } = useDashboardTour();
+    prevStep,
+    hasSeenTour
+  } = useTour();
 
   const [targetPosition, setTargetPosition] = useState<{
     top: number;
@@ -59,7 +69,7 @@ const DashboardTour: React.FC = () => {
   }, [isTourOpen, currentStep, tourSteps]);
 
   if (!isTourOpen) {
-    return null; // No longer need to show a button here
+    return null;
   }
 
   const step = tourSteps[currentStep];
@@ -102,7 +112,10 @@ const DashboardTour: React.FC = () => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/40 z-40" onClick={endTour}></div>
+      <div 
+        className="fixed inset-0 bg-black/30 z-40 backdrop-blur-sm" 
+        onClick={endTour}
+      ></div>
 
       {/* Highlight overlay */}
       <div
@@ -118,7 +131,10 @@ const DashboardTour: React.FC = () => {
 
       <AnimatePresence>
         <motion.div 
-          className="fixed z-50 bg-card text-card-foreground border rounded-lg shadow-lg p-4 max-w-md"
+          className={cn(
+            "fixed z-50 bg-card text-card-foreground border rounded-lg shadow-lg p-4 max-w-md",
+            className
+          )}
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
@@ -181,4 +197,4 @@ const DashboardTour: React.FC = () => {
   );
 };
 
-export default DashboardTour;
+export default PageTour;

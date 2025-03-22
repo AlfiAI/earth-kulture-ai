@@ -8,6 +8,7 @@ import MobileSidebarToggle from "./MobileSidebarToggle";
 import SimpleChat from '@/components/chat/SimpleChat';
 import { motion } from "framer-motion";
 import { pageTransitionVariants } from "@/styles/animations";
+import PageTour from "@/components/ui/tour/PageTour";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -56,6 +57,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         
         {/* Ensure chat is always mounted regardless of route */}
         <SimpleChat />
+        
+        {/* Page-specific tour */}
+        <PageTour />
       </motion.div>
     </SidebarProvider>
   );
