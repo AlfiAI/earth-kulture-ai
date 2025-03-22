@@ -57,7 +57,7 @@ export const useAuthProvider = () => {
     }
   };
 
-  // Implement the missing getUserContext method with error handling
+  // Implement the missing getUserContext method with proper type handling
   const getUserContext = async (): Promise<UserContext> => {
     if (!user) {
       throw new Error("User not authenticated");
@@ -72,9 +72,9 @@ export const useAuthProvider = () => {
         industry: IndustryType.CORPORATE,
         role: UserRoleType.VIEWER,
         preferences: {
-          dashboardType: 'business',
-          dataVisualizationPreference: 'visual',
-          reportFrequency: 'monthly'
+          dashboardType: 'business' as 'business' | 'individual' | 'enterprise',
+          dataVisualizationPreference: 'visual' as 'detailed' | 'summary' | 'visual',
+          reportFrequency: 'monthly' as 'daily' | 'weekly' | 'monthly' | 'quarterly'
         }
       };
     }
@@ -85,9 +85,9 @@ export const useAuthProvider = () => {
       industry: (userProfile.industry as IndustryType) || IndustryType.CORPORATE,
       role: (userProfile.role as UserRoleType) || UserRoleType.VIEWER,
       preferences: {
-        dashboardType: userProfile.dashboard_preference || 'business',
-        dataVisualizationPreference: userProfile.data_visualization_preference || 'visual',
-        reportFrequency: userProfile.report_frequency || 'monthly'
+        dashboardType: (userProfile.dashboard_preference || 'business') as 'business' | 'individual' | 'enterprise',
+        dataVisualizationPreference: (userProfile.data_visualization_preference || 'visual') as 'detailed' | 'summary' | 'visual',
+        reportFrequency: (userProfile.report_frequency || 'monthly') as 'daily' | 'weekly' | 'monthly' | 'quarterly'
       }
     };
   };
