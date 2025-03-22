@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, Session } from "@supabase/supabase-js";
 import { UserProfile } from "./types";
 import { supabase } from "@/integrations/supabase/client";
+import { IndustryType, UserRoleType } from "@/services/ai/orchestration/types/agentTypes";
 
 // This component wraps AuthProvider with router functionality
 // It must be used INSIDE a Router context
@@ -68,8 +69,12 @@ export const AuthProviderWithRouter = ({ children }: { children: ReactNode }) =>
               full_name: profileData.full_name || '',
               avatar_url: profileData.avatar_url || '',
               company: profileData.company || '',
-              role: profileData.role || undefined,
-              industry: profileData.industry || undefined
+              role: profileData.role ? 
+                profileData.role as UserRoleType : // Type cast to UserRoleType
+                undefined,
+              industry: profileData.industry ? 
+                profileData.industry as IndustryType : // Type cast to IndustryType
+                undefined
             });
           }
         }

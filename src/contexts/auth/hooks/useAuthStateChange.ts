@@ -4,6 +4,7 @@ import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { UserProfile } from "../types";
+import { IndustryType, UserRoleType } from "@/services/ai/orchestration/types/agentTypes";
 
 type FetchUserProfileFn = (userId: string) => Promise<any>;
 type NavigateFunction = (path: string) => void;
@@ -47,8 +48,12 @@ export const useAuthStateChange = (
                 avatar_url: profileData.avatar_url || '',
                 // Include other profile properties if they exist
                 company: profileData.company,
-                role: profileData.role,
-                industry: profileData.industry,
+                role: profileData.role ? 
+                  profileData.role as UserRoleType : 
+                  undefined,
+                industry: profileData.industry ? 
+                  profileData.industry as IndustryType : 
+                  undefined,
                 tenant_id: profileData.tenant_id,
                 dashboard_preference: profileData.dashboard_preference,
                 data_visualization_preference: profileData.data_visualization_preference,
