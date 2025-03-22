@@ -91,8 +91,40 @@ export const AuthProviderWithRouter = ({ children }: { children: ReactNode }) =>
     initAuth();
   }, []);
 
+  // Create the auth context value with all the state and functions
+  const authContextValue = {
+    session,
+    user,
+    userProfile,
+    isAuthenticated: !!user,
+    isLoading,
+    authError,
+    // These will be implemented in useAuthProvider
+    signIn: async () => ({ requiresMFA: false }),
+    signUp: async () => {},
+    signInWithGoogle: async () => {},
+    signInWithGithub: async () => {},
+    signInWithLinkedIn: async () => {},
+    signOut: async () => {},
+    resetPassword: async () => {},
+    setupMFA: async () => null,
+    verifyMFA: async () => false,
+    disableMFA: async () => false,
+    updateUserProfile: async () => {},
+    getUserContext: async () => ({ 
+      userId: user?.id || '', 
+      industry: IndustryType.CORPORATE,
+      role: UserRoleType.VIEWER,
+      preferences: {
+        dashboardType: 'business',
+        dataVisualizationPreference: 'visual',
+        reportFrequency: 'monthly'
+      }
+    })
+  };
+
   return (
-    <AuthProvider>
+    <AuthProvider value={authContextValue}>
       {children}
     </AuthProvider>
   );

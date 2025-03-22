@@ -6,8 +6,15 @@ import { useAuthProvider } from "./useAuthProvider";
 // Create the auth context with a default value of null
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const auth = useAuthProvider();
+export const AuthProvider = ({ 
+  children, 
+  value 
+}: { 
+  children: ReactNode;
+  value?: AuthContextType;
+}) => {
+  // Use the provided value or get it from useAuthProvider
+  const auth = value || useAuthProvider();
 
   return (
     <AuthContext.Provider value={auth}>
