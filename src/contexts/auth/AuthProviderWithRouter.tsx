@@ -113,12 +113,13 @@ export const AuthProviderWithRouter = ({ children }: { children: ReactNode }) =>
     updateUserProfile: async () => {},
     getUserContext: async () => ({ 
       userId: user?.id || '', 
+      tenantId: undefined,
       industry: IndustryType.CORPORATE,
       role: UserRoleType.VIEWER,
       preferences: {
-        dashboardType: 'business',
-        dataVisualizationPreference: 'visual',
-        reportFrequency: 'monthly'
+        dashboardType: 'business' as 'business' | 'individual' | 'enterprise',
+        dataVisualizationPreference: 'visual' as 'detailed' | 'summary' | 'visual',
+        reportFrequency: 'monthly' as 'daily' | 'weekly' | 'monthly' | 'quarterly'
       }
     })
   };
