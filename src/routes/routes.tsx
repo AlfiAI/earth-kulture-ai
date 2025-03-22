@@ -23,106 +23,106 @@ import Insights from "@/pages/Insights";
 import AIAssistant from "@/pages/AIAssistant";
 import BenchmarkingPage from "@/pages/BenchmarkingPage";
 import Benchmarking from "@/pages/Benchmarking";
+import App from "@/App";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Landing />,
-  },
-  {
-    path: "/features",
-    element: <Features />,
-  },
-  {
-    path: "/pricing",
-    element: <Pricing />,
-  },
-  {
-    path: "/about",
-    element: <About />,
-  },
-  {
-    path: "/login",
-    element: <AuthPage />,
-  },
-  {
-    path: "/dashboard",
-    element: <ProtectedRoute />,
-    // This will be the default dashboard view
+    element: <App />,
     children: [
       {
-        path: "",
-        element: <Analytics />,
+        index: true,
+        element: <Landing />,
       },
       {
-        path: "settings",
-        element: <Settings />,
+        path: "features",
+        element: <Features />,
       },
       {
-        path: "onboarding",
-        element: <Onboarding />,
+        path: "pricing",
+        element: <Pricing />,
+      },
+      {
+        path: "about",
+        element: <About />,
+      },
+      {
+        path: "login",
+        element: <AuthPage />,
+      },
+      {
+        path: "dashboard",
+        element: <ProtectedRoute><Analytics /></ProtectedRoute>,
+      },
+      {
+        path: "dashboard/settings",
+        element: <ProtectedRoute><Settings /></ProtectedRoute>,
+      },
+      {
+        path: "dashboard/onboarding",
+        element: <ProtectedRoute><Onboarding /></ProtectedRoute>,
+      },
+      {
+        path: "analytics",
+        element: <ProtectedRoute><Analytics /></ProtectedRoute>,
+      },
+      {
+        path: "compliance",
+        element: <ProtectedRoute><Compliance /></ProtectedRoute>,
+      },
+      {
+        path: "data",
+        element: <ProtectedRoute><DataCenter /></ProtectedRoute>,
+      },
+      {
+        path: "external-data",
+        element: <ProtectedRoute><ExternalData /></ProtectedRoute>,
+      },
+      {
+        path: "insights",
+        element: <ProtectedRoute><Insights /></ProtectedRoute>,
+      },
+      {
+        path: "ai-insights",
+        element: <ProtectedRoute><AIInsights /></ProtectedRoute>,
+      },
+      {
+        path: "reports",
+        element: <ProtectedRoute><Reports /></ProtectedRoute>,
+      },
+      {
+        path: "goals",
+        element: <ProtectedRoute><Goals /></ProtectedRoute>,
+      },
+      {
+        path: "support",
+        element: <ProtectedRoute><Support /></ProtectedRoute>,
+      },
+      {
+        path: "documentation",
+        element: <ProtectedRoute><Documentation /></ProtectedRoute>,
+      },
+      {
+        path: "benchmark-dashboard",
+        element: <ProtectedRoute><BenchmarkDashboard /></ProtectedRoute>,
+      },
+      {
+        path: "benchmarking",
+        element: <ProtectedRoute><BenchmarkingPage /></ProtectedRoute>,
+      },
+      {
+        path: "ai-assistant",
+        element: <ProtectedRoute><AIAssistant /></ProtectedRoute>,
+      },
+      {
+        path: "advanced-benchmarking",
+        element: <ProtectedRoute><Benchmarking /></ProtectedRoute>,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
-  },
-  {
-    path: "/analytics",
-    element: <ProtectedRoute><Analytics /></ProtectedRoute>,
-  },
-  {
-    path: "/compliance",
-    element: <ProtectedRoute><Compliance /></ProtectedRoute>,
-  },
-  {
-    path: "/data",
-    element: <ProtectedRoute><DataCenter /></ProtectedRoute>,
-  },
-  {
-    path: "/external-data",
-    element: <ProtectedRoute><ExternalData /></ProtectedRoute>,
-  },
-  {
-    path: "/insights",
-    element: <ProtectedRoute><Insights /></ProtectedRoute>,
-  },
-  {
-    path: "/ai-insights",
-    element: <ProtectedRoute><AIInsights /></ProtectedRoute>,
-  },
-  {
-    path: "/reports",
-    element: <ProtectedRoute><Reports /></ProtectedRoute>,
-  },
-  {
-    path: "/goals",
-    element: <ProtectedRoute><Goals /></ProtectedRoute>,
-  },
-  {
-    path: "/support",
-    element: <ProtectedRoute><Support /></ProtectedRoute>,
-  },
-  {
-    path: "/documentation",
-    element: <ProtectedRoute><Documentation /></ProtectedRoute>,
-  },
-  {
-    path: "/benchmark-dashboard",
-    element: <ProtectedRoute><BenchmarkDashboard /></ProtectedRoute>,
-  },
-  {
-    path: "/benchmarking",
-    element: <ProtectedRoute><BenchmarkingPage /></ProtectedRoute>,
-  },
-  {
-    path: "/ai-assistant",
-    element: <ProtectedRoute><AIAssistant /></ProtectedRoute>,
-  },
-  {
-    path: "/advanced-benchmarking",
-    element: <ProtectedRoute><Benchmarking /></ProtectedRoute>,
-  },
-  {
-    path: "*",
-    element: <NotFound />,
   },
 ]);
 

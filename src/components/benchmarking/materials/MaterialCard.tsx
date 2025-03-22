@@ -10,6 +10,7 @@ interface MaterialCardProps {
   onToggleCompare: () => void;
   compareMode: boolean;
   isSelected: boolean;
+  selectedCount?: number;
 }
 
 const MaterialCard = ({ 
@@ -17,9 +18,11 @@ const MaterialCard = ({
   onClick, 
   onToggleCompare, 
   compareMode,
-  isSelected
+  isSelected,
+  selectedCount = 0
 }: MaterialCardProps) => {
   const { name, category, sustainabilityScore, properties } = material;
+  const maxSelectionsReached = selectedCount >= 3;
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600";
@@ -41,7 +44,7 @@ const MaterialCard = ({
             <Checkbox 
               checked={isSelected}
               onCheckedChange={() => onToggleCompare()}
-              disabled={!isSelected && isMaxSelected}
+              disabled={!isSelected && maxSelectionsReached}
             />
           </div>
         )}
@@ -94,11 +97,6 @@ const MaterialCard = ({
       </CardContent>
     </Card>
   );
-};
-
-// Helper to check if maximum selections are reached
-const isMaxSelected = (selectedCount: number): boolean => {
-  return selectedCount >= 3;
 };
 
 export default MaterialCard;

@@ -29,6 +29,13 @@ const SupplierList = ({ suppliers, isLoading }: SupplierListProps) => {
     );
   }
 
+  // Helper function to get appropriate badge variant
+  const getScoreBadgeVariant = (score: number) => {
+    if (score >= 80) return "default";
+    if (score >= 50) return "secondary";
+    return "destructive";
+  };
+
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -62,10 +69,7 @@ const SupplierList = ({ suppliers, isLoading }: SupplierListProps) => {
                 </Badge>
               </TableCell>
               <TableCell>
-                <Badge variant={
-                  supplier.sustainabilityScore >= 80 ? "success" : 
-                  supplier.sustainabilityScore >= 50 ? "warning" : "destructive"
-                }>
+                <Badge variant={getScoreBadgeVariant(supplier.sustainabilityScore)}>
                   {supplier.sustainabilityScore}%
                 </Badge>
               </TableCell>

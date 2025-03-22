@@ -165,11 +165,11 @@ const MaterialComparisonView = ({ materialIds, materials, onDownload }: Material
                 <Tooltip 
                   formatter={(value, name) => {
                     const dataPoint = barChartData.find(d => name in d);
-                    return [`${value} ${dataPoint?.unit || ''}`, selectedMaterials[parseInt(name.replace('material', '')) - 1]?.name];
+                    return [`${value} ${dataPoint?.unit || ''}`, selectedMaterials[parseInt(String(name).replace('material', '')) - 1]?.name];
                   }}
                 />
                 <Legend formatter={(value) => {
-                  const index = parseInt(value.replace('material', '')) - 1;
+                  const index = parseInt(String(value).replace('material', '')) - 1;
                   return selectedMaterials[index]?.name || value;
                 }} />
                 {selectedMaterials.map((_, index) => (
