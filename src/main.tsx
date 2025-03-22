@@ -2,7 +2,6 @@
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
-import { AuthProvider } from "@/contexts/auth";
 import router from "@/routes/routes"; // Changed from named import to default import
 import './index.css'
 
@@ -19,8 +18,6 @@ const root = createRoot(document.getElementById("root")!);
 // Render the application
 root.render(
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <RouterProvider router={router} />
   </QueryClientProvider>
 );

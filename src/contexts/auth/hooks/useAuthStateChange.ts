@@ -3,19 +3,18 @@ import { useEffect } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { UserProfile } from "../types";
 
 type FetchUserProfileFn = (userId: string) => Promise<any>;
+type NavigateFunction = (path: string) => void;
 
 export const useAuthStateChange = (
   setSession: (session: Session | null) => void,
   setUser: (user: User | null) => void,
   setUserProfile: (profile: UserProfile | null) => void,
-  fetchUserProfile: FetchUserProfileFn
+  fetchUserProfile: FetchUserProfileFn,
+  navigate: NavigateFunction
 ) => {
-  const navigate = useNavigate();
-
   useEffect(() => {
     // Handle URL hash fragments for auth redirects
     const handleHashParams = async () => {
@@ -75,7 +74,7 @@ export const useAuthStateChange = (
             
           case 'SIGNED_OUT':
             console.log("User signed out, redirecting to auth page");
-            navigate('/auth');
+            navigate('/login');
             toast.info("You have been signed out");
             break;
             

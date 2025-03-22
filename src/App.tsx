@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from 'sonner';
 import WalyActionHandler from '@/components/ai/WalyActionHandler';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { AuthProvider } from '@/contexts/auth';
 
 function App() {
   const location = useLocation();
@@ -16,11 +17,13 @@ function App() {
   return (
     <TooltipProvider>
       <WalyActionHandler>
-        <div className="min-h-screen flex flex-col">
-          <Outlet />
-          <Toaster />
-          <SonnerToaster position="top-center" />
-        </div>
+        <AuthProvider>
+          <div className="min-h-screen flex flex-col">
+            <Outlet />
+            <Toaster />
+            <SonnerToaster position="top-center" />
+          </div>
+        </AuthProvider>
       </WalyActionHandler>
     </TooltipProvider>
   );
