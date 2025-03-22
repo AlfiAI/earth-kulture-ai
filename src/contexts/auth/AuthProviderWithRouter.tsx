@@ -69,11 +69,13 @@ export const AuthProviderWithRouter = ({ children }: { children: ReactNode }) =>
               full_name: profileData.full_name || '',
               avatar_url: profileData.avatar_url || '',
               company: profileData.company || '',
+              // Check if role exists and type cast it
               role: profileData.role ? 
-                profileData.role as UserRoleType : // Type cast to UserRoleType
+                profileData.role as UserRoleType : 
                 undefined,
-              industry: profileData.industry ? 
-                profileData.industry as IndustryType : // Type cast to IndustryType
+              // Check if industry exists and type cast it
+              industry: 'industry' in profileData && profileData.industry ? 
+                profileData.industry as IndustryType : 
                 undefined
             });
           }

@@ -51,7 +51,7 @@ export const useAuthStateChange = (
                 role: profileData.role ? 
                   profileData.role as UserRoleType : 
                   undefined,
-                industry: profileData.industry ? 
+                industry: 'industry' in profileData && profileData.industry ? 
                   profileData.industry as IndustryType : 
                   undefined,
                 tenant_id: profileData.tenant_id,
