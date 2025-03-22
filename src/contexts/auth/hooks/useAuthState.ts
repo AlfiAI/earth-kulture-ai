@@ -9,7 +9,7 @@ export const useAuthState = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [authError, setAuthError] = useState<Error | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null); // Changed from Error to string
 
   // Initialize auth state
   useEffect(() => {
@@ -34,7 +34,7 @@ export const useAuthState = () => {
         }
       } catch (error) {
         console.error("Error initializing auth:", error);
-        setAuthError(error as Error);
+        setAuthError(error instanceof Error ? error.message : String(error));
       } finally {
         setIsLoading(false);
       }

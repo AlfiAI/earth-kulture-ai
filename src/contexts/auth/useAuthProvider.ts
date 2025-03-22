@@ -68,7 +68,7 @@ export const useAuthProvider = () => {
       console.warn("User profile not loaded, returning minimal context");
       return {
         userId: user.id,
-        tenantId: null,
+        tenantId: undefined,
         industry: IndustryType.CORPORATE,
         role: UserRoleType.VIEWER,
         preferences: {

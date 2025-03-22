@@ -30,7 +30,7 @@ export interface AuthContextType {
   userProfile: UserProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  authError: string | null;
+  authError: string | null; // Changed from Error to string
   signIn: (email: string, password: string, rememberMe?: boolean) => Promise<MFASignInResult>;
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<any>;

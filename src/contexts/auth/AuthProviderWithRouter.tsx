@@ -1,5 +1,5 @@
 
-import { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { AuthProvider } from './AuthContext';
 import { useAuthStateChange } from "./hooks/useAuthStateChange";
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +18,7 @@ export const AuthProviderWithRouter = ({ children }: { children: ReactNode }) =>
   const [session, setSession] = React.useState<Session | null>(null);
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [authError, setAuthError] = React.useState<Error | null>(null);
+  const [authError, setAuthError] = React.useState<string | null>(null);
   
   // Fetch user profile function
   const fetchUserProfile = async (userId: string) => {
@@ -60,11 +60,22 @@ export const AuthProviderWithRouter = ({ children }: { children: ReactNode }) =>
         
         if (data.session?.user) {
           const profileData = await fetchUserProfile(data.session.user.id);
-          setUserProfile(profileData);
+          if (profileData) {
+            // Make sure the profile data includes the email field
+            setUserProfile({
+              id: profileData.id,
+              email: data.session.user.email || '',
+              full_name: profileData.full_name || '',
+              avatar_url: profileData.avatar_url || '',
+              company: profileData.company || '',
+              role: profileData.role || undefined,
+              industry: profileData.industry || undefined
+            });
+          }
         }
       } catch (error) {
         console.error("Error initializing auth:", error);
-        setAuthError(error as Error);
+        setAuthError(error instanceof Error ? error.message : String(error));
       } finally {
         setIsLoading(false);
       }

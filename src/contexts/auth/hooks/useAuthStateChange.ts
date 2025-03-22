@@ -39,7 +39,21 @@ export const useAuthStateChange = (
             console.log("Fetched profile data:", profileData);
             
             if (profileData) {
-              setUserProfile(profileData);
+              // Ensure we include the email from the user object
+              setUserProfile({
+                id: newSession.user.id,
+                email: newSession.user.email || '',
+                full_name: profileData.full_name || '',
+                avatar_url: profileData.avatar_url || '',
+                // Include other profile properties if they exist
+                company: profileData.company,
+                role: profileData.role,
+                industry: profileData.industry,
+                tenant_id: profileData.tenant_id,
+                dashboard_preference: profileData.dashboard_preference,
+                data_visualization_preference: profileData.data_visualization_preference,
+                report_frequency: profileData.report_frequency
+              });
             } else {
               // Set basic profile if we couldn't fetch from database
               setUserProfile({
