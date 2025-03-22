@@ -66,7 +66,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   // If redirecting or not authenticated, redirect to auth page
   if (redirecting || !isAuthenticated) {
     console.log("Redirecting to auth page from:", location.pathname);
-    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   // If authenticated and not loading, show the protected content

@@ -2,7 +2,6 @@
 import { useAuthState } from "./hooks/useAuthState";
 import { useProfileManagement } from "./hooks/useProfileManagement";
 import { useAuthOperations } from "./hooks/useAuthOperations";
-import { useAuthStateChange } from "./hooks/useAuthStateChange";
 import { UserContext, UserProfile } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 import { IndustryType, UserRoleType } from "@/services/ai/orchestration/types/agentTypes";
@@ -35,22 +34,6 @@ export const useAuthProvider = () => {
     verifyMFA,
     disableMFA 
   } = useAuthOperations();
-
-  // Set up auth state change handler but with error handling
-  useAuthStateChange(setSession, setUser, setUserProfile, async (userId) => {
-    try {
-      return await fetchUserProfile(userId);
-    } catch (error) {
-      console.error("Error in fetchUserProfile during auth state change:", error);
-      // Return minimal profile data on error
-      return {
-        id: userId,
-        email: user?.email || '',
-        full_name: '',
-        avatar_url: ''
-      };
-    }
-  });
 
   // Implement the missing updateUserProfile method
   const updateUserProfile = async (profile: Partial<UserProfile>): Promise<void> => {

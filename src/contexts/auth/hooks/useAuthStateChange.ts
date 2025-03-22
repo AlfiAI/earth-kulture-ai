@@ -92,8 +92,6 @@ export const useAuthStateChange = (
             // Session token was refreshed
             console.log("Session token refreshed");
             break;
-            
-          // Removed the invalid USER_DELETED case as it's not a valid AuthChangeEvent in Supabase
         }
       }
     );
