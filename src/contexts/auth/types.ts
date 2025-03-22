@@ -13,7 +13,10 @@ export interface UserProfile {
   email_verified?: boolean;
   mfa_enabled?: boolean;
   last_sign_in?: string;
-  // Remove the fields that don't exist in the profiles table
+  // Add back the fields needed by components
+  dashboard_preference?: 'individual' | 'business' | 'enterprise';
+  data_visualization_preference?: 'detailed' | 'summary' | 'visual';
+  report_frequency?: 'daily' | 'weekly' | 'monthly' | 'quarterly';
 }
 
 export interface MFASignInResult {

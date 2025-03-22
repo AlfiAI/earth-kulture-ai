@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,7 +53,6 @@ export const useAuthStateChange = (
                 industry: 'industry' in profileData && profileData.industry ? 
                   profileData.industry as IndustryType : 
                   undefined,
-                tenant_id: profileData.tenant_id,
                 dashboard_preference: profileData.dashboard_preference,
                 data_visualization_preference: profileData.data_visualization_preference,
                 report_frequency: profileData.report_frequency

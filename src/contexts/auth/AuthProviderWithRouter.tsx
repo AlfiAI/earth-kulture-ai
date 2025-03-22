@@ -76,8 +76,11 @@ export const AuthProviderWithRouter = ({ children }: { children: ReactNode }) =>
               // Check if industry exists and type cast it
               industry: 'industry' in profileData && profileData.industry ? 
                 profileData.industry as IndustryType : 
-                undefined
-              // Remove the properties that don't exist in the profiles table
+                undefined,
+              // Add back the preference fields if they exist in profileData
+              dashboard_preference: profileData.dashboard_preference,
+              data_visualization_preference: profileData.data_visualization_preference,
+              report_frequency: profileData.report_frequency
             });
           }
         }

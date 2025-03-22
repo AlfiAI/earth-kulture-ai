@@ -85,9 +85,9 @@ export const useAuthProvider = () => {
       industry: (userProfile.industry as IndustryType) || IndustryType.CORPORATE,
       role: (userProfile.role as UserRoleType) || UserRoleType.VIEWER,
       preferences: {
-        dashboardType: 'business' as 'business' | 'individual' | 'enterprise',
-        dataVisualizationPreference: 'visual' as 'detailed' | 'summary' | 'visual',
-        reportFrequency: 'monthly' as 'daily' | 'weekly' | 'monthly' | 'quarterly'
+        dashboardType: (userProfile.dashboard_preference || 'business') as 'business' | 'individual' | 'enterprise',
+        dataVisualizationPreference: (userProfile.data_visualization_preference || 'visual') as 'detailed' | 'summary' | 'visual',
+        reportFrequency: (userProfile.report_frequency || 'monthly') as 'daily' | 'weekly' | 'monthly' | 'quarterly'
       }
     };
   };
