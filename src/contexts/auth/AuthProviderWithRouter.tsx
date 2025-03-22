@@ -77,10 +77,10 @@ export const AuthProviderWithRouter = ({ children }: { children: ReactNode }) =>
               industry: 'industry' in profileData && profileData.industry ? 
                 profileData.industry as IndustryType : 
                 undefined,
-              // Add back the preference fields if they exist in profileData
-              dashboard_preference: profileData.dashboard_preference,
-              data_visualization_preference: profileData.data_visualization_preference,
-              report_frequency: profileData.report_frequency
+              // Include preference fields from the database (now properly typed)
+              dashboard_preference: profileData.dashboard_preference as 'individual' | 'business' | 'enterprise',
+              data_visualization_preference: profileData.data_visualization_preference as 'detailed' | 'summary' | 'visual',
+              report_frequency: profileData.report_frequency as 'daily' | 'weekly' | 'monthly' | 'quarterly'
             });
           }
         }

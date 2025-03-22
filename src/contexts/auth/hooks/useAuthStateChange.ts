@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,9 +54,9 @@ export const useAuthStateChange = (
                 industry: 'industry' in profileData && profileData.industry ? 
                   profileData.industry as IndustryType : 
                   undefined,
-                dashboard_preference: profileData.dashboard_preference,
-                data_visualization_preference: profileData.data_visualization_preference,
-                report_frequency: profileData.report_frequency
+                dashboard_preference: profileData.dashboard_preference as 'individual' | 'business' | 'enterprise',
+                data_visualization_preference: profileData.data_visualization_preference as 'detailed' | 'summary' | 'visual',
+                report_frequency: profileData.report_frequency as 'daily' | 'weekly' | 'monthly' | 'quarterly'
               });
             } else {
               // Set basic profile if we couldn't fetch from database
