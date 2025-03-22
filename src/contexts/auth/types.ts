@@ -13,10 +13,7 @@ export interface UserProfile {
   email_verified?: boolean;
   mfa_enabled?: boolean;
   last_sign_in?: string;
-  tenant_id?: string;
-  dashboard_preference?: 'individual' | 'business' | 'enterprise';
-  data_visualization_preference?: 'detailed' | 'summary' | 'visual';
-  report_frequency?: 'daily' | 'weekly' | 'monthly' | 'quarterly';
+  // Remove the fields that don't exist in the profiles table
 }
 
 export interface MFASignInResult {
