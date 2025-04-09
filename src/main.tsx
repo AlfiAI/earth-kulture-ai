@@ -15,15 +15,19 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      // Global error handler for react-query
-      onError: (error) => {
-        console.error("Data fetching error:", error);
+      // Updated error handler for react-query v5
+      meta: {
+        onError: (error: Error) => {
+          console.error("Data fetching error:", error);
+        }
       }
     },
     mutations: {
-      // Global error handler for mutations
-      onError: (error) => {
-        console.error("Mutation error:", error);
+      // Updated error handler for react-query v5
+      meta: {
+        onError: (error: Error) => {
+          console.error("Mutation error:", error);
+        }
       }
     }
   }
