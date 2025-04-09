@@ -9,8 +9,25 @@ import './index.css'
 import { initErrorTracking } from '@/services/monitoring/errorTracking';
 initErrorTracking();
 
-// Create a react-query client
-const queryClient = new QueryClient();
+// Create a react-query client with error handling
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      // Global error handler for react-query
+      onError: (error) => {
+        console.error("Data fetching error:", error);
+      }
+    },
+    mutations: {
+      // Global error handler for mutations
+      onError: (error) => {
+        console.error("Mutation error:", error);
+      }
+    }
+  }
+});
 
 // Create a new router that wraps the AuthProvider inside the routes
 const root = createRoot(document.getElementById("root")!);

@@ -24,15 +24,18 @@ import AIAssistant from "@/pages/AIAssistant";
 import BenchmarkingPage from "@/pages/BenchmarkingPage";
 import Benchmarking from "@/pages/Benchmarking";
 import App from "@/App";
+import { RouteErrorDisplay } from "@/components/error/ErrorBoundary";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <RouteErrorDisplay />,
     children: [
       {
         index: true,
         element: <Landing />,
+        errorElement: <RouteErrorDisplay />,
       },
       {
         path: "features",
@@ -53,6 +56,7 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <ProtectedRoute><Analytics /></ProtectedRoute>,
+        errorElement: <RouteErrorDisplay />,
       },
       {
         path: "dashboard/settings",

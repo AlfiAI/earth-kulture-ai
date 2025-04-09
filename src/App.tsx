@@ -6,6 +6,7 @@ import { Toaster as SonnerToaster } from 'sonner';
 import WalyActionHandler from '@/components/ai/WalyActionHandler';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AuthProviderWithRouter } from '@/contexts/auth/AuthProviderWithRouter';
+import ErrorBoundary from '@/components/error/ErrorBoundary';
 
 function App() {
   const location = useLocation();
@@ -15,17 +16,19 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <TooltipProvider>
-      <WalyActionHandler>
-        <AuthProviderWithRouter>
-          <div className="min-h-screen flex flex-col">
-            <Outlet />
-            <Toaster />
-            <SonnerToaster position="top-center" />
-          </div>
-        </AuthProviderWithRouter>
-      </WalyActionHandler>
-    </TooltipProvider>
+    <ErrorBoundary>
+      <TooltipProvider>
+        <WalyActionHandler>
+          <AuthProviderWithRouter>
+            <div className="min-h-screen flex flex-col">
+              <Outlet />
+              <Toaster />
+              <SonnerToaster position="top-center" />
+            </div>
+          </AuthProviderWithRouter>
+        </WalyActionHandler>
+      </TooltipProvider>
+    </ErrorBoundary>
   );
 }
 
